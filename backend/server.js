@@ -16,10 +16,19 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// Set up MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecommerce-store')
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error(err));
+// Ensure MongoDB Connection for Serverless
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState === 1) {
+    return next();
+  }
+  try {
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecommerce-store');
+    next();
+  } catch (err) {
+    console.error('MongoDB Connection Error:', err);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 app.get('/api/health', async (req, res) => {
   try {

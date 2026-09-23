@@ -21,6 +21,15 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecommerce-s
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.error(err));
 
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    dbState: mongoose.connection.readyState,
+    hasMongoUri: !!process.env.MONGO_URI,
+    envKeys: Object.keys(process.env)
+  });
+});
+
 // Models
 const Product = require('./models/Product');
 const Order = require('./models/Order');

@@ -21,13 +21,24 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/ecommerce-s
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.error(err));
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    dbState: mongoose.connection.readyState,
-    hasMongoUri: !!process.env.MONGO_URI,
-    envKeys: Object.keys(process.env)
-  });
+app.get('/api/health', async (req, res) => {
+  try {
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGO_URI);
+    }
+    res.json({
+      status: 'ok',
+      dbState: mongoose.connection.readyState,
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      dbState: mongoose.connection.readyState,
+      errorName: err.name,
+      errorMessage: err.message,
+      errorCode: err.code
+    });
+  }
 });
 
 // Models

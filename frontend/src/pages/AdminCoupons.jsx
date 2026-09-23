@@ -23,7 +23,7 @@ export default function AdminCoupons() {
     try {
       if (!user) return;
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get('http://localhost:5000/api/coupons', config);
+      const { data } = await axios.get('https://saasecommerce.vercel.app/api/coupons', config);
       setCoupons(data);
     } catch (err) {
       console.error(err);
@@ -50,9 +50,9 @@ export default function AdminCoupons() {
       };
 
       if (editId) {
-        await axios.put(`http://localhost:5000/api/coupons/${editId}`, couponData, config);
+        await axios.put(`https://saasecommerce.vercel.app/api/coupons/${editId}`, couponData, config);
       } else {
-        await axios.post('http://localhost:5000/api/coupons', couponData, config);
+        await axios.post('https://saasecommerce.vercel.app/api/coupons', couponData, config);
       }
       
       fetchCoupons();
@@ -66,7 +66,7 @@ export default function AdminCoupons() {
     if (!window.confirm('Are you sure you want to delete this coupon?')) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`http://localhost:5000/api/coupons/${id}`, config);
+      await axios.delete(`https://saasecommerce.vercel.app/api/coupons/${id}`, config);
       fetchCoupons();
     } catch (err) {
       alert(err.response?.data?.message || 'Error deleting coupon');
@@ -76,7 +76,7 @@ export default function AdminCoupons() {
   const toggleActive = async (coupon) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`http://localhost:5000/api/coupons/${coupon._id}`, { isActive: !coupon.isActive }, config);
+      await axios.put(`https://saasecommerce.vercel.app/api/coupons/${coupon._id}`, { isActive: !coupon.isActive }, config);
       fetchCoupons();
     } catch (err) {
       alert(err.response?.data?.message || 'Error updating coupon');

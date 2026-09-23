@@ -13,7 +13,7 @@ export default function AdminInventory() {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/products');
+      const { data } = await axios.get('https://saasecommerce.vercel.app/api/products');
       setProducts(data);
     } catch (err) {
       console.error(err);
@@ -27,7 +27,7 @@ export default function AdminInventory() {
   const handleSaveStock = async (product) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`http://localhost:5000/api/products/${product._id}`, {
+      await axios.put(`https://saasecommerce.vercel.app/api/products/${product._id}`, {
         ...product, // keep existing data
         stock: Number(editStock),
         variants: editVariants

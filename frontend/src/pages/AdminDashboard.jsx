@@ -24,7 +24,7 @@ export default function AdminDashboard() {
     const fetchDashboard = async () => {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const response = await axios.get('http://localhost:5000/api/dashboard', config);
+        const response = await axios.get('https://saasecommerce.vercel.app/api/dashboard', config);
         setData(response.data);
       } catch (err) {
         console.error(err);

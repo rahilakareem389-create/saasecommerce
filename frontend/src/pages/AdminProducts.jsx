@@ -32,12 +32,12 @@ export default function AdminProducts() {
   }, []);
 
   const fetchProducts = async () => {
-    const { data } = await axios.get('http://localhost:5000/api/products');
+    const { data } = await axios.get('https://saasecommerce.vercel.app/api/products');
     setProducts(data);
   };
 
   const fetchCategories = async () => {
-    const { data } = await axios.get('http://localhost:5000/api/categories');
+    const { data } = await axios.get('https://saasecommerce.vercel.app/api/categories');
     setCategories(data);
   };
 
@@ -51,9 +51,9 @@ export default function AdminProducts() {
       };
 
       if (editId) {
-        await axios.put(`http://localhost:5000/api/products/${editId}`, productData, config);
+        await axios.put(`https://saasecommerce.vercel.app/api/products/${editId}`, productData, config);
       } else {
-        await axios.post('http://localhost:5000/api/products', productData, config);
+        await axios.post('https://saasecommerce.vercel.app/api/products', productData, config);
       }
       
       fetchProducts();
@@ -67,7 +67,7 @@ export default function AdminProducts() {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`http://localhost:5000/api/products/${id}`, config);
+      await axios.delete(`https://saasecommerce.vercel.app/api/products/${id}`, config);
       fetchProducts();
     } catch (err) {
       alert(err.response?.data?.message || 'Error deleting product');

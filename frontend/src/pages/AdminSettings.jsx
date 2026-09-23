@@ -29,7 +29,7 @@ export default function AdminSettings() {
   const fetchSettings = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get('http://localhost:5000/api/settings', config);
+      const { data } = await axios.get('https://saasecommerce.vercel.app/api/settings', config);
       setSettings(data);
     } catch (err) {
       console.error(err);
@@ -43,7 +43,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put('http://localhost:5000/api/settings', settings, config);
+      await axios.put('https://saasecommerce.vercel.app/api/settings', settings, config);
       alert('Settings saved successfully!');
     } catch (err) {
       alert(err.response?.data?.message || 'Error saving settings');
@@ -57,7 +57,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put('http://localhost:5000/api/auth/profile', adminProfile, config);
+      await axios.put('https://saasecommerce.vercel.app/api/auth/profile', adminProfile, config);
       alert('Admin Profile updated successfully!');
       setAdminProfile({ ...adminProfile, password: '' });
     } catch (err) {

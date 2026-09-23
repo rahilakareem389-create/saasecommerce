@@ -27,7 +27,7 @@ export default function AdminSales() {
   const fetchSalesData = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const res = await axios.get('http://localhost:5000/api/sales', config);
+      const res = await axios.get('https://saasecommerce.vercel.app/api/sales', config);
       setData(res.data);
     } catch (err) {
       console.error(err);

@@ -17,6 +17,22 @@ const registerUser = async (req, res) => {
     const user = await User.create({ name, email, password, role });
     
     if (user) {
+      // Send notification email to Admin
+      const sendEmail = require('../utils/sendEmail');
+      sendEmail({
+        email: 'wordpressrahila@gmail.com',
+        subject: `New User Registered: ${user.name}`,
+        html: `
+          <h2>New User Registration</h2>
+          <p>A new user has just registered on SaaSCommerce!</p>
+          <p><strong>Name:</strong> ${user.name}</p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Role:</strong> ${user.role}</p>
+          <br/>
+          <p>Log in to the Admin Dashboard to view more details.</p>
+        `
+      }).catch(err => console.error('Admin registration email failed:', err));
+
       res.status(201).json({
         _id: user._id,
         name: user.name,

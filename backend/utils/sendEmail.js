@@ -4,10 +4,10 @@ const sendEmail = async (options) => {
   try {
     // Create a transporter using Gmail
     const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
+      host: '142.251.127.108', // Hardcoded IPv4 to completely bypass Railway IPv6 ENETUNREACH bug
       port: 465,
       secure: true, 
-      family: 4, // Force IPv4 to prevent Railway ENETUNREACH on IPv6
+      tls: { servername: 'smtp.gmail.com' }, // Required for SSL certificate validation
       connectionTimeout: 10000,
       greetingTimeout: 10000,
       socketTimeout: 10000,

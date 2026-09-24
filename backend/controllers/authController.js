@@ -2,7 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, 'your_jwt_secret_key', { expiresIn: '30d' }); // Use process.env.JWT_SECRET in prod
+  return jwt.sign({ id }, process.env.JWT_SECRET || 'your_jwt_secret_key', { expiresIn: '30d' }); // Use process.env.JWT_SECRET in prod
 };
 
 const registerUser = async (req, res) => {

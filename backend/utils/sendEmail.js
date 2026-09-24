@@ -2,14 +2,18 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async (options) => {
   try {
-    // Create a transporter using Gmail with port 587
+    // Create a transporter using Gmail
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // upgrade later with STARTTLS
+      port: 465,
+      secure: true, 
+      family: 4, // Force IPv4 to prevent Railway ENETUNREACH on IPv6
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
       auth: {
         user: process.env.EMAIL_USER || 'wordpressrahila@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your_app_password_here', // The user must replace this in .env
+        pass: process.env.EMAIL_PASS || 'your_app_password_here',
       },
     });
 

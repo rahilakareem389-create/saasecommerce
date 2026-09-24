@@ -84,6 +84,27 @@ export default function Checkout() {
         coupon: appliedCoupon ? appliedCoupon.code : null
       });
 
+      // Send Email via Web3Forms directly from the browser to bypass Cloudflare
+      try {
+        const orderItemsText = cart.map(item => `${item.qty}x ${item.title} ($${item.price})`).join('\n');
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: '6d6e0418-bb66-48ed-81eb-aaf8f0a9486d',
+            subject: 'New Order Received! SaaSCommerce',
+            from_name: 'SaaSCommerce System',
+            Order_Total: `$${finalTotal.toFixed(2)}`,
+            Payment_Method: paymentMethod,
+            Customer_Email: user.email,
+            Address: `${address}, ${city}, ${country}`,
+            Items: orderItemsText
+          })
+        });
+      } catch (emailErr) {
+        console.error("Web3Forms Email Error:", emailErr);
+      }
+
       clearCart();
       alert('Order placed successfully!');
       navigate('/');

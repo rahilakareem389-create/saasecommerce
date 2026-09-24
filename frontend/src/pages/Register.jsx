@@ -15,6 +15,22 @@ export default function Register() {
     setError('');
     const res = await register(name, email, password);
     if (res.success) {
+      // Send Email via Web3Forms directly from the browser
+      try {
+        await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            access_key: '6d6e0418-bb66-48ed-81eb-aaf8f0a9486d',
+            subject: 'New User Registered on SaaSCommerce',
+            from_name: 'SaaSCommerce System',
+            Name: name,
+            Email: email
+          })
+        });
+      } catch (emailErr) {
+        console.error("Web3Forms Email Error:", emailErr);
+      }
       navigate('/');
     } else {
       setError(res.message);

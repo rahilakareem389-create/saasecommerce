@@ -1,36 +1,32 @@
-const nodemailer = require('nodemailer');
-
 const sendEmail = async (options) => {
   try {
-    // Create a transporter using Gmail
-    const transporter = nodemailer.createTransport({
-      host: '142.251.127.108', // Hardcoded IPv4 to completely bypass Railway IPv6 ENETUNREACH bug
-      port: 465,
-      secure: true, 
-      tls: { servername: 'smtp.gmail.com' }, // Required for SSL certificate validation
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-      auth: {
-        user: process.env.EMAIL_USER || 'wordpressrahila@gmail.com',
-        pass: process.env.EMAIL_PASS || 'your_app_password_here',
+    // Strip HTML tags for Web3Forms readability
+    const plainText = options.html ? options.html.replace(/<[^>]*>?/gm, '\n').replace(/\n\s*\n/g, '\n').trim() : '';
+
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
       },
+      body: JSON.stringify({
+        access_key: '6d6e0418-bb66-48ed-81eb-aaf8f0a9486d',
+        subject: options.subject || 'SaaSCommerce Notification',
+        Message: plainText,
+        from_name: 'SaaSCommerce System'
+      })
     });
 
-    // Email options
-    const mailOptions = {
-      from: `"SaaSCommerce Alerts" <${process.env.EMAIL_USER || 'wordpressrahila@gmail.com'}>`,
-      to: options.email,
-      subject: options.subject,
-      html: options.html,
-    };
-
-    // Send the email
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent: ' + info.response);
-    return info;
+    const result = await response.json();
+    console.log('Web3Forms Result:', result);
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Web3Forms submission failed');
+    }
+    
+    return result;
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending via Web3Forms:', error);
     throw error;
   }
 };

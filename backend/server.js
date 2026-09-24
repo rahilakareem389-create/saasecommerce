@@ -388,7 +388,7 @@ app.post('/api/orders', async (req, res) => {
     const sendEmail = require('./utils/sendEmail');
     const orderItemsHtml = order.orderItems.map(item => `<li>${item.qty}x ${item.name} ($${item.price})</li>`).join('');
     
-    await sendEmail({
+    sendEmail({
       email: 'wordpressrahila@gmail.com',
       subject: `New Order Received! #${order._id.toString().substring(order._id.toString().length - 8).toUpperCase()}`,
       html: `
@@ -405,7 +405,7 @@ app.post('/api/orders', async (req, res) => {
         <br/>
         <p>Log in to the Admin Dashboard to process this order.</p>
       `
-    });
+    }).catch(err => console.error('Background email failed:', err));
 
     // Emit real-time event
     io.emit('new_order', order);

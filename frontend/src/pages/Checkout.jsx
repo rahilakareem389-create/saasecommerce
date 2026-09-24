@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useWeb3Forms from '@web3forms/react';
 
 export default function Checkout() {
   const { cart, clearCart } = useCart();
@@ -15,6 +16,17 @@ export default function Checkout() {
   const [country, setCountry] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
   const [loading, setLoading] = useState(false);
+
+  // Web3Forms Hook
+  const { submit: submitWeb3Form } = useWeb3Forms({
+    access_key: '6d6e0418-bb66-48ed-81eb-aaf8f0a9486d',
+    settings: {
+      from_name: 'SaaSCommerce System',
+      subject: 'New Order Received! SaaSCommerce',
+    },
+    onSuccess: (msg, data) => console.log('Web3Forms Success:', msg),
+    onError: (msg, data) => console.error('Web3Forms Error:', msg, data),
+  });
 
   // Coupon State
   const [couponCode, setCouponCode] = useState('');
@@ -84,26 +96,15 @@ export default function Checkout() {
         coupon: appliedCoupon ? appliedCoupon.code : null
       });
 
-      // Send Email via Web3Forms directly from the browser to bypass Cloudflare
-      try {
-        const orderItemsText = cart.map(item => `${item.qty}x ${item.title} ($${item.price})`).join('\n');
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            access_key: '6d6e0418-bb66-48ed-81eb-aaf8f0a9486d',
-            subject: 'New Order Received! SaaSCommerce',
-            from_name: 'SaaSCommerce System',
-            Order_Total: `$${finalTotal.toFixed(2)}`,
-            Payment_Method: paymentMethod,
-            Customer_Email: user.email,
-            Address: `${address}, ${city}, ${country}`,
-            Items: orderItemsText
-          })
-        });
-      } catch (emailErr) {
-        console.error("Web3Forms Email Error:", emailErr);
-      }
+      // Send Email via Web3Forms using the official package
+      const orderItemsText = cart.map(item => `${item.qty}x ${item.title} ($${item.price})`).join('\n');
+      submitWeb3Form({
+        Order_Total: `$${finalTotal.toFixed(2)}`,
+        Payment_Method: paymentMethod,
+        Customer_Email: user.email,
+        Address: `${address}, ${city}, ${country}`,
+        Items: orderItemsText
+      });
 
       clearCart();
       alert('Order placed successfully!');

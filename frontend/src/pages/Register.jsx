@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import useWeb3Forms from '@web3forms/react';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -10,27 +11,26 @@ export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const { submit: submitWeb3Form } = useWeb3Forms({
+    access_key: '6d6e0418-bb66-48ed-81eb-aaf8f0a9486d',
+    settings: {
+      from_name: 'SaaSCommerce System',
+      subject: 'New User Registered on SaaSCommerce',
+    },
+    onSuccess: (msg, data) => console.log('Web3Forms Success:', msg),
+    onError: (msg, data) => console.error('Web3Forms Error:', msg, data),
+  });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     const res = await register(name, email, password);
     if (res.success) {
-      // Send Email via Web3Forms directly from the browser
-      try {
-        await fetch('https://api.web3forms.com/submit', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            access_key: '6d6e0418-bb66-48ed-81eb-aaf8f0a9486d',
-            subject: 'New User Registered on SaaSCommerce',
-            from_name: 'SaaSCommerce System',
-            Name: name,
-            Email: email
-          })
-        });
-      } catch (emailErr) {
-        console.error("Web3Forms Email Error:", emailErr);
-      }
+      // Send Email via Web3Forms using official package
+      submitWeb3Form({
+        Name: name,
+        Email: email
+      });
       navigate('/');
     } else {
       setError(res.message);

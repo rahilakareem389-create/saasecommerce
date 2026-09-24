@@ -24,8 +24,20 @@ export default function Checkout() {
       from_name: 'SaaSCommerce System',
       subject: 'New Order Received! SaaSCommerce',
     },
-    onSuccess: (msg, data) => console.log('Web3Forms Success:', msg),
-    onError: (msg, data) => console.error('Web3Forms Error:', msg, data),
+    onSuccess: (msg, data) => {
+      console.log('Web3Forms Success:', msg);
+      clearCart();
+      alert('Order placed successfully!');
+      setLoading(false);
+      navigate('/');
+    },
+    onError: (msg, data) => {
+      console.error('Web3Forms Error:', msg, data);
+      clearCart();
+      alert('Order placed, but email notification failed.');
+      setLoading(false);
+      navigate('/');
+    },
   });
 
   // Coupon State
@@ -96,7 +108,7 @@ export default function Checkout() {
         coupon: appliedCoupon ? appliedCoupon.code : null
       });
 
-      // Send Email via Web3Forms using the official package
+      // Send Email via Web3Forms using the official package (Navigation happens in callbacks)
       const orderItemsText = cart.map(item => `${item.qty}x ${item.title} ($${item.price})`).join('\n');
       submitWeb3Form({
         Order_Total: `$${finalTotal.toFixed(2)}`,
@@ -106,13 +118,9 @@ export default function Checkout() {
         Items: orderItemsText
       });
 
-      clearCart();
-      alert('Order placed successfully!');
-      navigate('/');
     } catch (err) {
       console.error(err);
       alert('Error placing order');
-    } finally {
       setLoading(false);
     }
   };

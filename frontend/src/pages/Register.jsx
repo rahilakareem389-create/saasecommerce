@@ -17,8 +17,14 @@ export default function Register() {
       from_name: 'SaaSCommerce System',
       subject: 'New User Registered on SaaSCommerce',
     },
-    onSuccess: (msg, data) => console.log('Web3Forms Success:', msg),
-    onError: (msg, data) => console.error('Web3Forms Error:', msg, data),
+    onSuccess: (msg, data) => {
+      console.log('Web3Forms Success:', msg);
+      navigate('/');
+    },
+    onError: (msg, data) => {
+      console.error('Web3Forms Error:', msg, data);
+      navigate('/');
+    },
   });
 
   const handleSubmit = async (e) => {
@@ -26,12 +32,11 @@ export default function Register() {
     setError('');
     const res = await register(name, email, password);
     if (res.success) {
-      // Send Email via Web3Forms using official package
+      // Send Email via Web3Forms using official package (Navigation happens in callbacks)
       submitWeb3Form({
         Name: name,
         Email: email
       });
-      navigate('/');
     } else {
       setError(res.message);
     }

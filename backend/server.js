@@ -77,6 +77,20 @@ app.get('/api/dashboard', protect, admin, getDashboardData);
 app.get('/api/sales', protect, admin, getSalesData);
 
 // Settings Routes
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const sendEmail = require('./utils/sendEmail');
+    await sendEmail({
+      email: 'wordpressrahila@gmail.com',
+      subject: 'Test Email from Railway Server',
+      html: '<p>This is a test email sent directly from the Railway server environment.</p>'
+    });
+    res.json({ success: true, message: 'Email sent successfully from Railway!' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message || error.toString() });
+  }
+});
+
 app.get('/api/settings', protect, admin, async (req, res) => {
   try {
     let settings = await Settings.findOne();

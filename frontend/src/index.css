@@ -75,37 +75,47 @@
   }
   
   html.dark body {
-    background-color: #0f172a;
-    color: #f8fafc;
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
   }
 
-  /* Global component overrides for dark mode */
-  html.dark .bg-white {
+  /* Global component overrides for dark mode using wildcards */
+  html.dark .bg-white,
+  html.dark [class*="bg-slate-50"],
+  html.dark [class*="bg-gray-50"] {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+  }
+
+  html.dark [class*="bg-slate-1"],
+  html.dark [class*="bg-slate-2"],
+  html.dark [class*="bg-gray-1"],
+  html.dark [class*="bg-gray-2"],
+  html.dark [class*="bg-white"] {
     background-color: #1e293b !important;
     border-color: #334155 !important;
   }
   
-  html.dark .text-slate-900, 
-  html.dark .text-slate-800,
-  html.dark .text-gray-900,
-  html.dark .text-gray-800 {
+  html.dark [class*="text-slate-9"],
+  html.dark [class*="text-slate-8"],
+  html.dark [class*="text-slate-7"],
+  html.dark [class*="text-gray-9"],
+  html.dark [class*="text-gray-8"],
+  html.dark [class*="text-gray-7"] {
     color: #f8fafc !important;
   }
 
-  html.dark .text-slate-600,
-  html.dark .text-slate-500,
-  html.dark .text-gray-600,
-  html.dark .text-gray-500 {
+  html.dark [class*="text-slate-6"],
+  html.dark [class*="text-slate-5"],
+  html.dark [class*="text-slate-4"],
+  html.dark [class*="text-gray-6"],
+  html.dark [class*="text-gray-5"],
+  html.dark [class*="text-gray-4"] {
     color: #cbd5e1 !important;
   }
 
-  html.dark .border-slate-200,
-  html.dark .border-gray-200 {
+  html.dark [class*="border-slate-"],
+  html.dark [class*="border-gray-"] {
     border-color: #334155 !important;
-  }
-
-  html.dark .bg-slate-50,
-  html.dark .bg-gray-50 {
-    background-color: #0f172a !important;
   }
 }

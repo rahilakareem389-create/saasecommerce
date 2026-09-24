@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
 // Change this URL to your Railway backend URL once deployed
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'https://saasecommerce-production.up.railway.app';
 
 export const socket = io(SOCKET_URL);

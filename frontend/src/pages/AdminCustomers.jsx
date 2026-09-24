@@ -29,7 +29,7 @@ export default function AdminCustomers() {
   const fetchCustomers = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/customers`, config);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers`, config);
       setCustomers(data);
     } catch (err) {
       console.error(err);
@@ -41,7 +41,7 @@ export default function AdminCustomers() {
   const fetchCustomerDetails = async (id) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/customers/${id}`, config);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers/${id}`, config);
       setSelectedCustomer(data);
     } catch (err) {
       console.error(err);
@@ -51,7 +51,7 @@ export default function AdminCustomers() {
   const toggleStatus = async (id) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/customers/${id}/status`, {}, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers/${id}/status`, {}, config);
       fetchCustomers();
       if (selectedCustomer && selectedCustomer._id === id) {
         fetchCustomerDetails(id);
@@ -65,7 +65,7 @@ export default function AdminCustomers() {
     if (!window.confirm('Are you sure you want to delete this customer? This action cannot be undone.')) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/customers/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers/${id}`, config);
       fetchCustomers();
       if (selectedCustomer && selectedCustomer._id === id) {
         setSelectedCustomer(null);

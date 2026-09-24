@@ -24,7 +24,7 @@ export default function AdminDashboard() {
     const fetchDashboard = async () => {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/dashboard`, config);
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/dashboard`, config);
         setData(response.data);
       } catch (err) {
         console.error(err);

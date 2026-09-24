@@ -12,7 +12,7 @@ export default function AdminOrders() {
     try {
       if (!user) return;
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, config);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/orders`, config);
       setOrders(data);
     } catch (err) {
       console.error(err);
@@ -26,7 +26,7 @@ export default function AdminOrders() {
   const updateStatus = async (id, status) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${id}/status`, { status }, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/orders/${id}/status`, { status }, config);
       fetchOrders();
     } catch (err) {
       console.error(err);

@@ -16,7 +16,7 @@ export default function AdminCategories() {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/categories`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories`);
       setCategories(data);
     } catch (err) {
       console.error(err);
@@ -36,9 +36,9 @@ export default function AdminCategories() {
       };
 
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/categories/${editId}`, categoryData, config);
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories/${editId}`, categoryData, config);
       } else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/categories`, categoryData, config);
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories`, categoryData, config);
       }
       
       fetchCategories();
@@ -52,7 +52,7 @@ export default function AdminCategories() {
     if (!window.confirm('Are you sure you want to delete this category? Products using this category might lose their reference.')) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/categories/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories/${id}`, config);
       fetchCategories();
     } catch (err) {
       alert(err.response?.data?.message || 'Error deleting category');

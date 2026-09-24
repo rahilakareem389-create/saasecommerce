@@ -29,7 +29,7 @@ export default function AdminSettings() {
   const fetchSettings = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/settings`, config);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/settings`, config);
       setSettings(data);
     } catch (err) {
       console.error(err);
@@ -43,7 +43,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/settings`, settings, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/settings`, settings, config);
       alert('Settings saved successfully!');
     } catch (err) {
       alert(err.response?.data?.message || 'Error saving settings');
@@ -57,7 +57,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/auth/profile`, adminProfile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/profile`, adminProfile, config);
       alert('Admin Profile updated successfully!');
       setAdminProfile({ ...adminProfile, password: '' });
     } catch (err) {

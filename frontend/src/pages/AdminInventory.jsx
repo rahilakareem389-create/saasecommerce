@@ -13,7 +13,7 @@ export default function AdminInventory() {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products`);
       setProducts(data);
     } catch (err) {
       console.error(err);
@@ -27,7 +27,7 @@ export default function AdminInventory() {
   const handleSaveStock = async (product) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${product._id}`, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${product._id}`, {
         ...product, // keep existing data
         stock: Number(editStock),
         variants: editVariants

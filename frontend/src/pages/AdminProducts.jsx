@@ -32,12 +32,12 @@ export default function AdminProducts() {
   }, []);
 
   const fetchProducts = async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`);
+    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products`);
     setProducts(data);
   };
 
   const fetchCategories = async () => {
-    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/categories`);
+    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories`);
     setCategories(data);
   };
 
@@ -51,9 +51,9 @@ export default function AdminProducts() {
       };
 
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${editId}`, productData, config);
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${editId}`, productData, config);
       } else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, productData, config);
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products`, productData, config);
       }
       
       fetchProducts();
@@ -67,7 +67,7 @@ export default function AdminProducts() {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${id}`, config);
       fetchProducts();
     } catch (err) {
       alert(err.response?.data?.message || 'Error deleting product');

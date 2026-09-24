@@ -27,7 +27,7 @@ export default function AdminSales() {
   const fetchSalesData = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/sales`, config);
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/sales`, config);
       setData(res.data);
     } catch (err) {
       console.error(err);

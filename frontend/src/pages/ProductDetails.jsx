@@ -26,7 +26,7 @@ export default function ProductDetails() {
 
   const fetchProduct = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${id}`);
       setProduct(data);
       setLoading(false);
     } catch (err) {
@@ -42,7 +42,7 @@ export default function ProductDetails() {
     setReviewLoading(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${id}/reviews`, {
         rating, comment
       }, config);
       fetchProduct();

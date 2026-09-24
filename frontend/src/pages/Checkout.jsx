@@ -43,7 +43,7 @@ export default function Checkout() {
     setCouponError('');
     setCouponLoading(true);
     try {
-      const { data } = await axios.post('https://saasecommerce.vercel.app/api/coupons/validate', {
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/coupons/validate`, {
         code: couponCode,
         orderTotal: total
       });
@@ -75,7 +75,7 @@ export default function Checkout() {
         variant: item.selectedVariant ? `${item.selectedVariant.size ? item.selectedVariant.size + ' - ' : ''}${item.selectedVariant.color}` : null
       }));
 
-      await axios.post('https://saasecommerce.vercel.app/api/orders', {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/orders`, {
         user: user._id,
         orderItems,
         shippingAddress: { address, city, postalCode, country },

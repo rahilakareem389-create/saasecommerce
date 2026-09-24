@@ -18,8 +18,8 @@ export default function StoreFront() {
 
   useEffect(() => {
     Promise.all([
-      fetch('https://saasecommerce.vercel.app/api/products').then(r => r.json()),
-      fetch('https://saasecommerce.vercel.app/api/categories').then(r => r.json())
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/products`).then(r => r.json()),
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/categories`).then(r => r.json())
     ]).then(([prodData, catData]) => {
       setProducts(prodData);
       setCategories(catData);

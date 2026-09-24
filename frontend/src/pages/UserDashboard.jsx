@@ -49,11 +49,11 @@ export default function UserDashboard() {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       
       const [ordersRes, reviewsRes, profileRes, couponsRes, productsRes] = await Promise.all([
-        axios.get('https://saasecommerce.vercel.app/api/orders/myorders', config),
-        axios.get('https://saasecommerce.vercel.app/api/users/myreviews', config),
-        axios.get('https://saasecommerce.vercel.app/api/auth/profile', config),
-        axios.get('https://saasecommerce.vercel.app/api/coupons/active', config),
-        axios.get('https://saasecommerce.vercel.app/api/products') // Get all products
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders/myorders`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users/myreviews`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/auth/profile`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/coupons/active`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products`) // Get all products
       ]);
 
       setOrders(ordersRes.data);
@@ -81,7 +81,7 @@ export default function UserDashboard() {
     e.preventDefault();
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put('https://saasecommerce.vercel.app/api/auth/profile', profile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/auth/profile`, profile, config);
       alert('Profile updated successfully!');
       setProfile({ ...profile, password: '' });
     } catch (err) {
@@ -93,7 +93,7 @@ export default function UserDashboard() {
     if(!window.confirm('Delete this review?')) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`https://saasecommerce.vercel.app/api/products/${productId}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products/${productId}/reviews`, {
         rating: 0, comment: 'deleted', _delete: true // Dummy way to handle delete if backend doesn't have route
       }, config).catch(e => console.log("Implement delete route in backend if needed"));
       

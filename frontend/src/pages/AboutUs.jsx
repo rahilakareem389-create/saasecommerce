@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function AboutUs() {
   return (
-    <div className="flex flex-col gap-16 pb-8">
+    <div className="flex flex-col gap-16 pb-8 overflow-hidden w-full">
       {/* Full-width Hero Image Section */}
       <div className="w-[100vw] relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[70vh] min-h-[500px] -mt-8 flex items-center justify-center overflow-hidden">
         <img 

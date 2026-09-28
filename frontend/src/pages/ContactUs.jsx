@@ -26,7 +26,7 @@ export default function ContactUs() {
   };
 
   return (
-    <div className="flex flex-col gap-16 pb-12 w-full">
+    <div className="flex flex-col gap-16 pb-12 w-full overflow-hidden">
       {/* Modern Slider Hero Section */}
       <div className="w-[100vw] relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] h-[60vh] min-h-[400px] -mt-8 overflow-hidden bg-slate-200 group">
         

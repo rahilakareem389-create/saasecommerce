@@ -64,9 +64,9 @@ export default function ProductDetails() {
         <div className="md:w-1/2 aspect-square bg-white rounded-2xl border p-4 shadow-sm relative">
           <button 
             onClick={() => toggleWishlist(product)}
-            className="absolute top-4 right-4 p-3 bg-slate-50 rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-sm z-10"
+            className="absolute top-4 right-4 p-3 bg-slate-50 rounded-full text-slate-400 hover:text-primary-600 transition-colors shadow-sm z-10"
           >
-            <Heart size={24} className={isInWishlist(product._id) ? "fill-red-500 text-red-500" : ""} />
+            <Heart size={24} className={isInWishlist(product._id) ? "fill-primary-600 text-primary-600" : ""} />
           </button>
           {product.imageUrl ? (
             <img src={product.imageUrl} alt={product.title} className="w-full h-full object-contain" />

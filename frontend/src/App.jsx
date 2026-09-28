@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import StoreFront from './pages/StoreFront';
+import Home from './pages/Home';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLayout from './components/AdminLayout';
 import StoreLayout from './components/StoreLayout';
@@ -22,13 +23,17 @@ import AdminSales from './pages/AdminSales';
 import AdminReviews from './pages/AdminReviews';
 import AdminSettings from './pages/AdminSettings';
 
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
+import FAQ from './pages/FAQ';
+
 function App() {
   return (
     <Router>
       <Routes>
         {/* Public Storefront */}
         <Route element={<StoreLayout />}>
-          <Route path="/" element={<StoreFront />} />
+          <Route path="/" element={<Home />} />
           <Route path="/products" element={<StoreFront />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/login" element={<Login />} />
@@ -37,6 +42,9 @@ function App() {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/user-dashboard" element={<UserDashboard />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
+          <Route path="/faq" element={<FAQ />} />
         </Route>
 
         {/* Admin Dashboard */}

@@ -31,7 +31,7 @@ export default function Wishlist() {
                 </Link>
                 <button 
                   onClick={() => toggleWishlist(product)}
-                  className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur rounded-full text-red-500 hover:bg-red-50 transition-colors shadow-sm"
+                  className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur rounded-full text-primary-600 hover:bg-primary-50 transition-colors shadow-sm"
                   title="Remove from Wishlist"
                 >
                   <Trash2 size={18} />

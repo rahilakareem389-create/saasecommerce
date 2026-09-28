@@ -134,146 +134,214 @@ export default function UserDashboard() {
   const filteredOrders = orderTab === 'All Orders' ? orders : orders.filter(o => o.status === orderTab);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex flex-col lg:flex-row gap-8">
+    <div className="min-h-screen bg-[#f8fafc] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-50/50 via-slate-50 to-primary-50/30 py-8 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-[1400px] mx-auto">
         
-        {/* Sidebar */}
-        <div className="lg:w-64 shrink-0">
-          <div className="bg-white rounded-2xl border shadow-sm p-4 sticky top-6">
-            <h2 className="font-bold text-slate-800 mb-4 px-2 flex items-center gap-2">
-              <User size={20} className="text-primary-600" /> My Dashboard
-            </h2>
-            <nav className="space-y-1">
-              {sidebarLinks.map((link) => (
-                <button
-                  key={link.id}
-                  onClick={() => {
-                    setActiveTab(link.id);
-                    if (link.id !== 'orders') setSelectedOrder(null);
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                    activeTab === link.id
-                      ? 'bg-primary-50 text-primary-700'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                >
-                  <link.icon size={18} className={activeTab === link.id ? 'text-primary-600' : 'text-slate-400'} />
-                  {link.label}
-                  {link.id === 'wishlist' && wishlist.length > 0 && (
-                    <span className="ml-auto bg-primary-100 text-primary-700 py-0.5 px-2 rounded-full text-xs">{wishlist.length}</span>
-                  )}
-                  {link.id === 'orders' && pendingOrders > 0 && (
-                    <span className="ml-auto bg-yellow-100 text-yellow-700 py-0.5 px-2 rounded-full text-xs">{pendingOrders}</span>
-                  )}
-                </button>
-              ))}
-              <div className="pt-4 mt-4 border-t">
-                <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">
-                  <LogOut size={18} /> Logout
-                </button>
-              </div>
-            </nav>
+        {/* Header Area */}
+        <div className="mb-8 md:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">Overview</h1>
+            <p className="text-slate-500 mt-2 text-lg">Manage your entire shopping experience from one place.</p>
+          </div>
+          <div className="hidden md:flex items-center gap-3 bg-white/80 backdrop-blur-md px-5 py-2.5 rounded-full border border-slate-200/60 shadow-sm">
+            <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold text-lg shadow-inner">
+              ${user?.name?.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900 leading-tight">${user?.name}</p>
+              <p className="text-xs text-slate-500">${user?.email}</p>
+            </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-10">
           
-          {/* 1. Dashboard Home */}
-          {activeTab === 'dashboard' && (
-            <div className="space-y-8">
-              <div>
-                <h2 className="text-2xl font-bold text-slate-800">Welcome back, {user?.name.split(' ')[0]} 👋</h2>
-                <p className="text-slate-500 mt-1">Manage your profile, orders, wishlist, addresses and account settings.</p>
-              </div>
+          {/* Modern Glass Sidebar */}
+          <div className="lg:w-72 shrink-0">
+            <div className="bg-white/70 backdrop-blur-xl rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-6 sticky top-24">
+              <nav className="space-y-2">
+                {sidebarLinks.map((link) => {
+                  const isActive = activeTab === link.id;
+                  return (
+                    <button
+                      key={link.id}
+                      onClick={() => {
+                        setActiveTab(link.id);
+                        if (link.id !== 'orders') setSelectedOrder(null);
+                      }}
+                      className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 ${
+                        isActive
+                          ? 'bg-primary-600 text-white shadow-lg shadow-primary-500/30 translate-x-2'
+                          : 'text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-md hover:translate-x-1'
+                      }`}
+                    >
+                      <link.icon size={20} className={isActive ? 'text-white' : 'text-slate-400'} />
+                      {link.label}
+                      {link.id === 'wishlist' && wishlist.length > 0 && (
+                        <span className={`ml-auto py-1 px-2.5 rounded-full text-xs ${isActive ? 'bg-white/20 text-white' : 'bg-primary-100 text-primary-700'}`}>
+                          ${wishlist.length}
+                        </span>
+                      )}
+                      {link.id === 'orders' && pendingOrders > 0 && (
+                        <span className={`ml-auto py-1 px-2.5 rounded-full text-xs ${isActive ? 'bg-white/20 text-white' : 'bg-yellow-100 text-yellow-700'}`}>
+                          ${pendingOrders}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-white p-6 rounded-2xl border shadow-sm">
-                  <p className="text-sm font-medium text-slate-500 mb-1">Total Orders</p>
-                  <h3 className="text-3xl font-bold text-slate-900">{orders.length}</h3>
-                </div>
-                <div className="bg-white p-6 rounded-2xl border shadow-sm">
-                  <p className="text-sm font-medium text-slate-500 mb-1">Pending Orders</p>
-                  <h3 className="text-3xl font-bold text-yellow-600">{pendingOrders}</h3>
-                </div>
-                <div className="bg-white p-6 rounded-2xl border shadow-sm">
-                  <p className="text-sm font-medium text-slate-500 mb-1">Completed</p>
-                  <h3 className="text-3xl font-bold text-green-600">{completedOrders}</h3>
-                </div>
-                <div className="bg-white p-6 rounded-2xl border shadow-sm">
-                  <p className="text-sm font-medium text-slate-500 mb-1">Wishlist Items</p>
-                  <h3 className="text-3xl font-bold text-red-500">{wishlist.length}</h3>
-                </div>
-              </div>
-
-              {/* Recent Orders in Dashboard */}
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-bold text-slate-800">Recent Orders</h3>
-                  <button onClick={() => setActiveTab('orders')} className="text-primary-600 text-sm font-medium hover:underline">View All Orders →</button>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm text-slate-600">
-                    <thead className="bg-slate-50 text-slate-700 border-b">
-                      <tr>
-                        <th className="px-4 py-3 font-semibold">Order ID</th>
-                        <th className="px-4 py-3 font-semibold">Date</th>
-                        <th className="px-4 py-3 font-semibold text-right">Items</th>
-                        <th className="px-4 py-3 font-semibold text-right">Total</th>
-                        <th className="px-4 py-3 font-semibold">Status</th>
-                        <th className="px-4 py-3 font-semibold text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100">
-                      {orders.slice(0, 3).map(order => (
-                        <tr key={order._id} className="hover:bg-slate-50">
-                          <td className="px-4 py-3 font-mono text-xs">#{order._id.substring(order._id.length - 8).toUpperCase()}</td>
-                          <td className="px-4 py-3">{formatDate(order.createdAt)}</td>
-                          <td className="px-4 py-3 text-right">{order.orderItems.length}</td>
-                          <td className="px-4 py-3 font-medium text-right">${order.totalPrice.toFixed(2)}</td>
-                          <td className="px-4 py-3">
-                            <span className={`font-medium ${
-                              order.status === 'Pending' ? 'text-yellow-600' :
-                              order.status === 'Processing' ? 'text-blue-600' :
-                              order.status === 'Shipped' ? 'text-indigo-600' :
-                              order.status === 'Delivered' ? 'text-green-600' :
-                              'text-red-600'
-                            }`}>{order.status}</span>
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <button onClick={() => { setActiveTab('orders'); setSelectedOrder(order); }} className="text-primary-600 hover:underline font-medium">View</button>
-                          </td>
-                        </tr>
-                      ))}
-                      {orders.length === 0 && <tr><td colSpan="6" className="py-8 text-center text-slate-500">No orders placed yet.</td></tr>}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* RECENTLY VIEWED PRODUCTS / SUGGESTIONS (To show products alongside dashboard) */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-lg font-bold text-slate-800">Products You Might Like</h3>
-                  <Link to="/products" className="text-primary-600 text-sm font-medium hover:underline">Continue Shopping →</Link>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {products.map(product => (
-                    <div key={product._id} className="bg-white rounded-xl border p-3 hover:shadow-md transition-shadow relative">
-                      <Link to={`/product/${product._id}`}>
-                        <img src={product.imageUrl} alt={product.title} className="w-full h-32 object-contain mb-3" />
-                        <h4 className="font-medium text-sm text-slate-800 truncate">{product.title}</h4>
-                        <div className="flex justify-between items-center mt-1">
-                          <span className="font-bold text-primary-600">${product.price}</span>
-                          <span className="text-xs text-yellow-500">⭐ {product.rating || 0}</span>
-                        </div>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+              <div className="pt-6 mt-6 border-t border-slate-200/50">
+                <button onClick={handleLogout} className="w-full flex items-center justify-center gap-3 px-5 py-4 rounded-2xl text-sm font-bold text-red-500 bg-red-50/50 hover:bg-red-500 hover:text-white transition-all duration-300">
+                  <LogOut size={20} /> Sign Out
+                </button>
               </div>
             </div>
-          )}
+          </div>
+  
+          {/* Main Content Area */}
+          <div className="flex-1">
+            
+            {/* 1. Dashboard Home (Bento Grid Style) */}
+            {activeTab === 'dashboard' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-min mb-12">
+                
+                {/* Welcome Banner */}
+                <div className="lg:col-span-2 bg-gradient-to-br from-slate-900 via-slate-800 to-primary-900 rounded-[2rem] p-8 md:p-10 shadow-2xl shadow-slate-900/20 text-white relative overflow-hidden flex flex-col justify-center group">
+                  <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-primary-500/40 to-fuchsia-500/40 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 group-hover:scale-110 transition-transform duration-1000"></div>
+                  <div className="relative z-10">
+                    <div className="inline-block px-4 py-1.5 bg-white/10 backdrop-blur-md rounded-full text-xs font-bold tracking-wider uppercase mb-6 border border-white/20">
+                      Welcome Back ✨
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+                      Ready to elevate <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-300 to-fuchsia-300">your wardrobe?</span>
+                    </h2>
+                    <p className="text-slate-300 font-medium text-lg max-w-md">Discover new arrivals, track your latest orders, and explore items picked just for you.</p>
+                  </div>
+                </div>
+
+                {/* Wishlist Highlight Card */}
+                <div className="bg-gradient-to-br from-pink-500 to-rose-600 rounded-[2rem] p-8 shadow-xl shadow-rose-500/20 text-white relative overflow-hidden flex flex-col justify-between group cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setActiveTab('wishlist')}>
+                  <div className="absolute -bottom-10 -right-10 opacity-20 group-hover:scale-110 transition-transform duration-700">
+                    <Heart size={150} fill="currentColor" />
+                  </div>
+                  <div className="relative z-10 flex flex-col items-center text-center justify-center h-full">
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center mb-6 shadow-inner">
+                      <Heart size={32} className="text-white" />
+                    </div>
+                    <h3 className="text-6xl font-black mb-2">${wishlist.length}</h3>
+                    <p className="text-pink-100 font-bold text-lg uppercase tracking-wider">Saved Items</p>
+                  </div>
+                </div>
+
+                {/* Stat Bento Boxes */}
+                <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-6">
+                  {/* Total Orders */}
+                  <div className="bg-white/80 backdrop-blur-md rounded-[2rem] p-6 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col justify-center items-center text-center group cursor-pointer" onClick={() => setActiveTab('orders')}>
+                    <div className="w-16 h-16 bg-indigo-50 rounded-[1.5rem] flex items-center justify-center text-indigo-600 mb-4 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-sm">
+                      <Package size={28} />
+                    </div>
+                    <h3 className="text-4xl font-black text-slate-800">${orders.length}</h3>
+                    <p className="text-slate-500 font-bold text-sm uppercase tracking-wider mt-1">Total Orders</p>
+                  </div>
+                  
+                  {/* Pending Orders */}
+                  <div className="bg-white/80 backdrop-blur-md rounded-[2rem] p-6 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col justify-center items-center text-center group cursor-pointer" onClick={() => setActiveTab('orders')}>
+                    <div className="w-16 h-16 bg-amber-50 rounded-[1.5rem] flex items-center justify-center text-amber-600 mb-4 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                      <Truck size={28} />
+                    </div>
+                    <h3 className="text-4xl font-black text-slate-800">${pendingOrders}</h3>
+                    <p className="text-slate-500 font-bold text-sm uppercase tracking-wider mt-1">Pending</p>
+                  </div>
+
+                  {/* Completed Orders */}
+                  <div className="bg-white/80 backdrop-blur-md rounded-[2rem] p-6 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col justify-center items-center text-center group cursor-pointer" onClick={() => setActiveTab('orders')}>
+                    <div className="w-16 h-16 bg-emerald-50 rounded-[1.5rem] flex items-center justify-center text-emerald-600 mb-4 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                      <CheckCircle size={28} />
+                    </div>
+                    <h3 className="text-4xl font-black text-slate-800">${completedOrders}</h3>
+                    <p className="text-slate-500 font-bold text-sm uppercase tracking-wider mt-1">Completed</p>
+                  </div>
+
+                  {/* Coupons */}
+                  <div className="bg-white/80 backdrop-blur-md rounded-[2rem] p-6 border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all flex flex-col justify-center items-center text-center group cursor-pointer" onClick={() => setActiveTab('coupons')}>
+                    <div className="w-16 h-16 bg-fuchsia-50 rounded-[1.5rem] flex items-center justify-center text-fuchsia-600 mb-4 group-hover:scale-110 group-hover:bg-fuchsia-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                      <Ticket size={28} />
+                    </div>
+                    <h3 className="text-4xl font-black text-slate-800">${coupons.length}</h3>
+                    <p className="text-slate-500 font-bold text-sm uppercase tracking-wider mt-1">Coupons</p>
+                  </div>
+                </div>
+
+                {/* Recent Orders List */}
+                <div className="lg:col-span-3 bg-white/70 backdrop-blur-xl rounded-[2rem] border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 mt-2">
+                  <div className="flex justify-between items-center mb-8">
+                    <div>
+                      <h3 className="text-2xl font-extrabold text-slate-900">Recent Activity</h3>
+                      <p className="text-slate-500 text-sm mt-1 font-medium">Track your most recent purchases</p>
+                    </div>
+                    <button onClick={() => setActiveTab('orders')} className="hidden sm:flex items-center gap-2 px-6 py-3 bg-white text-slate-700 font-bold rounded-2xl hover:bg-slate-50 transition-colors shadow-sm border border-slate-100">
+                      View All
+                    </button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {orders.slice(0, 3).map(order => (
+                      <div key={order._id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl border border-slate-100/60 bg-white/60 hover:bg-white hover:shadow-lg hover:shadow-slate-200/40 transition-all cursor-pointer" onClick={() => { setActiveTab('orders'); setSelectedOrder(order); }}>
+                        <div className="flex items-center gap-5">
+                          <div className="w-14 h-14 bg-slate-50 rounded-[1.25rem] shadow-inner border border-slate-100 flex items-center justify-center text-slate-400">
+                            <Package size={24} />
+                          </div>
+                          <div>
+                            <p className="font-extrabold text-slate-900 text-lg">Order #${order._id.substring(order._id.length - 8).toUpperCase()}</p>
+                            <p className="text-sm font-semibold text-slate-500 mt-1">${formatDate(order.createdAt)} • ${order.orderItems.length} Items</p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between sm:justify-end gap-8 sm:w-1/2">
+                          <div className="text-left sm:text-right">
+                            <p className="font-black text-slate-900 text-xl">$${order.totalPrice.toFixed(2)}</p>
+                            <span className={`inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider mt-2 shadow-sm ${
+                                order.status === 'Pending' ? 'bg-amber-100 text-amber-700' :
+                                order.status === 'Processing' ? 'bg-blue-100 text-blue-700' :
+                                order.status === 'Shipped' ? 'bg-indigo-100 text-indigo-700' :
+                                order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                              <div className={`w-1.5 h-1.5 rounded-full mr-2 ${
+                                order.status === 'Pending' ? 'bg-amber-500' :
+                                order.status === 'Processing' ? 'bg-blue-500' :
+                                order.status === 'Shipped' ? 'bg-indigo-500' :
+                                order.status === 'Delivered' ? 'bg-green-500' :
+                                'bg-red-500'
+                              }`}></div>
+                              ${order.status}
+                            </span>
+                          </div>
+                          <div className="w-12 h-12 rounded-[1.25rem] bg-white border border-slate-100 text-slate-400 flex items-center justify-center shadow-sm">
+                            <Eye size={20} />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    {orders.length === 0 && (
+                      <div className="py-16 text-center flex flex-col items-center bg-white/50 rounded-3xl border border-slate-100 border-dashed">
+                        <div className="w-24 h-24 bg-slate-100/50 rounded-full flex items-center justify-center text-slate-300 mb-6">
+                          <Package size={48} />
+                        </div>
+                        <h4 className="text-xl font-extrabold text-slate-700">No orders yet</h4>
+                        <p className="text-slate-500 mt-2 font-medium">When you place an order, it will appear here.</p>
+                      </div>
+                    )}
+                  </div>
+                  <button onClick={() => setActiveTab('orders')} className="w-full mt-6 sm:hidden px-6 py-4 bg-white text-slate-700 font-bold rounded-2xl hover:bg-slate-50 transition-colors shadow-sm border border-slate-100">
+                    View All Orders
+                  </button>
+                </div>
+
+              </div>
+            )}
 
           {/* 2 & 3. My Orders & Order Details */}
           {activeTab === 'orders' && (
@@ -778,7 +846,8 @@ export default function UserDashboard() {
           )}
 
         </div>
-      </div>
+        </div>
+    </div>
     </div>
   );
 }

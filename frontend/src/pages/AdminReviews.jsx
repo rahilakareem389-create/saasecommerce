@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -35,36 +36,36 @@ export default function AdminReviews() {
         setSelectedReview({ ...selectedReview, status });
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Error updating review status');
+      Swal.fire(err.response?.data?.message || 'Error updating review status');
     }
   };
 
   const handleDelete = async (productId, reviewId) => {
-    if (!window.confirm('Are you sure you want to delete this review?')) return;
+    if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this review?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/reviews/${productId}/${reviewId}`, config);
       fetchReviews();
       if (selectedReview && selectedReview._id === reviewId) setSelectedReview(null);
     } catch (err) {
-      alert(err.response?.data?.message || 'Error deleting review');
+      Swal.fire(err.response?.data?.message || 'Error deleting review');
     }
   };
 
   const filteredReviews = filter === 'All' ? reviews : reviews.filter(r => r.status === filter);
 
-  if (loading) return <div className="text-center py-20 text-slate-500">Loading Reviews...</div>;
+  if (loading) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Loading Reviews...</div>;
 
   const tabs = ['All', 'Pending', 'Approved', 'Rejected'];
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800">Reviews Management</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Reviews Management</h2>
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 border-b border-slate-200">
+      <div className="flex space-x-1 border-b border-slate-200 dark:border-[#3d3d5c]">
         {tabs.map(tab => (
           <button
             key={tab}
@@ -72,7 +73,7 @@ export default function AdminReviews() {
             className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors ${
               filter === tab
                 ? 'border-primary-600 text-primary-600'
-                : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:text-slate-300 hover:border-slate-300'
             }`}
           >
             {tab}
@@ -85,9 +86,9 @@ export default function AdminReviews() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-slate-700 border-b">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+          <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
               <th className="px-6 py-4 font-semibold">Customer</th>
               <th className="px-6 py-4 font-semibold">Product</th>
@@ -99,8 +100,8 @@ export default function AdminReviews() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {filteredReviews.map(review => (
-              <tr key={review._id} className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4 font-medium text-slate-900">{review.name}</td>
+              <tr key={review._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
+                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50">{review.name}</td>
                 <td className="px-6 py-4 text-primary-600">
                   <a href={`/product/${review.productId}`} target="_blank" rel="noreferrer" className="hover:underline">
                     {review.productName}
@@ -148,7 +149,7 @@ export default function AdminReviews() {
           </tbody>
         </table>
         {filteredReviews.length === 0 && (
-          <div className="text-center py-10 text-slate-500">
+          <div className="text-center py-10 text-slate-500 dark:text-slate-400">
             No {filter !== 'All' ? filter.toLowerCase() : ''} reviews found.
           </div>
         )}
@@ -157,10 +158,10 @@ export default function AdminReviews() {
       {/* Review Details Modal */}
       {selectedReview && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
-            <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
-              <h3 className="text-xl font-bold text-slate-800">Review Details</h3>
-              <button onClick={() => setSelectedReview(null)} className="text-slate-400 hover:text-slate-600">
+          <div className="bg-white dark:bg-[#2a2a3c] rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+            <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50 dark:bg-[#1f1f2e]">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Review Details</h3>
+              <button onClick={() => setSelectedReview(null)} className="text-slate-400 hover:text-slate-600 dark:text-slate-400">
                 <X size={24} />
               </button>
             </div>
@@ -168,8 +169,8 @@ export default function AdminReviews() {
             <div className="p-6 space-y-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg">{selectedReview.name}</h4>
-                  <p className="text-sm text-slate-500">{new Date(selectedReview.createdAt).toLocaleString()}</p>
+                  <h4 className="font-bold text-slate-900 dark:text-slate-50 text-lg">{selectedReview.name}</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{new Date(selectedReview.createdAt).toLocaleString()}</p>
                 </div>
                 <span className={`inline-flex px-3 py-1 rounded-full text-xs font-bold ${
                   selectedReview.status === 'Approved' ? 'bg-green-100 text-green-700' :
@@ -181,12 +182,12 @@ export default function AdminReviews() {
               </div>
               
               <div>
-                <p className="text-sm font-medium text-slate-500 mb-1">Product</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Product</p>
                 <p className="font-medium text-primary-600">{selectedReview.productName}</p>
               </div>
               
               <div>
-                <p className="text-sm font-medium text-slate-500 mb-1">Rating</p>
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Rating</p>
                 <div className="flex text-yellow-400">
                   {[1, 2, 3, 4, 5].map(star => (
                     <Star key={star} size={18} className={star <= selectedReview.rating ? "fill-yellow-400" : "fill-slate-200 text-slate-200"} />
@@ -195,14 +196,14 @@ export default function AdminReviews() {
               </div>
               
               <div>
-                <p className="text-sm font-medium text-slate-500 mb-1">Comment</p>
-                <div className="bg-slate-50 p-4 rounded-xl border text-slate-700">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Comment</p>
+                <div className="bg-slate-50 dark:bg-[#1f1f2e] p-4 rounded-xl border text-slate-700 dark:text-slate-300">
                   "{selectedReview.comment}"
                 </div>
               </div>
             </div>
             
-            <div className="px-6 py-4 border-t bg-slate-50 flex justify-between">
+            <div className="px-6 py-4 border-t bg-slate-50 dark:bg-[#1f1f2e] flex justify-between">
               {selectedReview.status === 'Pending' ? (
                 <div className="space-x-2">
                   <button onClick={() => handleUpdateStatus(selectedReview.productId, selectedReview._id, 'Approved')} className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium transition-colors">
@@ -213,7 +214,7 @@ export default function AdminReviews() {
                   </button>
                 </div>
               ) : <div></div>}
-              <button onClick={() => setSelectedReview(null)} className="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium transition-colors">
+              <button onClick={() => setSelectedReview(null)} className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 font-medium transition-colors">
                 Close
               </button>
             </div>

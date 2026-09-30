@@ -36,7 +36,7 @@ export default function AdminSales() {
     }
   };
 
-  if (loading || !data) return <div className="text-center py-20 text-slate-500">Loading Sales Data...</div>;
+  if (loading || !data) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Loading Sales Data...</div>;
 
   const { overview, chartData, categoryChartData, topProducts } = data;
 
@@ -56,18 +56,18 @@ export default function AdminSales() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800">Sales Overview</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Sales Overview</h2>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, i) => (
-          <div key={i} className="bg-white rounded-xl border p-6 flex items-center shadow-sm">
+          <div key={i} className="bg-white dark:bg-[#2a2a3c] rounded-xl border p-6 flex items-center shadow-sm">
             <div className={`w-12 h-12 rounded-full ${stat.bg} ${stat.color} flex items-center justify-center mr-4`}>
               <stat.icon size={24} />
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-500 mb-1">{stat.title}</p>
-              <h3 className="text-2xl font-bold text-slate-900">{stat.value}</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{stat.title}</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-50">{stat.value}</h3>
             </div>
           </div>
         ))}
@@ -75,8 +75,8 @@ export default function AdminSales() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sales Chart */}
-        <div className="bg-white rounded-xl border shadow-sm p-6 lg:col-span-2">
-          <h3 className="text-lg font-semibold text-slate-800 mb-6">Daily Sales Trend (Last 7 Days)</h3>
+        <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6 lg:col-span-2">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-6">Daily Sales Trend (Last 7 Days)</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -97,8 +97,8 @@ export default function AdminSales() {
         </div>
 
         {/* Category Sales Pie */}
-        <div className="bg-white rounded-xl border shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-800 mb-6">Category-wise Sales</h3>
+        <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-6">Category-wise Sales</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -115,11 +115,11 @@ export default function AdminSales() {
       </div>
 
       {/* Top Selling Products */}
-      <div className="bg-white rounded-xl border shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4">Top-Selling Products</h3>
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6">
+        <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Top-Selling Products</h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-600">
-            <thead className="bg-slate-50 text-slate-700 border-b">
+          <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+            <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
               <tr>
                 <th className="px-4 py-3 font-semibold">Image</th>
                 <th className="px-4 py-3 font-semibold">Product Name</th>
@@ -129,11 +129,11 @@ export default function AdminSales() {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {topProducts.map(product => (
-                <tr key={product._id} className="hover:bg-slate-50">
+                <tr key={product._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e]">
                   <td className="px-4 py-3">
                     <img src={product.imageUrl} alt={product.title} className="w-10 h-10 rounded object-cover border" />
                   </td>
-                  <td className="px-4 py-3 font-medium text-slate-900">{product.title}</td>
+                  <td className="px-4 py-3 font-medium text-slate-900 dark:text-slate-50">{product.title}</td>
                   <td className="px-4 py-3">${product.price.toFixed(2)}</td>
                   <td className="px-4 py-3 text-right">
                     <span className="inline-block bg-primary-100 text-primary-700 px-3 py-1 rounded-full font-bold">
@@ -144,7 +144,7 @@ export default function AdminSales() {
               ))}
               {topProducts.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="text-center py-6 text-slate-500">No sales data available.</td>
+                  <td colSpan="4" className="text-center py-6 text-slate-500 dark:text-slate-400">No sales data available.</td>
                 </tr>
               )}
             </tbody>

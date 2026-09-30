@@ -35,9 +35,9 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#1f1f2e] flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r flex flex-col">
+      <aside className="w-64 bg-white dark:bg-[#2a2a3c] border-r flex flex-col">
         <div className="h-16 flex items-center px-6 border-b">
           <Link to="/" className="flex items-center gap-2 text-primary-600 font-bold text-xl">
             <div className="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center">
@@ -61,7 +61,7 @@ export default function AdminLayout() {
                     "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
                     isActive 
                       ? "bg-primary-50 text-primary-700" 
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:bg-[#1f1f2e] hover:text-slate-900 dark:text-slate-50"
                   )}
                 >
                   <Icon size={18} className={isActive ? "text-primary-600" : "text-slate-400"} />
@@ -73,7 +73,7 @@ export default function AdminLayout() {
         </div>
         
         <div className="p-4 border-t flex flex-col gap-2">
-          <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+          <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:bg-[#1f1f2e] hover:text-slate-900 dark:text-slate-50 transition-colors">
             Back to Store
           </Link>
           <button onClick={handleLogout} className="flex items-center w-full gap-3 px-3 py-2 rounded-md text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
@@ -85,8 +85,8 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-white border-b flex items-center px-8 sticky top-0 z-10 justify-between">
-          <h1 className="text-xl font-semibold text-slate-800 capitalize">
+        <header className="h-16 bg-white dark:bg-[#2a2a3c] border-b flex items-center px-8 sticky top-0 z-10 justify-between">
+          <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-200 capitalize">
             {location.pathname.split('/').pop() === 'admin' ? 'Dashboard Overview' : location.pathname.split('/').pop()}
           </h1>
           <div className="flex items-center gap-4">

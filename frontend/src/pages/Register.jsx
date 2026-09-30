@@ -14,8 +14,8 @@ export default function Register() {
   const { submit: submitWeb3Form } = useWeb3Forms({
     access_key: 'ef613376-0f0b-4347-895c-0497fb766444',
     settings: {
-      from_name: 'SaaSCommerce System',
-      subject: 'New User Registered on SaaSCommerce',
+      from_name: 'BuyNest System',
+      subject: 'New User Registered on BuyNest',
     },
     onSuccess: (msg, data) => {
       console.log('Web3Forms Success:', msg);
@@ -43,12 +43,12 @@ export default function Register() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-16 bg-white p-8 border rounded-xl shadow-sm">
-      <h2 className="text-2xl font-bold text-center text-slate-800 mb-6">Create an Account</h2>
+    <div className="max-w-md mx-auto mt-16 bg-white dark:bg-[#2a2a3c] p-8 border rounded-xl shadow-sm">
+      <h2 className="text-2xl font-bold text-center text-slate-800 dark:text-slate-200 mb-6">Create an Account</h2>
       {error && <div className="bg-red-50 text-red-600 p-3 rounded-md mb-4 text-sm">{error}</div>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
           <input
             type="text"
             required
@@ -58,7 +58,7 @@ export default function Register() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
           <input
             type="email"
             required
@@ -68,7 +68,7 @@ export default function Register() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
           <input
             type="password"
             required
@@ -84,7 +84,7 @@ export default function Register() {
           Sign Up
         </button>
       </form>
-      <div className="mt-6 text-center text-sm text-slate-600">
+      <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
         Already have an account? <Link to="/login" className="text-primary-600 font-medium hover:underline">Login here</Link>
       </div>
     </div>

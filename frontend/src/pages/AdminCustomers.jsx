@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -62,7 +63,7 @@ export default function AdminCustomers() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this customer? This action cannot be undone.')) return;
+    if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this customer? This action cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers/${id}`, config);
@@ -85,12 +86,12 @@ export default function AdminCustomers() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800">Customers Management</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Customers Management</h2>
       </div>
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-slate-700 border-b">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+          <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
               <th className="px-6 py-4 font-semibold">Customer</th>
               <th className="px-6 py-4 font-semibold">Email</th>
@@ -103,13 +104,13 @@ export default function AdminCustomers() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {customers.map(customer => (
-              <tr key={customer._id} className="hover:bg-slate-50 transition-colors">
-                <td className="px-6 py-4 font-medium text-slate-900">{customer.name}</td>
+              <tr key={customer._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
+                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50">{customer.name}</td>
                 <td className="px-6 py-4 text-blue-600 hover:underline">
                   <a href={`mailto:${customer.email}`}>{customer.email}</a>
                 </td>
                 <td className="px-6 py-4">{customer.totalOrders || 0}</td>
-                <td className="px-6 py-4 font-bold text-slate-700">${(customer.totalSpent || 0).toFixed(2)}</td>
+                <td className="px-6 py-4 font-bold text-slate-700 dark:text-slate-300">${(customer.totalSpent || 0).toFixed(2)}</td>
                 <td className="px-6 py-4">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${customer.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                     {customer.status || 'Active'}
@@ -131,17 +132,17 @@ export default function AdminCustomers() {
             ))}
           </tbody>
         </table>
-        {customers.length === 0 && <div className="text-center py-8 text-slate-500">No customers found.</div>}
+        {customers.length === 0 && <div className="text-center py-8 text-slate-500 dark:text-slate-400">No customers found.</div>}
       </div>
 
       {/* Customer Details Modal */}
       {selectedCustomer && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+          <div className="bg-white dark:bg-[#2a2a3c] rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
             
-            <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50">
-              <h3 className="text-xl font-bold text-slate-800">Customer Details</h3>
-              <button onClick={() => setSelectedCustomer(null)} className="text-slate-400 hover:text-slate-600">
+            <div className="px-6 py-4 border-b flex justify-between items-center bg-slate-50 dark:bg-[#1f1f2e]">
+              <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200">Customer Details</h3>
+              <button onClick={() => setSelectedCustomer(null)} className="text-slate-400 hover:text-slate-600 dark:text-slate-400">
                 <X size={24} />
               </button>
             </div>
@@ -150,22 +151,22 @@ export default function AdminCustomers() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Customer Information */}
-                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                  <h4 className="font-semibold text-slate-800 mb-4 border-b pb-2">Customer Information</h4>
+                <div className="bg-slate-50 dark:bg-[#1f1f2e] p-5 rounded-xl border border-slate-100 dark:border-[#3d3d5c]">
+                  <h4 className="font-semibold text-slate-800 dark:text-slate-200 mb-4 border-b pb-2">Customer Information</h4>
                   <div className="space-y-3 text-sm">
-                    <div className="flex justify-between"><span className="text-slate-500">Name:</span> <span className="font-medium text-slate-900">{selectedCustomer.name}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Email:</span> <span className="font-medium text-slate-900">{selectedCustomer.email}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Phone:</span> <span className="font-medium text-slate-900">{selectedCustomer.phone || 'N/A'}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Name:</span> <span className="font-medium text-slate-900 dark:text-slate-50">{selectedCustomer.name}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Email:</span> <span className="font-medium text-slate-900 dark:text-slate-50">{selectedCustomer.email}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Phone:</span> <span className="font-medium text-slate-900 dark:text-slate-50">{selectedCustomer.phone || 'N/A'}</span></div>
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Address:</span> 
-                      <span className="font-medium text-slate-900 text-right">
+                      <span className="text-slate-500 dark:text-slate-400">Address:</span> 
+                      <span className="font-medium text-slate-900 dark:text-slate-50 text-right">
                         {selectedCustomer.address ? 
                           `${selectedCustomer.address.street || ''}, ${selectedCustomer.address.city || ''}, ${selectedCustomer.address.country || ''}`
                           : 'N/A'}
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-500">Account Status:</span> 
+                      <span className="text-slate-500 dark:text-slate-400">Account Status:</span> 
                       <span className={`px-2 py-1 rounded text-xs font-bold ${selectedCustomer.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                         {selectedCustomer.status || 'Active'}
                       </span>
@@ -174,24 +175,24 @@ export default function AdminCustomers() {
                 </div>
 
                 {/* Order Information */}
-                <div className="bg-slate-50 p-5 rounded-xl border border-slate-100">
-                  <h4 className="font-semibold text-slate-800 mb-4 border-b pb-2">Order Information</h4>
+                <div className="bg-slate-50 dark:bg-[#1f1f2e] p-5 rounded-xl border border-slate-100 dark:border-[#3d3d5c]">
+                  <h4 className="font-semibold text-slate-800 dark:text-slate-200 mb-4 border-b pb-2">Order Information</h4>
                   <div className="space-y-3 text-sm">
-                    <div className="flex justify-between"><span className="text-slate-500">Total Orders:</span> <span className="font-bold text-slate-900">{selectedCustomer.totalOrders}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Pending Orders:</span> <span className="font-medium text-yellow-600">{selectedCustomer.pendingOrders}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Completed Orders:</span> <span className="font-medium text-green-600">{selectedCustomer.completedOrders}</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Cancelled Orders:</span> <span className="font-medium text-red-600">{selectedCustomer.cancelledOrders}</span></div>
-                    <div className="flex justify-between pt-2 border-t"><span className="text-slate-500 font-medium">Total Spending:</span> <span className="font-bold text-lg text-primary-600">${(selectedCustomer.totalSpent || 0).toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Total Orders:</span> <span className="font-bold text-slate-900 dark:text-slate-50">{selectedCustomer.totalOrders}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Pending Orders:</span> <span className="font-medium text-yellow-600">{selectedCustomer.pendingOrders}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Completed Orders:</span> <span className="font-medium text-green-600">{selectedCustomer.completedOrders}</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500 dark:text-slate-400">Cancelled Orders:</span> <span className="font-medium text-red-600">{selectedCustomer.cancelledOrders}</span></div>
+                    <div className="flex justify-between pt-2 border-t"><span className="text-slate-500 dark:text-slate-400 font-medium">Total Spending:</span> <span className="font-bold text-lg text-primary-600">${(selectedCustomer.totalSpent || 0).toFixed(2)}</span></div>
                   </div>
                 </div>
               </div>
 
               {/* Recent Orders */}
               <div>
-                <h4 className="font-semibold text-slate-800 mb-4">Recent Orders</h4>
+                <h4 className="font-semibold text-slate-800 dark:text-slate-200 mb-4">Recent Orders</h4>
                 <div className="border rounded-xl overflow-hidden">
-                  <table className="w-full text-left text-sm text-slate-600">
-                    <thead className="bg-slate-50 text-slate-700 border-b">
+                  <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+                    <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
                       <tr>
                         <th className="px-4 py-3 font-semibold">Order ID</th>
                         <th className="px-4 py-3 font-semibold">Date</th>
@@ -202,7 +203,7 @@ export default function AdminCustomers() {
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                       {selectedCustomer.ordersList?.map(order => (
-                        <tr key={order._id} className="hover:bg-slate-50">
+                        <tr key={order._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e]">
                           <td className="px-4 py-3 font-mono text-xs">{order._id.substring(order._id.length - 8)}</td>
                           <td className="px-4 py-3">{formatDate(order.createdAt)}</td>
                           <td className="px-4 py-3">
@@ -219,7 +220,7 @@ export default function AdminCustomers() {
                         </tr>
                       ))}
                       {!selectedCustomer.ordersList?.length && (
-                        <tr><td colSpan="5" className="px-4 py-6 text-center text-slate-500">No orders found.</td></tr>
+                        <tr><td colSpan="5" className="px-4 py-6 text-center text-slate-500 dark:text-slate-400">No orders found.</td></tr>
                       )}
                     </tbody>
                   </table>
@@ -227,8 +228,8 @@ export default function AdminCustomers() {
               </div>
             </div>
             
-            <div className="px-6 py-4 border-t bg-slate-50 flex justify-end">
-              <button onClick={() => setSelectedCustomer(null)} className="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 font-medium transition-colors">
+            <div className="px-6 py-4 border-t bg-slate-50 dark:bg-[#1f1f2e] flex justify-end">
+              <button onClick={() => setSelectedCustomer(null)} className="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300 font-medium transition-colors">
                 Close
               </button>
             </div>

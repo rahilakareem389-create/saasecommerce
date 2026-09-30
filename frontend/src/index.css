@@ -119,3 +119,20 @@
     border-color: #334155 !important;
   }
 }
+
+@layer base {
+  input:not([type="submit"]):not([type="button"]):not([type="radio"]):not([type="checkbox"]), 
+  textarea, 
+  select {
+    color: #0f172a;
+    background-color: #ffffff;
+  }
+  
+  html.dark input:not([type="submit"]):not([type="button"]):not([type="radio"]):not([type="checkbox"]), 
+  html.dark textarea, 
+  html.dark select {
+    background-color: #1a1a24 !important;
+    color: #f8fafc !important;
+    border-color: #3d3d5c !important;
+  }
+}

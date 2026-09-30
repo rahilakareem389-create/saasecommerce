@@ -11,7 +11,11 @@ import {
 } from 'recharts';
 
 export default function AdminDashboard() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState({
+    kpis: { totalRevenue: 0, newCustomers: 0, activeOrders: 0, conversionRate: '0%' },
+    charts: { revenue: [], visitors: [] },
+    lists: { recentOrders: [], topProducts: [], customerAlerts: [] }
+  });
   const [error, setError] = useState(null);
   const { user, logout } = useAuth();
 
@@ -59,7 +63,7 @@ export default function AdminDashboard() {
   }, [user]);
 
   if (error) return <div className="p-8 text-center text-red-500 font-medium">{error}</div>;
-  if (!data) return <div className="p-8 text-center text-slate-500">Loading Dashboard...</div>;
+  // Fast initial render without blocking
 
   const { kpis, charts, lists } = data;
 
@@ -82,13 +86,13 @@ export default function AdminDashboard() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {statCards.map((stat, i) => (
-          <div key={i} className="bg-white rounded-xl border p-6 flex items-center shadow-sm">
+          <div key={i} className="bg-white dark:bg-[#2a2a3c] rounded-xl border p-6 flex items-center shadow-sm">
             <div className={`w-12 h-12 rounded-full ${stat.bg} ${stat.color} flex items-center justify-center mr-4`}>
               <stat.icon size={24} />
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-500 mb-1">{stat.title}</p>
-              <h3 className="text-2xl font-bold text-slate-900">{stat.value}</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{stat.title}</p>
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-50">{stat.value}</h3>
             </div>
           </div>
         ))}
@@ -96,8 +100,8 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue & Sales Chart */}
-        <div className="bg-white rounded-xl border shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-800 mb-6">Sales & Revenue</h3>
+        <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-6">Sales & Revenue</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={charts.revenueChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -119,9 +123,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* Orders Overview & Category Sales */}
-        <div className="bg-white rounded-xl border shadow-sm p-6 grid grid-cols-2 gap-4">
+        <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6 grid grid-cols-2 gap-4">
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-2">Orders Overview</h3>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">Orders Overview</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -137,7 +141,7 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-2">Category Sales</h3>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2">Category Sales</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -157,16 +161,16 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Selling Products */}
-        <div className="bg-white rounded-xl border shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Top-Selling Products</h3>
+        <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Top-Selling Products</h3>
           <div className="space-y-4">
             {lists.topProducts.map(product => (
               <div key={product._id} className="flex items-center justify-between border-b pb-4 last:border-0">
                 <div className="flex items-center gap-4">
                   <img src={product.imageUrl} alt={product.title} className="w-12 h-12 rounded object-cover border" />
                   <div>
-                    <h4 className="font-medium text-slate-800">{product.title}</h4>
-                    <p className="text-sm text-slate-500">${product.price} • {product.stock} in stock</p>
+                    <h4 className="font-medium text-slate-800 dark:text-slate-200">{product.title}</h4>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">${product.price} • {product.stock} in stock</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -176,29 +180,29 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
-            {lists.topProducts.length === 0 && <p className="text-slate-500">No sales data yet.</p>}
+            {lists.topProducts.length === 0 && <p className="text-slate-500 dark:text-slate-400">No sales data yet.</p>}
           </div>
         </div>
 
         {/* Recent Orders */}
-        <div className="bg-white rounded-xl border shadow-sm p-6">
-          <h3 className="text-lg font-semibold text-slate-800 mb-4">Recent Orders</h3>
+        <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6">
+          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-4">Recent Orders</h3>
           <div className="space-y-4">
             {lists.recentOrders.map(order => (
               <div key={order._id} className="flex items-center justify-between border-b pb-4 last:border-0">
                 <div>
-                  <h4 className="font-medium text-slate-800">{order.user?.name || 'Guest'}</h4>
-                  <p className="text-sm text-slate-500 text-xs font-mono">{order._id}</p>
+                  <h4 className="font-medium text-slate-800 dark:text-slate-200">{order.user?.name || 'Guest'}</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 text-xs font-mono">{order._id}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-slate-900">${order.totalPrice?.toFixed(2)}</p>
-                  <span className={`text-xs font-medium ${order.status === 'Pending' ? 'text-yellow-600' : order.status === 'Delivered' ? 'text-green-600' : 'text-slate-500'}`}>
+                  <p className="font-bold text-slate-900 dark:text-slate-50">${order.totalPrice?.toFixed(2)}</p>
+                  <span className={`text-xs font-medium ${order.status === 'Pending' ? 'text-yellow-600' : order.status === 'Delivered' ? 'text-green-600' : 'text-slate-500 dark:text-slate-400'}`}>
                     {order.status}
                   </span>
                 </div>
               </div>
             ))}
-            {lists.recentOrders.length === 0 && <p className="text-slate-500">No recent orders.</p>}
+            {lists.recentOrders.length === 0 && <p className="text-slate-500 dark:text-slate-400">No recent orders.</p>}
           </div>
         </div>
       </div>

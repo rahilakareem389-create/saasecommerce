@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import { socket } from '../socket';
 import { useCart } from '../context/CartContext';
@@ -10,14 +11,17 @@ export default function StoreFront() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
+  const [quickQty, setQuickQty] = useState(1);
+  const [quickColor, setQuickColor] = useState("");
+  const [activeImage, setActiveImage] = useState("");
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  
-  const [searchTerm, setSearchTerm] = useState('');
   
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialCategory = queryParams.get('category') || '';
+  const initialSearch = queryParams.get('search') || '';
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
   const initialSort = queryParams.get('sort') || '';
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [sortOption, setSortOption] = useState(initialSort);
@@ -122,7 +126,13 @@ export default function StoreFront() {
 
   const filteredProducts = displayProducts.filter(p => {
     const matchSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchCategory = selectedCategory ? (p.category?._id === selectedCategory || p.category?.name?.toLowerCase() === selectedCategory.toLowerCase() || p.category === selectedCategory) : true;
+    const matchCategory = selectedCategory 
+      ? (
+          p.category?._id === selectedCategory || 
+          p.category?.name?.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, '') || 
+          (typeof p.category === 'string' && p.category.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, ''))
+        ) 
+      : true;
     const matchPrice = p.price <= priceRange;
     return matchSearch && matchCategory && matchPrice;
   }).sort((a, b) => {
@@ -137,28 +147,70 @@ export default function StoreFront() {
     setCurrentPage(1);
   }, [searchTerm, selectedCategory, priceRange]);
 
+  // Update states if URL query params change while already on the page
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearchTerm(params.get('search') || '');
+    if (params.get('category')) setSelectedCategory(params.get('category'));
+  }, [location.search]);
+
   // Pagination calculation
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-  if (loading) return <div className="text-center py-20 text-slate-500">Loading products...</div>;
+  if (loading) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Loading products...</div>;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 w-full px-2 md:px-4 py-8">
+      
+      {/* Featured Categories */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-black text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2"><i className="fas fa-th-large text-primary-500"></i> Browse Categories</h2>
+        <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+          {[{_id: '', name: 'ALL PRODUCTS', img: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=500&q=80'}, { _id: 'pre-order', name: 'PRE ORDER', img: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&q=80' }, { _id: 'graphic', name: 'GRAPHIC', img: 'https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=500&q=80' }, { _id: 'tops', name: 'TOPS', img: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80' }, { _id: 'dresses', name: 'DRESSES', img: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&q=80' }].map(c => (
+            <button key={c._id} onClick={() => setSelectedCategory(c._id)} className={`min-w-[140px] h-[160px] rounded-2xl relative overflow-hidden group snap-start border-4 transition-all ${selectedCategory === c._id ? 'border-primary-600 shadow-xl scale-105' : 'border-transparent hover:border-primary-300'}`}>
+              <img src={c.img} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+              <span className="absolute inset-0 flex items-center justify-center text-white font-black tracking-widest text-sm drop-shadow-md z-10">{c.name}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Featured Products */}
+      {filteredProducts.length > 0 && <div className="mb-8 bg-slate-900 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+         <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500 rounded-full blur-[100px] opacity-30"></div>
+         <h2 className="text-3xl font-black mb-2 relative z-10"><i className="fas fa-star text-yellow-400"></i> Featured Collection</h2>
+         <p className="text-slate-400 mb-8 max-w-lg relative z-10">Discover our most premium quality items crafted with excellence. Perfect for every occasion.</p>
+         
+         <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x relative z-10">
+           {filteredProducts.slice(0, 8).map(fp => (
+              <div key={'f'+fp._id} className="min-w-[240px] max-w-[240px] bg-white dark:bg-[#2a2a3c]/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 snap-start hover:-translate-y-2 transition-transform">
+                 <div className="aspect-square bg-slate-800 rounded-xl mb-4 overflow-hidden">
+                   <img src={fp.imageUrl} className="w-full h-full object-cover" />
+                 </div>
+                 <h3 className="font-bold text-white line-clamp-1 mb-1">{fp.title}</h3>
+                 <p className="text-primary-400 font-black mb-3">Rs. {fp.price}</p>
+                 <button onClick={() => { setQuickViewProduct(fp); setQuickQty(1); setQuickColor(fp.variants?.[0]?.color || "Standard"); setActiveImage(fp.imageUrl); }} className="w-full py-2 bg-white dark:bg-[#2a2a3c] text-slate-900 dark:text-slate-50 font-bold rounded-lg hover:bg-primary-50 transition-colors">Quick View</button>
+              </div>
+           ))}
+         </div>
+      </div>}
+
       {/* Main Content */}
       <div className="flex-1">
-        <div className="mb-8 bg-white p-6 rounded-xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mb-8 bg-white dark:bg-[#2a2a3c] p-6 rounded-xl border shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-1">Products Catalog</h1>
-            <p className="text-slate-600 text-sm">Browse our real-time updated catalog.</p>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-1">Products Catalog</h1>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">Browse our real-time updated catalog.</p>
           </div>
           
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             {/* Price Range Dropdown / Slider */}
-            <div className="flex items-center gap-2 px-4 py-2 border rounded-lg bg-white w-full sm:w-auto">
-              <span className="text-sm text-slate-500 whitespace-nowrap">Up to ${priceRange}</span>
+            <div className="flex items-center gap-2 px-4 py-2 border rounded-lg bg-white dark:bg-[#2a2a3c] w-full sm:w-auto">
+              <span className="text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">Up to ${priceRange}</span>
               <input 
                 type="range" 
                 min="0" 
@@ -185,8 +237,8 @@ export default function StoreFront() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
           {currentProducts.map(product => (
-            <div key={product._id} className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group flex flex-col border">
-              <div className="aspect-[3/4] bg-slate-100 relative overflow-hidden">
+            <div key={product._id} className="bg-white dark:bg-[#2a2a3c] rounded-xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group flex flex-col border">
+              <div className="aspect-[3/4] bg-slate-100 dark:bg-[#2a2a3c]/50 relative overflow-hidden">
                 <Link to={`/product/${product._id}`}>
                   {product.imageUrl ? (
                     <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -202,15 +254,15 @@ export default function StoreFront() {
                 <div className="absolute bottom-4 left-0 right-0 flex justify-center items-center gap-4 opacity-0 -translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out pointer-events-none z-10">
                   <button 
                     onClick={() => toggleWishlist(product)}
-                    className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 hover:text-primary-600 hover:bg-white shadow-md transition-all pointer-events-auto group/btn relative"
+                    className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative"
                   >
                     <Heart size={20} className={isInWishlist(product._id) ? "fill-primary-600 text-primary-600" : ""} />
                     {/* Tooltip */}
                     <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity">Heart</span>
                   </button>
                   <button 
-                    onClick={() => setQuickViewProduct(product)}
-                    className="w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 hover:text-primary-600 hover:bg-white shadow-md transition-all pointer-events-auto group/btn relative"
+                    onClick={() => { setQuickViewProduct(product); setQuickQty(1); setQuickColor(product.variants?.[0]?.color || "Standard"); setActiveImage(product.imageUrl); }}
+                    className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative"
                   >
                     <ShoppingBag size={20} />
                     {/* Tooltip */}
@@ -220,7 +272,7 @@ export default function StoreFront() {
               </div>
               
               <div className="p-4 flex flex-col flex-1">
-                <Link to={`/product/${product._id}`} className="font-medium text-sm text-slate-800 mb-1 hover:text-primary-600 line-clamp-2 leading-snug">{product.title}</Link>
+                <Link to={`/product/${product._id}`} className="font-medium text-sm text-slate-800 dark:text-slate-200 mb-1 hover:text-primary-600 line-clamp-2 leading-snug">{product.title}</Link>
                 <div className="flex items-center justify-between mt-auto pt-2">
                   <span className="font-bold text-base text-primary-600">${product.price}</span>
                   <div className="text-[10px] text-slate-400 flex items-center gap-1">
@@ -232,9 +284,9 @@ export default function StoreFront() {
             </div>
           ))}
           {filteredProducts.length === 0 && (
-            <div className="col-span-full text-center py-20 bg-white rounded-xl border text-slate-500">
+            <div className="col-span-full text-center py-20 bg-white dark:bg-[#2a2a3c] rounded-xl border text-slate-500 dark:text-slate-400">
               <div className="text-4xl mb-4">🛒</div>
-              <h2 className="text-xl font-semibold mb-2 text-slate-700">No products found</h2>
+              <h2 className="text-xl font-semibold mb-2 text-slate-700 dark:text-slate-300">No products found</h2>
               <p>Try adjusting your search or filters.</p>
             </div>
           )}
@@ -246,7 +298,7 @@ export default function StoreFront() {
             <button 
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 border rounded-lg bg-white text-slate-600 hover:bg-slate-50 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              className="px-4 py-2 border rounded-lg bg-white dark:bg-[#2a2a3c] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:bg-[#1f1f2e] hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
             >
               Previous
             </button>
@@ -266,7 +318,7 @@ export default function StoreFront() {
                     className={`w-10 h-10 rounded-lg border flex items-center justify-center font-bold transition-colors ${
                       currentPage === pageNumber 
                         ? 'bg-primary-600 border-primary-600 text-white shadow-sm' 
-                        : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-primary-600'
+                        : 'bg-white dark:bg-[#2a2a3c] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:bg-[#1f1f2e] hover:text-primary-600'
                     }`}
                   >
                     {pageNumber}
@@ -277,7 +329,7 @@ export default function StoreFront() {
             <button 
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 border rounded-lg bg-white text-slate-600 hover:bg-slate-50 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              className="px-4 py-2 border rounded-lg bg-white dark:bg-[#2a2a3c] text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:bg-[#1f1f2e] hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
             >
               Next
             </button>
@@ -287,50 +339,92 @@ export default function StoreFront() {
 
       {/* Quick View Modal */}
       {quickViewProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm z-[100]">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md z-[100]">
+          <div className="bg-white dark:bg-[#2a2a3c] rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300">
             <button 
               onClick={() => setQuickViewProduct(null)}
-              className="absolute top-4 right-4 z-10 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+              className="absolute top-4 right-4 z-20 w-10 h-10 bg-white dark:bg-[#2a2a3c] shadow-md rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:bg-[#2a2a3c]/50 transition-colors"
             >
-              <X size={18} />
+              <X size={20} />
             </button>
             
-            <div className="w-full md:w-1/2 aspect-square md:aspect-auto md:h-[500px] bg-slate-100">
-              {quickViewProduct.imageUrl ? (
-                <img src={quickViewProduct.imageUrl} alt={quickViewProduct.title} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400">No Image</div>
-              )}
+            {/* Left: Images */}
+            <div className="w-full md:w-1/2 bg-slate-50 dark:bg-[#1f1f2e] p-6 flex flex-col gap-4 overflow-y-auto">
+              <div className="w-full aspect-square bg-white dark:bg-[#2a2a3c] rounded-2xl shadow-sm border border-slate-200 dark:border-[#3d3d5c] overflow-hidden">
+                <img src={activeImage || quickViewProduct.imageUrl} alt={quickViewProduct.title} className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
+              </div>
+              {/* Feature Images Gallery */}
+              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                 {[quickViewProduct.imageUrl, 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=500&q=80', 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80', 'https://images.unsplash.com/photo-1489987707023-afc82478163a?w=500&q=80'].map((img, idx) => (
+                    <button key={idx} onClick={() => setActiveImage(img)} className={`w-20 h-20 min-w-[5rem] bg-white dark:bg-[#2a2a3c] rounded-xl border-2 overflow-hidden ${activeImage === img ? 'border-primary-600 shadow-md' : 'border-slate-200 dark:border-[#3d3d5c] opacity-70 hover:opacity-100'}`}>
+                       <img src={img} className="w-full h-full object-cover" />
+                    </button>
+                 ))}
+              </div>
             </div>
             
-            <div className="w-full md:w-1/2 p-8 flex flex-col">
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">{quickViewProduct.title}</h2>
-              <div className="text-2xl font-bold text-primary-600 mb-6">${quickViewProduct.price}</div>
+            {/* Right: Details */}
+            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col overflow-y-auto bg-white dark:bg-[#2a2a3c] custom-scrollbar">
+              <span className="text-primary-600 font-bold text-xs tracking-widest uppercase bg-primary-50 px-3 py-1 rounded-full w-fit mb-4">
+                {quickViewProduct.category?.name || 'Premium'}
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-slate-50 mb-2 leading-tight">{quickViewProduct.title}</h2>
+              <div className="text-3xl font-black text-primary-600 mb-6">Rs. {quickViewProduct.price.toFixed(2)}</div>
               
-              <p className="text-slate-600 mb-8 flex-1 overflow-y-auto pr-2">{quickViewProduct.description}</p>
+              <div className="grid grid-cols-2 gap-4 mb-6 bg-slate-50 dark:bg-[#1f1f2e] p-4 rounded-xl border border-slate-100 dark:border-[#3d3d5c]">
+                 <div>
+                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Quality</p>
+                   <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">Brand New (100% Original)</p>
+                 </div>
+                 <div>
+                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Weight</p>
+                   <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">Approx. 1.2 KG</p>
+                 </div>
+              </div>
+
+              <div className="mb-6">
+                <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Select Color</h4>
+                <div className="flex gap-2">
+                   {['Black', 'White', 'Navy'].map(c => (
+                     <button key={c} onClick={() => setQuickColor(c)} className={`px-4 py-2 rounded-lg border-2 text-sm font-bold transition-all ${quickColor === c ? 'border-slate-900 bg-slate-900 text-white shadow-md' : 'border-slate-200 dark:border-[#3d3d5c] text-slate-600 dark:text-slate-400 hover:border-slate-300'}`}>
+                        {c}
+                     </button>
+                   ))}
+                </div>
+              </div>
+
+              <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">{quickViewProduct.description || "This premium product is crafted with the highest quality materials to ensure durability and comfort. Whether you are using it for daily tasks or special occasions, it delivers exceptional performance."}</p>
               
-              <div className="mt-auto pt-6 border-t flex items-center gap-4">
+              <div className="mt-auto pt-6 border-t flex flex-col sm:flex-row gap-4">
+                <div className="flex items-center justify-between border-2 border-slate-200 dark:border-[#3d3d5c] rounded-xl px-4 py-2 bg-white dark:bg-[#2a2a3c] sm:w-1/3">
+                  <button onClick={() => setQuickQty(q => Math.max(1, q - 1))} className="text-slate-400 hover:text-primary-600 p-2"><i className="fas fa-minus"></i></button>
+                  <span className="font-black text-xl text-slate-800 dark:text-slate-200">{quickQty}</span>
+                  <button onClick={() => setQuickQty(q => q + 1)} className="text-slate-400 hover:text-primary-600 p-2"><i className="fas fa-plus"></i></button>
+                </div>
+
                 <button 
                   onClick={() => {
-                    addToCart(quickViewProduct);
+                    addToCart({...quickViewProduct, qty: quickQty, selectedVariant: { color: quickColor }});
                     setQuickViewProduct(null);
+                    Swal.fire("Added to cart successfully!");
                   }}
-                  className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-bold hover:bg-primary-700 transition-colors shadow-lg shadow-primary-500/30"
+                  className="flex-1 bg-primary-600 text-white py-4 rounded-xl font-black text-lg hover:bg-primary-700 transition-all hover:shadow-lg hover:-translate-y-1 shadow-primary-500/30 flex items-center justify-center gap-2"
                 >
+                  <ShoppingBag size={24} />
                   Add to Cart
                 </button>
                 <button 
                   onClick={() => toggleWishlist(quickViewProduct)}
-                  className="w-12 h-12 flex items-center justify-center border-2 border-slate-200 rounded-xl text-slate-500 hover:text-primary-600 hover:border-primary-600 transition-colors"
+                  className="w-14 h-14 flex items-center justify-center border-2 border-slate-200 dark:border-[#3d3d5c] rounded-xl text-slate-500 dark:text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
                 >
-                  <Heart size={24} className={isInWishlist(quickViewProduct._id) ? "fill-primary-600 text-primary-600" : ""} />
+                  <Heart size={24} className={isInWishlist(quickViewProduct._id) ? "fill-red-500 text-red-500" : ""} />
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+      {/* END QUICK VIEW */}
     </div>
   );
 }

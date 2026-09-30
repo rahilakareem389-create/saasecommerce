@@ -46,10 +46,10 @@ export default function AdminOrders() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-slate-800">Orders Management</h2>
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-slate-700 border-b">
+      <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Orders Management</h2>
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+          <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
               <th className="px-6 py-4 font-semibold">Order ID</th>
               <th className="px-6 py-4 font-semibold">Customer</th>
@@ -61,10 +61,10 @@ export default function AdminOrders() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {orders.map(order => (
-              <tr key={order._id} className="hover:bg-slate-50 transition-colors">
+              <tr key={order._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
                 <td className="px-6 py-4 font-mono text-xs">{order._id}</td>
-                <td className="px-6 py-4 font-medium text-slate-900">{order.user?.name || 'Guest'}</td>
-                <td className="px-6 py-4 text-slate-500">{new Date(order.createdAt).toLocaleDateString()}</td>
+                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50">{order.user?.name || 'Guest'}</td>
+                <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{new Date(order.createdAt).toLocaleDateString()}</td>
                 <td className="px-6 py-4 font-bold">${order.totalPrice?.toFixed(2) || '0.00'}</td>
                 <td className="px-6 py-4">
                   <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
@@ -95,7 +95,7 @@ export default function AdminOrders() {
             ))}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-slate-500">
+                <td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
                   <PackageOpen size={32} className="mx-auto mb-2 text-slate-400" />
                   No orders found.
                 </td>
@@ -108,38 +108,38 @@ export default function AdminOrders() {
       {/* Order Details Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white">
-              <h3 className="font-bold text-xl text-slate-800">Order Details</h3>
-              <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-slate-600">
+          <div className="bg-white dark:bg-[#2a2a3c] rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center p-6 border-b sticky top-0 bg-white dark:bg-[#2a2a3c]">
+              <h3 className="font-bold text-xl text-slate-800 dark:text-slate-200">Order Details</h3>
+              <button onClick={() => setSelectedOrder(null)} className="text-slate-400 hover:text-slate-600 dark:text-slate-400">
                 <X size={24} />
               </button>
             </div>
             <div className="p-6 space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h4 className="font-bold text-slate-700 mb-2">Shipping Information</h4>
-                  <div className="text-sm text-slate-600 space-y-1">
-                    <p><span className="font-medium text-slate-800">Name:</span> {selectedOrder.user?.name || 'Guest'}</p>
-                    <p><span className="font-medium text-slate-800">Address:</span> {selectedOrder.shippingAddress?.address}</p>
-                    <p><span className="font-medium text-slate-800">City:</span> {selectedOrder.shippingAddress?.city}</p>
-                    <p><span className="font-medium text-slate-800">Postal Code:</span> {selectedOrder.shippingAddress?.postalCode}</p>
-                    <p><span className="font-medium text-slate-800">Country:</span> {selectedOrder.shippingAddress?.country}</p>
+                  <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-2">Shipping Information</h4>
+                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Name:</span> {selectedOrder.user?.name || 'Guest'}</p>
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Address:</span> {selectedOrder.shippingAddress?.address}</p>
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">City:</span> {selectedOrder.shippingAddress?.city}</p>
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Postal Code:</span> {selectedOrder.shippingAddress?.postalCode}</p>
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Country:</span> {selectedOrder.shippingAddress?.country}</p>
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-700 mb-2">Order Summary</h4>
-                  <div className="text-sm text-slate-600 space-y-1">
-                    <p><span className="font-medium text-slate-800">Order ID:</span> {selectedOrder._id}</p>
-                    <p><span className="font-medium text-slate-800">Date:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
-                    <p><span className="font-medium text-slate-800">Payment Method:</span> {selectedOrder.paymentMethod}</p>
-                    <p><span className="font-medium text-slate-800">Status:</span> <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)}`}>{selectedOrder.status}</span></p>
+                  <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-2">Order Summary</h4>
+                  <div className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Order ID:</span> {selectedOrder._id}</p>
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Date:</span> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Payment Method:</span> {selectedOrder.paymentMethod}</p>
+                    <p><span className="font-medium text-slate-800 dark:text-slate-200">Status:</span> <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedOrder.status)}`}>{selectedOrder.status}</span></p>
                   </div>
                 </div>
               </div>
               
               <div>
-                <h4 className="font-bold text-slate-700 mb-4">Items Ordered</h4>
+                <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-4">Items Ordered</h4>
                 <div className="space-y-4">
                   {selectedOrder.orderItems.map((item, idx) => (
                     <div key={idx} className="flex items-center justify-between border-b pb-4 last:border-0">
@@ -147,15 +147,15 @@ export default function AdminOrders() {
                         {item.image ? (
                           <img src={item.image} alt={item.name} className="w-16 h-16 rounded object-cover border" />
                         ) : (
-                          <div className="w-16 h-16 bg-slate-100 rounded flex items-center justify-center text-xs text-slate-400 border">No Img</div>
+                          <div className="w-16 h-16 bg-slate-100 dark:bg-[#2a2a3c]/50 rounded flex items-center justify-center text-xs text-slate-400 border">No Img</div>
                         )}
                         <div>
-                          <p className="font-medium text-slate-800">{item.name}</p>
-                          {item.variant && <p className="text-xs text-slate-500">Variant: {item.variant}</p>}
-                          <p className="text-sm text-slate-500">Qty: {item.qty}</p>
+                          <p className="font-medium text-slate-800 dark:text-slate-200">{item.name}</p>
+                          {item.variant && <p className="text-xs text-slate-500 dark:text-slate-400">Variant: {item.variant}</p>}
+                          <p className="text-sm text-slate-500 dark:text-slate-400">Qty: {item.qty}</p>
                         </div>
                       </div>
-                      <div className="font-bold text-slate-800">
+                      <div className="font-bold text-slate-800 dark:text-slate-200">
                         ${(item.price * item.qty).toFixed(2)}
                       </div>
                     </div>
@@ -165,7 +165,7 @@ export default function AdminOrders() {
 
               <div className="border-t pt-4 flex justify-end">
                 <div className="text-right">
-                  <div className="text-slate-500 text-sm mb-1">Total Amount</div>
+                  <div className="text-slate-500 dark:text-slate-400 text-sm mb-1">Total Amount</div>
                   <div className="text-3xl font-bold text-primary-600">${selectedOrder.totalPrice?.toFixed(2)}</div>
                 </div>
               </div>

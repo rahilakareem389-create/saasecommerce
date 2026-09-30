@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -59,18 +60,18 @@ export default function AdminProducts() {
       fetchProducts();
       resetForm();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error saving product');
+      Swal.fire(err.response?.data?.message || 'Error saving product');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this product?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${id}`, config);
       fetchProducts();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error deleting product');
+      Swal.fire(err.response?.data?.message || 'Error deleting product');
     }
   };
 
@@ -134,7 +135,7 @@ export default function AdminProducts() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800">Product Management</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Product Management</h2>
         <button 
           onClick={() => {
             if (isAdding) {
@@ -151,30 +152,30 @@ export default function AdminProducts() {
       </div>
 
       {isAdding && (
-        <div className="bg-white p-6 rounded-xl border shadow-sm mb-6">
+        <div className="bg-white dark:bg-[#2a2a3c] p-6 rounded-xl border shadow-sm mb-6">
           <h3 className="font-bold text-lg mb-4">{editId ? 'Edit Product' : 'Add New Product'}</h3>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Product Name</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Product Name</label>
                 <input required type="text" value={title} onChange={e=>setTitle(e.target.value)} className="w-full px-3 py-2 border rounded-md" />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">SKU</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">SKU</label>
                 <input type="text" value={sku} onChange={e=>setSku(e.target.value)} className="w-full px-3 py-2 border rounded-md" placeholder="e.g. TSHIRT-RED-M" />
               </div>
               
               <div className="space-y-1 grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Category</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
                   <select required value={category} onChange={e=>setCategory(e.target.value)} className="w-full px-3 py-2 border rounded-md">
                     <option value="">Select Main...</option>
                     {mainCategories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Subcategory</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Subcategory</label>
                   <select value={subCategory} onChange={e=>setSubCategory(e.target.value)} className="w-full px-3 py-2 border rounded-md" disabled={!category}>
                     <option value="">Optional...</option>
                     {subCategories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
@@ -184,25 +185,25 @@ export default function AdminProducts() {
 
               <div className="space-y-1 grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Price ($)</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Price ($)</label>
                   <input required type="number" min="0" step="0.01" value={price} onChange={e=>setPrice(e.target.value)} className="w-full px-3 py-2 border rounded-md" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Sale Price ($)</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Sale Price ($)</label>
                   <input type="number" step="0.01" value={salePrice} onChange={e=>setSalePrice(e.target.value)} className="w-full px-3 py-2 border rounded-md" placeholder="Optional" />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700">Stock</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Stock</label>
                   <input required type="number" value={stock} onChange={e=>setStock(e.target.value)} className="w-full px-3 py-2 border rounded-md" />
                 </div>
               </div>
               
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Main Product Image (Upload or URL)</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Main Product Image (Upload or URL)</label>
                   <div className="flex gap-2 items-center">
                     <input type="text" value={imageUrl} onChange={e=>setImageUrl(e.target.value)} className="flex-1 px-3 py-2 border rounded-md" placeholder="Image URL or upload file" />
-                    <label className="cursor-pointer bg-slate-100 text-slate-700 px-4 py-2 border border-slate-300 rounded-md hover:bg-slate-200 transition-colors flex items-center gap-2">
+                    <label className="cursor-pointer bg-slate-100 dark:bg-[#2a2a3c]/50 text-slate-700 dark:text-slate-300 px-4 py-2 border border-slate-300 rounded-md hover:bg-slate-200 dark:bg-slate-700 transition-colors flex items-center gap-2">
                       <Upload size={16} /> Upload
                       <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, setImageUrl)} className="hidden" />
                     </label>
@@ -210,17 +211,17 @@ export default function AdminProducts() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700">Multiple Additional Images (Optional)</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Multiple Additional Images (Optional)</label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {images.map((img, idx) => (
-                      <div key={idx} className="relative w-16 h-16 border rounded group overflow-hidden bg-slate-50">
+                      <div key={idx} className="relative w-16 h-16 border rounded group overflow-hidden bg-slate-50 dark:bg-[#1f1f2e]">
                         <img src={img} alt="Additional" className="w-full h-full object-cover" />
                         <button type="button" onClick={() => removeImage(idx)} className="absolute inset-0 bg-black/50 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                           <X size={16} />
                         </button>
                       </div>
                     ))}
-                    <label className="cursor-pointer w-16 h-16 border-2 border-dashed border-slate-300 rounded flex flex-col items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-primary-400 transition-colors">
+                    <label className="cursor-pointer w-16 h-16 border-2 border-dashed border-slate-300 rounded flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:bg-[#1f1f2e] hover:border-primary-400 transition-colors">
                       <Plus size={20} />
                       <span className="text-[10px]">Add More</span>
                       <input type="file" accept="image/*" multiple onChange={handleMultipleImagesUpload} className="hidden" />
@@ -230,14 +231,14 @@ export default function AdminProducts() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Description</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Description</label>
                 <textarea required value={description} onChange={e=>setDescription(e.target.value)} className="w-full px-3 py-2 border rounded-md resize-none h-[116px]"></textarea>
               </div>
 
-              <div className="space-y-4 md:col-span-2 p-4 bg-slate-50 rounded-lg border flex flex-wrap gap-6 items-center">
+              <div className="space-y-4 md:col-span-2 p-4 bg-slate-50 dark:bg-[#1f1f2e] rounded-lg border flex flex-wrap gap-6 items-center">
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Status</label>
-                  <select value={status} onChange={e=>setStatus(e.target.value)} className="w-full px-3 py-1.5 border rounded-md bg-white">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Status</label>
+                  <select value={status} onChange={e=>setStatus(e.target.value)} className="w-full px-3 py-1.5 border rounded-md bg-white dark:bg-[#2a2a3c]">
                     <option value="Active">Active</option>
                     <option value="Draft">Draft</option>
                     <option value="Out of Stock">Out of Stock</option>
@@ -246,21 +247,21 @@ export default function AdminProducts() {
                 
                 <div className="flex items-center gap-2 mt-5">
                   <input type="checkbox" id="featured" checked={isFeatured} onChange={e=>setIsFeatured(e.target.checked)} className="rounded w-4 h-4 text-primary-600 focus:ring-primary-500" />
-                  <label htmlFor="featured" className="text-sm font-medium text-slate-700">Featured</label>
+                  <label htmlFor="featured" className="text-sm font-medium text-slate-700 dark:text-slate-300">Featured</label>
                 </div>
                 <div className="flex items-center gap-2 mt-5">
                   <input type="checkbox" id="bestseller" checked={isBestSeller} onChange={e=>setIsBestSeller(e.target.checked)} className="rounded w-4 h-4 text-primary-600 focus:ring-primary-500" />
-                  <label htmlFor="bestseller" className="text-sm font-medium text-slate-700">Best Seller</label>
+                  <label htmlFor="bestseller" className="text-sm font-medium text-slate-700 dark:text-slate-300">Best Seller</label>
                 </div>
                 <div className="flex items-center gap-2 mt-5">
                   <input type="checkbox" id="newarrival" checked={isNewArrival} onChange={e=>setIsNewArrival(e.target.checked)} className="rounded w-4 h-4 text-primary-600 focus:ring-primary-500" />
-                  <label htmlFor="newarrival" className="text-sm font-medium text-slate-700">New Arrival</label>
+                  <label htmlFor="newarrival" className="text-sm font-medium text-slate-700 dark:text-slate-300">New Arrival</label>
                 </div>
               </div>
 
             </div>
             <div className="flex justify-end gap-3 pt-4 border-t">
-              <button type="button" onClick={resetForm} className="px-6 py-2 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">Cancel</button>
+              <button type="button" onClick={resetForm} className="px-6 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:bg-[#2a2a3c]/50 transition-colors">Cancel</button>
               <button type="submit" className="bg-primary-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-primary-700 transition-colors">
                 {editId ? 'Update Product' : 'Save Product'}
               </button>
@@ -269,9 +270,9 @@ export default function AdminProducts() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-slate-700 border-b">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+          <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
               <th className="px-6 py-4 font-semibold">Image</th>
               <th className="px-6 py-4 font-semibold">Name & SKU</th>
@@ -283,22 +284,22 @@ export default function AdminProducts() {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {products.map(product => (
-              <tr key={product._id} className="hover:bg-slate-50 transition-colors">
+              <tr key={product._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
                 <td className="px-6 py-4">
                   {product.imageUrl ? (
                     <img src={product.imageUrl} alt={product.title} className="w-12 h-12 rounded object-cover" />
                   ) : (
-                    <div className="w-12 h-12 bg-slate-100 rounded" />
+                    <div className="w-12 h-12 bg-slate-100 dark:bg-[#2a2a3c]/50 rounded" />
                   )}
                 </td>
-                <td className="px-6 py-4 font-medium text-slate-900">
+                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50">
                   <div className="flex items-center gap-2 flex-wrap">
                     {product.title}
                     {product.isFeatured && <span className="text-[10px] bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Featured</span>}
                     {product.isBestSeller && <span className="text-[10px] bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">Best Seller</span>}
                     {product.isNewArrival && <span className="text-[10px] bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold">New</span>}
                   </div>
-                  {product.sku && <div className="text-xs text-slate-500 font-mono mt-1">SKU: {product.sku}</div>}
+                  {product.sku && <div className="text-xs text-slate-500 dark:text-slate-400 font-mono mt-1">SKU: {product.sku}</div>}
                 </td>
                 <td className="px-6 py-4 font-bold">
                   ${product.price}

@@ -9,29 +9,29 @@ export default function Cart() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-slate-800 mb-8">Shopping Cart</h1>
+      <h1 className="text-3xl font-bold text-slate-800 dark:text-slate-200 mb-8">Shopping Cart</h1>
       
       {cart.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-xl border">
-          <h2 className="text-xl text-slate-600 mb-4">Your cart is empty</h2>
+        <div className="text-center py-20 bg-white dark:bg-[#2a2a3c] rounded-xl border">
+          <h2 className="text-xl text-slate-600 dark:text-slate-400 mb-4">Your cart is empty</h2>
           <Link to="/" className="text-primary-600 font-medium hover:underline">Continue Shopping</Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2 space-y-4">
             {cart.map(item => (
-              <div key={item._id} className="flex items-center gap-4 bg-white p-4 rounded-xl border shadow-sm">
-                <div className="w-24 h-24 bg-slate-100 rounded-md overflow-hidden">
+              <div key={item._id} className="flex items-center gap-4 bg-white dark:bg-[#2a2a3c] p-4 rounded-xl border shadow-sm">
+                <div className="w-24 h-24 bg-slate-100 dark:bg-[#2a2a3c]/50 rounded-md overflow-hidden">
                   <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-bold text-slate-800 text-lg mb-1">{item.title}</h3>
+                  <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg mb-1">{item.title}</h3>
                   {item.selectedVariant && (
-                    <p className="text-sm text-slate-500 mb-2">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-2">
                       Variant: {item.selectedVariant.size && `[${item.selectedVariant.size}]`} {item.selectedVariant.color}
                     </p>
                   )}
-                  <div className="text-slate-500 text-sm mb-2">Qty: {item.qty}</div>
+                  <div className="text-slate-500 dark:text-slate-400 text-sm mb-2">Qty: {item.qty}</div>
                   <div className="font-bold text-primary-600">${item.price}</div>
                 </div>
                 <button onClick={() => removeFromCart(item._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
@@ -40,21 +40,21 @@ export default function Cart() {
               </div>
             ))}
           </div>
-          <div className="bg-white p-6 rounded-xl border shadow-sm h-fit">
-            <h3 className="font-bold text-lg text-slate-800 mb-4">Order Summary</h3>
-            <div className="flex justify-between text-slate-600 mb-2">
+          <div className="bg-white dark:bg-[#2a2a3c] p-6 rounded-xl border shadow-sm h-fit">
+            <h3 className="font-bold text-lg text-slate-800 dark:text-slate-200 mb-4">Order Summary</h3>
+            <div className="flex justify-between text-slate-600 dark:text-slate-400 mb-2">
               <span>Subtotal</span>
               <span>${total.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-slate-600 mb-4">
+            <div className="flex justify-between text-slate-600 dark:text-slate-400 mb-4">
               <span>Shipping</span>
               <span>Free</span>
             </div>
-            <div className="border-t pt-4 flex justify-between font-bold text-lg text-slate-900 mb-6">
+            <div className="border-t pt-4 flex justify-between font-bold text-lg text-slate-900 dark:text-slate-50 mb-6">
               <span>Total</span>
               <span>${total.toFixed(2)}</span>
             </div>
-            <Link to="/checkout" className="w-full block text-center bg-primary-600 text-white font-medium py-3 rounded-lg hover:bg-primary-700 transition-colors">
+            <Link to="/checkout" className="w-full block text-center bg-primary-600 text-white font-bold py-3 px-4 mt-6 rounded-xl hover:bg-primary-700 transition-colors shadow-lg">
               Proceed to Checkout
             </Link>
           </div>

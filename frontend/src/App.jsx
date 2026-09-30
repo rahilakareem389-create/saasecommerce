@@ -27,41 +27,47 @@ import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import FAQ from './pages/FAQ';
 
+import ErrorBoundary from './components/ErrorBoundary';
+import CookieConsent from './components/CookieConsent';
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Public Storefront */}
-        <Route element={<StoreLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<StoreFront />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/user-dashboard" element={<UserDashboard />} />
-          <Route path="/about" element={<AboutUs />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/faq" element={<FAQ />} />
-        </Route>
+    <ErrorBoundary>
+      <Router>
+        <Routes>
+          {/* Public Storefront */}
+          <Route element={<StoreLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<StoreFront />} />
+            <Route path="/product/:id" element={<ProductDetails />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/user-dashboard" element={<UserDashboard />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/faq" element={<FAQ />} />
+          </Route>
 
-        {/* Admin Dashboard */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="inventory" element={<AdminInventory />} />
-          <Route path="orders" element={<AdminOrders />} />
-          <Route path="coupons" element={<AdminCoupons />} />
-          <Route path="customers" element={<AdminCustomers />} />
-          <Route path="sales" element={<AdminSales />} />
-          <Route path="reviews" element={<AdminReviews />} />
-          <Route path="settings" element={<AdminSettings />} />
-        </Route>
-      </Routes>
-    </Router>
+          {/* Admin Dashboard */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="categories" element={<AdminCategories />} />
+            <Route path="inventory" element={<AdminInventory />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="coupons" element={<AdminCoupons />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="sales" element={<AdminSales />} />
+            <Route path="reviews" element={<AdminReviews />} />
+            <Route path="settings" element={<AdminSettings />} />
+          </Route>
+        </Routes>
+        <CookieConsent />
+      </Router>
+    </ErrorBoundary>
   );
 }
 

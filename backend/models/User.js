@@ -21,12 +21,14 @@ const userSchema = new mongoose.Schema({
     default: 'customer',
   },
   phone: String,
-  address: {
+  addresses: [{
+    title: { type: String, default: 'Home' },
     street: String,
     city: String,
     country: String,
     zipCode: String,
-  },
+    isDefault: { type: Boolean, default: false }
+  }],
   status: {
     type: String,
     enum: ['Active', 'Blocked'],

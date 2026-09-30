@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -35,7 +36,7 @@ export default function AdminInventory() {
       setEditingId(null);
       fetchProducts();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error updating stock');
+      Swal.fire(err.response?.data?.message || 'Error updating stock');
     }
   };
 
@@ -76,41 +77,41 @@ export default function AdminInventory() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-bold text-slate-800">Inventory Management</h2>
+      <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Inventory Management</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div onClick={() => setFilter('all')} className={`bg-white p-6 rounded-xl border shadow-sm cursor-pointer transition-all ${filter === 'all' ? 'ring-2 ring-primary-500' : 'hover:border-primary-300'}`}>
+        <div onClick={() => setFilter('all')} className={`bg-white dark:bg-[#2a2a3c] p-6 rounded-xl border shadow-sm cursor-pointer transition-all ${filter === 'all' ? 'ring-2 ring-primary-500' : 'hover:border-primary-300'}`}>
           <div className="flex items-center gap-4">
             <div className="p-3 bg-blue-100 text-blue-600 rounded-lg"><Box size={24} /></div>
             <div>
-              <p className="text-sm font-medium text-slate-500">Total Products</p>
-              <h3 className="text-2xl font-bold text-slate-800">{products.length}</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Total Products</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200">{products.length}</h3>
             </div>
           </div>
         </div>
-        <div onClick={() => setFilter('low')} className={`bg-white p-6 rounded-xl border shadow-sm cursor-pointer transition-all ${filter === 'low' ? 'ring-2 ring-yellow-500' : 'hover:border-yellow-300'}`}>
+        <div onClick={() => setFilter('low')} className={`bg-white dark:bg-[#2a2a3c] p-6 rounded-xl border shadow-sm cursor-pointer transition-all ${filter === 'low' ? 'ring-2 ring-yellow-500' : 'hover:border-yellow-300'}`}>
           <div className="flex items-center gap-4">
             <div className="p-3 bg-yellow-100 text-yellow-600 rounded-lg"><AlertTriangle size={24} /></div>
             <div>
-              <p className="text-sm font-medium text-slate-500">Low Stock (≤ 10)</p>
-              <h3 className="text-2xl font-bold text-slate-800">{lowStockCount}</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Low Stock (≤ 10)</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200">{lowStockCount}</h3>
             </div>
           </div>
         </div>
-        <div onClick={() => setFilter('out')} className={`bg-white p-6 rounded-xl border shadow-sm cursor-pointer transition-all ${filter === 'out' ? 'ring-2 ring-red-500' : 'hover:border-red-300'}`}>
+        <div onClick={() => setFilter('out')} className={`bg-white dark:bg-[#2a2a3c] p-6 rounded-xl border shadow-sm cursor-pointer transition-all ${filter === 'out' ? 'ring-2 ring-red-500' : 'hover:border-red-300'}`}>
           <div className="flex items-center gap-4">
             <div className="p-3 bg-red-100 text-red-600 rounded-lg"><PackageX size={24} /></div>
             <div>
-              <p className="text-sm font-medium text-slate-500">Out of Stock</p>
-              <h3 className="text-2xl font-bold text-slate-800">{outOfStockCount}</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Out of Stock</p>
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200">{outOfStockCount}</h3>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-slate-700 border-b">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+          <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
               <th className="px-6 py-4 font-semibold">Product</th>
               <th className="px-6 py-4 font-semibold">SKU / Status</th>
@@ -124,11 +125,11 @@ export default function AdminInventory() {
               const isEditing = editingId === product._id;
               
               return (
-                <tr key={product._id} className={product.stock === 0 ? 'bg-red-50' : 'hover:bg-slate-50'}>
+                <tr key={product._id} className={product.stock === 0 ? 'bg-red-50' : 'hover:bg-slate-50 dark:bg-[#1f1f2e]'}>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <img src={product.imageUrl} alt={product.title} className="w-10 h-10 rounded object-cover border" />
-                      <span className="font-medium text-slate-900">{product.title}</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-50">{product.title}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -175,7 +176,7 @@ export default function AdminInventory() {
                   <td className="px-6 py-4 text-right">
                     {isEditing ? (
                       <div className="flex justify-end gap-2">
-                        <button onClick={() => setEditingId(null)} className="text-xs px-3 py-1 bg-slate-200 rounded text-slate-700 hover:bg-slate-300">Cancel</button>
+                        <button onClick={() => setEditingId(null)} className="text-xs px-3 py-1 bg-slate-200 dark:bg-slate-700 rounded text-slate-700 dark:text-slate-300 hover:bg-slate-300">Cancel</button>
                         <button onClick={() => handleSaveStock(product)} className="text-xs px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 flex items-center gap-1"><Check size={14}/> Save</button>
                       </div>
                     ) : (

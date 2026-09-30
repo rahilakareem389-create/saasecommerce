@@ -77,7 +77,7 @@ const getUserProfile = async (req, res) => {
       email: user.email,
       role: user.role,
       phone: user.phone,
-      address: user.address,
+      addresses: user.addresses || [],
     });
   } else {
     res.status(404).json({ message: 'User not found' });
@@ -89,6 +89,8 @@ const updateUserProfile = async (req, res) => {
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;
+    if (req.body.phone !== undefined) user.phone = req.body.phone;
+    if (req.body.addresses !== undefined) user.addresses = req.body.addresses;
     if (req.body.password) {
       user.password = req.body.password;
     }
@@ -99,6 +101,8 @@ const updateUserProfile = async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       role: updatedUser.role,
+      phone: updatedUser.phone,
+      addresses: updatedUser.addresses || [],
       token: generateToken(updatedUser._id),
     });
   } else {

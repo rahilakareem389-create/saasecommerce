@@ -1,3 +1,4 @@
+import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -58,18 +59,18 @@ export default function AdminCoupons() {
       fetchCoupons();
       resetForm();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error saving coupon');
+      Swal.fire(err.response?.data?.message || 'Error saving coupon');
     }
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this coupon?')) return;
+    if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this coupon?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/coupons/${id}`, config);
       fetchCoupons();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error deleting coupon');
+      Swal.fire(err.response?.data?.message || 'Error deleting coupon');
     }
   };
 
@@ -79,7 +80,7 @@ export default function AdminCoupons() {
       await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/coupons/${coupon._id}`, { isActive: !coupon.isActive }, config);
       fetchCoupons();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error updating coupon');
+      Swal.fire(err.response?.data?.message || 'Error updating coupon');
     }
   };
 
@@ -106,7 +107,7 @@ export default function AdminCoupons() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-slate-800">Coupon Management</h2>
+        <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Coupon Management</h2>
         <button 
           onClick={() => {
             if (isAdding) {
@@ -123,46 +124,46 @@ export default function AdminCoupons() {
       </div>
 
       {isAdding && (
-        <div className="bg-white p-6 rounded-xl border shadow-sm mb-6">
+        <div className="bg-white dark:bg-[#2a2a3c] p-6 rounded-xl border shadow-sm mb-6">
           <h3 className="font-bold text-lg mb-4">{editId ? 'Edit Coupon' : 'Create New Discount Coupon'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Coupon Code</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Coupon Code</label>
                 <input required type="text" value={code} onChange={e=>setCode(e.target.value.toUpperCase())} className="w-full px-3 py-2 border rounded-md uppercase" placeholder="e.g. SUMMER50" />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Discount Type</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Discount Type</label>
                 <select value={discountType} onChange={e=>setDiscountType(e.target.value)} className="w-full px-3 py-2 border rounded-md">
                   <option value="percentage">Percentage (%)</option>
                   <option value="fixed">Fixed Amount ($)</option>
                 </select>
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Discount Amount</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Discount Amount</label>
                 <input required type="number" min="1" step="0.01" value={discountAmount} onChange={e=>setDiscountAmount(e.target.value)} className="w-full px-3 py-2 border rounded-md" />
               </div>
               {discountType === 'percentage' && (
                 <div className="space-y-1">
-                  <label className="text-sm font-medium text-slate-700">Max Discount Amount ($) - Optional</label>
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Max Discount Amount ($) - Optional</label>
                   <input type="number" min="1" step="0.01" value={maxDiscountAmount} onChange={e=>setMaxDiscountAmount(e.target.value)} className="w-full px-3 py-2 border rounded-md" placeholder="e.g. 50" />
                 </div>
               )}
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Minimum Order Amount ($) - Optional</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Minimum Order Amount ($) - Optional</label>
                 <input type="number" min="0" step="0.01" value={minOrderAmount} onChange={e=>setMinOrderAmount(e.target.value)} className="w-full px-3 py-2 border rounded-md" placeholder="e.g. 100" />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Usage Limit - Optional</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Usage Limit - Optional</label>
                 <input type="number" min="1" value={usageLimit} onChange={e=>setUsageLimit(e.target.value)} className="w-full px-3 py-2 border rounded-md" placeholder="e.g. 50 (Total times it can be used)" />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Expiry Date</label>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Expiry Date</label>
                 <input required type="date" value={expiryDate} onChange={e=>setExpiryDate(e.target.value)} className="w-full px-3 py-2 border rounded-md" />
               </div>
               <div className="space-y-1 md:col-span-2 flex items-center gap-2 mt-2">
                 <input type="checkbox" id="isActive" checked={isActive} onChange={e=>setIsActive(e.target.checked)} className="rounded text-primary-600 focus:ring-primary-500 w-4 h-4" />
-                <label htmlFor="isActive" className="text-sm font-medium text-slate-700">Coupon is Active</label>
+                <label htmlFor="isActive" className="text-sm font-medium text-slate-700 dark:text-slate-300">Coupon is Active</label>
               </div>
             </div>
             <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
@@ -172,9 +173,9 @@ export default function AdminCoupons() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-slate-600">
-          <thead className="bg-slate-50 text-slate-700 border-b">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
+          <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
               <th className="px-6 py-4 font-semibold">Code</th>
               <th className="px-6 py-4 font-semibold">Discount</th>
@@ -189,8 +190,8 @@ export default function AdminCoupons() {
             {coupons.map(coupon => {
               const isExpired = new Date() > new Date(coupon.expiryDate);
               return (
-                <tr key={coupon._id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-bold text-slate-900 flex items-center gap-2">
+                <tr key={coupon._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
+                  <td className="px-6 py-4 font-bold text-slate-900 dark:text-slate-50 flex items-center gap-2">
                     <Ticket size={16} className="text-primary-600" />
                     {coupon.code}
                   </td>
@@ -207,7 +208,7 @@ export default function AdminCoupons() {
                   <td className="px-6 py-4">
                     <button 
                       onClick={() => toggleActive(coupon)}
-                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${coupon.isActive ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'}`}
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-colors ${coupon.isActive ? 'bg-green-100 text-green-800 hover:bg-green-200' : 'bg-slate-100 dark:bg-[#2a2a3c]/50 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:bg-slate-700'}`}
                       title="Click to toggle status"
                     >
                       {coupon.isActive ? <CheckCircle size={12} /> : <XCircle size={12} />}
@@ -227,7 +228,7 @@ export default function AdminCoupons() {
             })}
             {coupons.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-6 py-8 text-center text-slate-500">
+                <td colSpan={7} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
                   <Ticket size={32} className="mx-auto mb-2 text-slate-400" />
                   No discount coupons created yet.
                 </td>

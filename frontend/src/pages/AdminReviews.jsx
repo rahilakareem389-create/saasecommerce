@@ -1,11 +1,12 @@
 import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet } from '../utils/apiCache';
 import { useAuth } from '../context/AuthContext';
 import { Check, X, Trash2, Eye, Star } from 'lucide-react';
 
 export default function AdminReviews() {
-  const [reviews, setReviews] = useState([]);
+  const [reviews, setReviews] = useState(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All'); // All, Pending, Approved, Rejected
   const [selectedReview, setSelectedReview] = useState(null);
@@ -18,7 +19,7 @@ export default function AdminReviews() {
   const fetchReviews = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/reviews`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/reviews`, config);
       setReviews(data);
     } catch (err) {
       console.error(err);
@@ -30,7 +31,7 @@ export default function AdminReviews() {
   const handleUpdateStatus = async (productId, reviewId, status) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/reviews/${productId}/${reviewId}/status`, { status }, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/reviews/${productId}/${reviewId}/status`, { status }, config);
       fetchReviews();
       if (selectedReview && selectedReview._id === reviewId) {
         setSelectedReview({ ...selectedReview, status });
@@ -44,7 +45,7 @@ export default function AdminReviews() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this review?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/reviews/${productId}/${reviewId}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/reviews/${productId}/${reviewId}`, config);
       fetchReviews();
       if (selectedReview && selectedReview._id === reviewId) setSelectedReview(null);
     } catch (err) {
@@ -52,9 +53,9 @@ export default function AdminReviews() {
     }
   };
 
-  const filteredReviews = filter === 'All' ? reviews : reviews.filter(r => r.status === filter);
+  const filteredReviews = filter === 'All' ? (reviews || []) : (reviews || []).filter(r => r.status === filter);
 
-  if (loading) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Loading Reviews...</div>;
+  
 
   const tabs = ['All', 'Pending', 'Approved', 'Rejected'];
 
@@ -77,16 +78,16 @@ export default function AdminReviews() {
             }`}
           >
             {tab}
-            {tab === 'Pending' && reviews.filter(r => r.status === 'Pending').length > 0 && (
+            {tab === 'Pending' && (reviews || []).filter(r => r.status === 'Pending').length > 0 && (
               <span className="ml-2 bg-red-100 text-red-600 py-0.5 px-2 rounded-full text-xs">
-                {reviews.filter(r => r.status === 'Pending').length}
+                {(reviews || []).filter(r => r.status === 'Pending').length}
               </span>
             )}
           </button>
         ))}
       </div>
 
-      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
           <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
@@ -148,7 +149,7 @@ export default function AdminReviews() {
             ))}
           </tbody>
         </table>
-        {filteredReviews.length === 0 && (
+        {reviews && filteredReviews.length === 0 && (
           <div className="text-center py-10 text-slate-500 dark:text-slate-400">
             No {filter !== 'All' ? filter.toLowerCase() : ''} reviews found.
           </div>

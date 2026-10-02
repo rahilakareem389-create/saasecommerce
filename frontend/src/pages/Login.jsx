@@ -27,8 +27,11 @@ export default function Login() {
       const regRes = await register(name, email, password);
       
       if (regRes && regRes.success) {
-         // Auto-registration successful! Now they are logged in.
-         navigate('/user-dashboard');
+         if (regRes.data?.role === 'admin') {
+           navigate('/admin');
+         } else {
+           navigate('/user-dashboard');
+         }
          setLoadingLocal(false);
          return;
       } else {

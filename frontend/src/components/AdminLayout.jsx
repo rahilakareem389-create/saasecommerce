@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import NotificationsDropdown from './NotificationsDropdown';
 import { LayoutDashboard, Package, ShoppingBag, Settings, LogOut, Users, Activity, MessageSquare, Sliders, Tags } from 'lucide-react';
 import clsx from 'clsx';
 import { useAuth } from '../context/AuthContext';
+import { cachedGet } from '../utils/apiCache';
 
 export default function AdminLayout() {
   const location = useLocation();
@@ -35,9 +37,9 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#1f1f2e] flex">
+    <div className="flex-1 bg-slate-50 dark:bg-[#1f1f2e] flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white dark:bg-[#2a2a3c] border-r flex flex-col">
+      <aside className="w-64 bg-white dark:bg-[#2a2a3c] border-r flex flex-col sticky top-[100px] h-[calc(100vh-100px)] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="h-16 flex items-center px-6 border-b">
           <Link to="/" className="flex items-center gap-2 text-primary-600 font-bold text-xl">
             <div className="w-8 h-8 rounded-lg bg-primary-600 text-white flex items-center justify-center">
@@ -85,11 +87,12 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className="h-16 bg-white dark:bg-[#2a2a3c] border-b flex items-center px-8 sticky top-0 z-10 justify-between">
+        <header className="h-16 bg-white dark:bg-[#2a2a3c] border-b flex items-center px-8 sticky top-[100px] z-40 justify-between shadow-sm">
           <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-200 capitalize">
             {location.pathname.split('/').pop() === 'admin' ? 'Dashboard Overview' : location.pathname.split('/').pop()}
           </h1>
           <div className="flex items-center gap-4">
+            <NotificationsDropdown />
             <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm">
               AD
             </div>

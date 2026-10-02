@@ -1,11 +1,12 @@
 import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet, getCachedDataSync } from '../utils/apiCache';
 import { useAuth } from '../context/AuthContext';
 import { Plus, Edit2, Trash2, FolderTree } from 'lucide-react';
 
 export default function AdminCategories() {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`) || null);
   const [isAdding, setIsAdding] = useState(false);
   const [editId, setEditId] = useState(null);
   const { user } = useAuth();
@@ -14,10 +15,12 @@ export default function AdminCategories() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [parentCategory, setParentCategory] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
 
   const fetchCategories = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories`);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`);
       setCategories(data);
     } catch (err) {
       console.error(err);
@@ -37,9 +40,9 @@ export default function AdminCategories() {
       };
 
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories/${editId}`, categoryData, config);
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories/${editId}`, categoryData, config);
       } else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories`, categoryData, config);
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`, categoryData, config);
       }
       
       fetchCategories();
@@ -53,7 +56,7 @@ export default function AdminCategories() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this category? Products using this category might lose their reference.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories/${id}`, config);
       fetchCategories();
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error deleting category');
@@ -119,7 +122,7 @@ export default function AdminCategories() {
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Parent Category (Optional - For Subcategories)</label>
                 <select value={parentCategory} onChange={e=>setParentCategory(e.target.value)} className="w-full px-3 py-2 border rounded-md">
                   <option value="">None (Top Level Category)</option>
-                  {categories.map(c => {
+                  {(categories || []).map(c => {
                     // Prevent setting itself as parent
                     if (c._id === editId) return null;
                     return <option key={c._id} value={c._id}>{c.name}</option>;
@@ -134,7 +137,7 @@ export default function AdminCategories() {
         </div>
       )}
 
-      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
           <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
@@ -145,7 +148,16 @@ export default function AdminCategories() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {categories.map(cat => (
+            {categories === null ? (
+               [...Array(4)].map((_, i) => (
+                 <tr key={i} className="animate-pulse hover:bg-slate-50 dark:bg-[#1f1f2e]">
+                   <td className="px-6 py-4 flex items-center gap-2"><div className="w-4 h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded"></div><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-32"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-24"></div></td>
+                   <td className="px-6 py-4"><div className="h-6 bg-slate-200 dark:bg-[#3d3d5c] rounded-md w-28"></div></td>
+                   <td className="px-6 py-4"><div className="h-8 bg-slate-200 dark:bg-[#3d3d5c] rounded w-20 ml-auto"></div></td>
+                 </tr>
+               ))
+            ) : (categories || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(cat => (
               <tr key={cat._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
                 <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50 flex items-center gap-2">
                   <FolderTree size={16} className="text-slate-400" />
@@ -171,6 +183,26 @@ export default function AdminCategories() {
             ))}
           </tbody>
         </table>
+        {categories && categories.length > itemsPerPage && (
+          <div className="flex justify-between items-center mt-4 p-4 border-t">
+            <div className="text-sm text-slate-500">Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, categories.length)} of {categories.length} entries</div>
+            <div className="flex gap-2">
+              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Previous</button>
+              {(() => {
+                const total = Math.ceil(categories.length / itemsPerPage);
+                const pages = [];
+                for(let i = 1; i <= total; i++) {
+                  if (i === 1 || i === total || Math.abs(currentPage - i) <= 1) {
+                    if (pages.length > 0 && pages[pages.length - 1] !== i - 1) pages.push('...');
+                    pages.push(i);
+                  }
+                }
+                return pages.map((p, idx) => p === '...' ? <span key={"elipsis" + idx} className="px-2 py-1 text-slate-400">...</span> : <button key={p} onClick={() => setCurrentPage(p)} className={`px-3 py-1 rounded ${currentPage === p ? "bg-primary-600 text-white" : "bg-slate-100 text-slate-600"}`}>{p}</button>);
+              })()}
+              <button disabled={currentPage === Math.ceil(categories.length / itemsPerPage)} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Next</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

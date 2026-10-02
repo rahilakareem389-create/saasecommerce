@@ -10,8 +10,9 @@ import {
 
 export default function AdminSettings() {
   const [activeTab, setActiveTab] = useState('store');
-  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState({ storeName: '', storeEmail: '', phoneNumber: '', storeAddress: '', codEnabled: true, onlinePaymentEnabled: false, shippingCharges: 0, freeShippingEnabled: false, freeShippingThreshold: 0, taxEnabled: false, taxPercentage: 0, currency: 'USD', notifyNewOrder: true, notifyLowStock: true, notifyNewCustomer: false, maintenanceMode: false, reviewsEnabled: true, productsPerPage: 12 });
+  
   const [saving, setSaving] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -30,8 +31,8 @@ export default function AdminSettings() {
   const fetchSettings = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/settings`, config);
-      setSettings(data);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/settings`, config);
+      if (data) setSettings(data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -44,7 +45,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/settings`, settings, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/settings`, settings, config);
       Swal.fire('Settings saved successfully!');
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error saving settings');
@@ -58,7 +59,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/profile`, adminProfile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/profile`, adminProfile, config);
       Swal.fire('Admin Profile updated successfully!');
       setAdminProfile({ ...adminProfile, password: '' });
     } catch (err) {
@@ -73,7 +74,7 @@ export default function AdminSettings() {
     navigate('/login');
   };
 
-  if (loading || !settings) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Loading Settings...</div>;
+  
 
   const tabs = [
     { id: 'store', label: 'Store', icon: Store },

@@ -17,7 +17,8 @@ export const AuthProvider = ({ children }) => {
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        if (error.response?.status === 401) {
+        const isAuthRoute = error.config?.url?.includes('/api/auth/login') || error.config?.url?.includes('/api/auth/register');
+        if (error.response?.status === 401 && !isAuthRoute) {
           setUser(null);
           localStorage.removeItem('userInfo');
           window.location.href = '/login';
@@ -31,7 +32,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/login`, { email, password });
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/login`, { email, password });
       setUser(data);
       localStorage.setItem('userInfo', JSON.stringify(data));
       return { success: true, data };
@@ -42,10 +43,10 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/register`, { name, email, password });
+      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/register`, { name, email, password });
       setUser(data);
       localStorage.setItem('userInfo', JSON.stringify(data));
-      return { success: true };
+      return { success: true, data };
     } catch (error) {
       return { success: false, message: error.response?.data?.message || 'Registration failed' };
     }

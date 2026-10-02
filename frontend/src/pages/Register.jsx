@@ -19,11 +19,11 @@ export default function Register() {
     },
     onSuccess: (msg, data) => {
       console.log('Web3Forms Success:', msg);
-      navigate('/');
+      // navigation handled in handleSubmit now
     },
     onError: (msg, data) => {
       console.error('Web3Forms Error:', msg, data);
-      navigate('/');
+      // navigation handled in handleSubmit now
     },
   });
 
@@ -32,11 +32,16 @@ export default function Register() {
     setError('');
     const res = await register(name, email, password);
     if (res.success) {
-      // Send Email via Web3Forms using official package (Navigation happens in callbacks)
+      // Send Email via Web3Forms using official package
       submitWeb3Form({
         Name: name,
         Email: email
       });
+      if (res.data?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/user-dashboard');
+      }
     } else {
       setError(res.message);
     }

@@ -57,8 +57,8 @@ export default function StoreFront() {
 
   useEffect(() => {
     Promise.all([
-      fetch(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products`).then(r => r.json()),
-      fetch(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories`).then(r => r.json()).catch(() => [])
+      fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products`).then(r => r.json()),
+      fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`).then(r => r.json()).catch(() => [])
     ]).then(([prodData, catData]) => {
       setProducts(prodData);
       setCategories([...defaultCategories, ...(Array.isArray(catData) ? catData : [])]);
@@ -127,12 +127,15 @@ export default function StoreFront() {
   const filteredProducts = displayProducts.filter(p => {
     const matchSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = selectedCategory 
-      ? (
-          p.category?._id === selectedCategory || 
-          p.category?.name?.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, '') || 
-          (typeof p.category === 'string' && p.category.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, ''))
-        ) 
-      : true;
+        ? (
+            p.category?._id === selectedCategory || 
+            p.subCategory?._id === selectedCategory ||
+            p.category?.name?.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, '') || 
+            p.subCategory?.name?.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, '') || 
+            (typeof p.category === 'string' && p.category.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, '')) ||
+            (typeof p.subCategory === 'string' && p.subCategory.toLowerCase().replace(/[-_\s]+/g, '') === selectedCategory.toLowerCase().replace(/[-_\s]+/g, ''))
+          ) 
+        : true;
     const matchPrice = p.price <= priceRange;
     return matchSearch && matchCategory && matchPrice;
   }).sort((a, b) => {
@@ -168,7 +171,7 @@ export default function StoreFront() {
       {/* Featured Categories */}
       <div className="mb-8">
         <h2 className="text-2xl font-black text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2"><i className="fas fa-th-large text-primary-500"></i> Browse Categories</h2>
-        <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
+        <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
           {[{_id: '', name: 'ALL PRODUCTS', img: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=500&q=80'}, { _id: 'pre-order', name: 'PRE ORDER', img: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&q=80' }, { _id: 'graphic', name: 'GRAPHIC', img: 'https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=500&q=80' }, { _id: 'tops', name: 'TOPS', img: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80' }, { _id: 'dresses', name: 'DRESSES', img: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&q=80' }].map(c => (
             <button key={c._id} onClick={() => setSelectedCategory(c._id)} className={`min-w-[140px] h-[160px] rounded-2xl relative overflow-hidden group snap-start border-4 transition-all ${selectedCategory === c._id ? 'border-primary-600 shadow-xl scale-105' : 'border-transparent hover:border-primary-300'}`}>
               <img src={c.img} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -185,7 +188,7 @@ export default function StoreFront() {
          <h2 className="text-3xl font-black mb-2 relative z-10"><i className="fas fa-star text-yellow-400"></i> Featured Collection</h2>
          <p className="text-slate-400 mb-8 max-w-lg relative z-10">Discover our most premium quality items crafted with excellence. Perfect for every occasion.</p>
          
-         <div className="flex gap-6 overflow-x-auto pb-6 custom-scrollbar snap-x relative z-10">
+         <div className="flex gap-6 overflow-x-auto pb-6 hide-scrollbar snap-x relative z-10">
            {filteredProducts.slice(0, 8).map(fp => (
               <div key={'f'+fp._id} className="min-w-[240px] max-w-[240px] bg-white dark:bg-[#2a2a3c]/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 snap-start hover:-translate-y-2 transition-transform">
                  <div className="aspect-square bg-slate-800 rounded-xl mb-4 overflow-hidden">
@@ -354,7 +357,7 @@ export default function StoreFront() {
                 <img src={activeImage || quickViewProduct.imageUrl} alt={quickViewProduct.title} className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
               </div>
               {/* Feature Images Gallery */}
-              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+              <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
                  {[quickViewProduct.imageUrl, 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=500&q=80', 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80', 'https://images.unsplash.com/photo-1489987707023-afc82478163a?w=500&q=80'].map((img, idx) => (
                     <button key={idx} onClick={() => setActiveImage(img)} className={`w-20 h-20 min-w-[5rem] bg-white dark:bg-[#2a2a3c] rounded-xl border-2 overflow-hidden ${activeImage === img ? 'border-primary-600 shadow-md' : 'border-slate-200 dark:border-[#3d3d5c] opacity-70 hover:opacity-100'}`}>
                        <img src={img} className="w-full h-full object-cover" />
@@ -364,7 +367,7 @@ export default function StoreFront() {
             </div>
             
             {/* Right: Details */}
-            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col overflow-y-auto bg-white dark:bg-[#2a2a3c] custom-scrollbar">
+            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col overflow-y-auto bg-white dark:bg-[#2a2a3c] hide-scrollbar">
               <span className="text-primary-600 font-bold text-xs tracking-widest uppercase bg-primary-50 px-3 py-1 rounded-full w-fit mb-4">
                 {quickViewProduct.category?.name || 'Premium'}
               </span>

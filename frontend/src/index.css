@@ -136,3 +136,7 @@
     border-color: #3d3d5c !important;
   }
 }
+
+
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }

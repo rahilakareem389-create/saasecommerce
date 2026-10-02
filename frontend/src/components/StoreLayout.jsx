@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
+import NotificationsDropdown from './NotificationsDropdown';
 import { ShoppingBag, ShoppingCart, User as UserIcon, LogOut, Heart, Moon, Sun, ChevronDown, Search, X, Globe, MessageCircle, MapPin, Phone, Mail, Truck, Flame, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -35,7 +36,7 @@ export default function StoreLayout() {
   ];
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/categories`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`)
       .then(r => r.json())
       .then(data => setCategories([...defaultCategories, ...(Array.isArray(data) ? data : [])]))
       .catch(err => {
@@ -428,7 +429,8 @@ export default function StoreLayout() {
                 <Heart size={20} />
               </Link>
               
-              <Link to="/cart" className="relative hover:text-primary-600 transition-colors flex items-center gap-1">
+              <NotificationsDropdown />
+                <Link to="/cart" className="relative hover:text-primary-600 transition-colors flex items-center gap-1">
                 <ShoppingCart size={22} />
                 {cart.length > 0 && (
                   <span className="absolute -top-2 -right-2 bg-primary-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">

@@ -8,8 +8,17 @@ const reviewSchema = new mongoose.Schema({
   status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' }
 }, { timestamps: true });
 
+const questionSchema = new mongoose.Schema({
+  user: { type: String, required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  question: { type: String, required: true },
+  answer: { type: String },
+  date: { type: Date, default: Date.now }
+});
+
 const productSchema = new mongoose.Schema({
   title: { type: String, required: true },
+  shortDescription: { type: String },
   description: { type: String, required: true },
   price: { type: Number, required: true },
   salePrice: { type: Number }, // Optional discount price
@@ -22,7 +31,10 @@ const productSchema = new mongoose.Schema({
   variants: [{
     size: String,
     color: String,
+    imageUrl: String,
+    colorHex: String,
     stock: Number,
+    imageUrl: String,
   }],
   status: { type: String, enum: ['Active', 'Draft', 'Out of Stock'], default: 'Active' },
   isFeatured: { type: Boolean, default: false },
@@ -31,6 +43,7 @@ const productSchema = new mongoose.Schema({
   reviews: [reviewSchema],
   rating: { type: Number, default: 0 },
   numReviews: { type: Number, default: 0 },
+  questions: [questionSchema],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Product', productSchema);

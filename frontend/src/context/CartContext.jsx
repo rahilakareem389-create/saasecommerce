@@ -31,10 +31,21 @@ export const CartProvider = ({ children }) => {
     setCart((prev) => prev.filter(item => item._id !== productId));
   };
 
+  const updateQuantity = (productId, variantColor, newQty) => {
+    if (newQty < 1) return;
+    setCart((prev) => 
+      prev.map(item => 
+        (item._id === productId && item.selectedVariant?.color === variantColor) 
+          ? { ...item, qty: newQty } 
+          : item
+      )
+    );
+  };
+
   const clearCart = () => setCart([]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart }}>
       {children}
     </CartContext.Provider>
   );

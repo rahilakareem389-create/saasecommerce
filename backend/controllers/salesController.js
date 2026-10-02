@@ -58,25 +58,48 @@ const getSalesData = async (req, res) => {
 
     const discountGiven = Math.max(0, totalOriginalValue - totalRevenue);
 
-    // Chart Data (Last 7 days)
-    const salesByDate = {};
+    // Chart Data (Daily, Weekly, Monthly)
+    const salesDaily = {};
     for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      salesByDate[d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })] = 0;
+      const d = new Date(); d.setDate(d.getDate() - i);
+      salesDaily[d.toLocaleDateString("en-US", { month: "short", day: "numeric" })] = 0;
     }
     
+    const salesWeekly = {};
+    for (let i = 3; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - (i * 7));
+      salesWeekly["Week " + (4 - i)] = 0; // Simplified week label
+    }
+
+    const salesMonthly = {};
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(); d.setMonth(d.getMonth() - i);
+      salesMonthly[d.toLocaleDateString("en-US", { month: "short" })] = 0;
+    }
+
     orders.forEach(order => {
-      const date = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-      if (salesByDate[date] !== undefined) {
-        salesByDate[date] += order.totalPrice;
-      }
+      const d = new Date(order.createdAt);
+      
+      // Daily
+      const dStr = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      if (salesDaily[dStr] !== undefined) salesDaily[dStr] += order.totalPrice;
+      
+      // Monthly
+      const mStr = d.toLocaleDateString("en-US", { month: "short" });
+      if (salesMonthly[mStr] !== undefined) salesMonthly[mStr] += order.totalPrice;
+      
+      // Weekly (naive approach: just bucket by difference in weeks from now)
+      const diffTime = Math.abs(new Date() - d);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+      if (diffDays <= 7) salesWeekly["Week 4"] += order.totalPrice;
+      else if (diffDays <= 14) salesWeekly["Week 3"] += order.totalPrice;
+      else if (diffDays <= 21) salesWeekly["Week 2"] += order.totalPrice;
+      else if (diffDays <= 28) salesWeekly["Week 1"] += order.totalPrice;
     });
-    
-    const chartData = Object.keys(salesByDate).map(date => ({
-      name: date,
-      sales: salesByDate[date]
-    }));
+
+    const chartDataDaily = Object.keys(salesDaily).map(k => ({ name: k, sales: salesDaily[k] }));
+    const chartDataWeekly = Object.keys(salesWeekly).map(k => ({ name: k, sales: salesWeekly[k] }));
+    const chartDataMonthly = Object.keys(salesMonthly).map(k => ({ name: k, sales: salesMonthly[k] }));
 
     // Category Chart
     const categoryChartData = Object.keys(categorySales).map(key => ({
@@ -103,7 +126,9 @@ const getSalesData = async (req, res) => {
         discountGiven,
         couponCount
       },
-      chartData,
+      chartDataDaily,
+      chartDataWeekly,
+      chartDataMonthly,
       categoryChartData,
       topProducts
     });
@@ -115,3 +140,4 @@ const getSalesData = async (req, res) => {
 };
 
 module.exports = { getSalesData };
+

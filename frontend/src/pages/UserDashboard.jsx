@@ -24,6 +24,7 @@ export default function UserDashboard() {
   const [coupons, setCoupons] = useState([]);
   const [products, setProducts] = useState([]); // For Recommended Products
   const [loading, setLoading] = useState(true);
+  const [profilePic, setProfilePic] = useState(user?.profilePic || null);
   
   // Profile State
   const [profile, setProfile] = useState({
@@ -73,18 +74,53 @@ export default function UserDashboard() {
     }
   };
 
-  const handleReorder = (order) => {
-    order.orderItems.forEach(item => {
-       addToCart({
-         _id: item.product,
-         title: item.name,
-         price: item.price,
-         imageUrl: item.image,
-         qty: item.qty
-       });
-    });
-    Swal.fire('Items added to cart! Redirecting to checkout...');
-    window.location.href = '/checkout';
+  const handleReorder = async (order) => {
+    try {
+      const res = await Swal.fire({
+        title: 'Reorder?',
+        text: 'Do you want to immediately place this exact order again?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Reorder!'
+      });
+      if (res.isConfirmed) {
+        Swal.fire({ title: 'Processing...', allowOutsideClick: false });
+        Swal.showLoading();
+
+        const config = { headers: { Authorization: `Bearer ${user.token}` } };
+        
+        const orderItems = order.orderItems.map(item => ({
+          name: item.name,
+          qty: item.qty,
+          image: item.image || '',
+          price: item.price,
+          product: item.product || item._id,
+          variant: item.variant || null
+        }));
+
+        const newOrderPayload = {
+          user: user._id,
+          orderItems,
+          shippingAddress: order.shippingAddress,
+          paymentMethod: order.paymentMethod || 'Cash On Delivery',
+          totalPrice: order.totalPrice
+        };
+
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders`,
+          newOrderPayload,
+          config
+        );
+
+        setOrders([data, ...orders]);
+        setSelectedOrder(data);
+        
+        Swal.fire('Success', 'Order has been placed again successfully!', 'success');
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire('Error', 'Failed to reorder. Please try again.', 'error');
+    }
   };
 
   const handlePrintInvoice = () => {
@@ -96,11 +132,11 @@ export default function UserDashboard() {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       
       const [ordersRes, reviewsRes, profileRes, couponsRes, productsRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/orders/myorders`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/users/myreviews`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/profile`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/coupons/active`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products`) // Get all products
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders/myorders`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/users/myreviews`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/profile`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/coupons/active`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products`) // Get all products
       ]);
 
       setOrders(ordersRes.data);
@@ -155,7 +191,11 @@ export default function UserDashboard() {
     e.preventDefault();
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/profile`, profile, config);
+      const { data } = await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/profile`, { ...profile, profilePic }, config);
+      
+      const updatedUser = { ...user, ...data, profilePic: profilePic || user.profilePic };
+      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+      
       Swal.fire('Profile updated successfully!');
       setProfile({ ...profile, password: '' });
     } catch (err) {
@@ -167,7 +207,7 @@ export default function UserDashboard() {
     if(!(await Swal.fire({title: 'Are you sure?', text: 'Delete this review?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${productId}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${productId}/reviews`, {
         rating: 0, comment: 'deleted', _delete: true // Dummy way to handle delete if backend doesn't have route
       }, config).catch(e => console.log("Implement delete route in backend if needed"));
       
@@ -196,7 +236,7 @@ export default function UserDashboard() {
       const updatedProfile = { ...profile, addresses: newAddresses, address: { ...profile.address, street: JSON.stringify(newAddresses) } };
       
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/profile`, updatedProfile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/profile`, updatedProfile, config);
       
       setProfile(updatedProfile);
       localStorage.setItem('userAddresses_' + user._id, JSON.stringify(newAddresses));
@@ -216,7 +256,7 @@ export default function UserDashboard() {
       const updatedProfile = { ...profile, addresses: newAddresses, address: { ...profile.address, street: JSON.stringify(newAddresses) } };
       
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/auth/profile`, updatedProfile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/auth/profile`, updatedProfile, config);
       
       setProfile(updatedProfile);
     } catch (err) {
@@ -230,7 +270,7 @@ export default function UserDashboard() {
     if(!editingReview) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${editingReview.productId}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${editingReview.productId}/reviews`, {
         rating: reviewForm.rating,
         comment: reviewForm.comment
       }, config).catch(e => console.log("Update sent to backend"));
@@ -264,8 +304,8 @@ export default function UserDashboard() {
     { id: 'addresses', label: 'My Addresses', icon: MapPin },
     { id: 'coupons', label: 'Coupons', icon: Ticket },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'profile', label: 'My Profile', icon: User },
-    { id: 'settings', label: 'Account Settings', icon: Settings },
+    
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   const formatDate = (dateString) => {
@@ -407,7 +447,7 @@ export default function UserDashboard() {
         </div>
       )}
 
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-[#222233] py-8 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-transparent py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-[1400px] mx-auto">
         
         {/* Header Area */}
@@ -752,10 +792,24 @@ export default function UserDashboard() {
                                 {item.variant && <p className="text-xs text-slate-500 dark:text-slate-400">Size/Color: {item.variant}</p>}
                                 <p className="text-sm text-slate-600 dark:text-slate-400">Quantity: {item.qty} | Price: Rs. {item.price.toFixed(2)}</p>
                               </div>
-                              <div className="font-bold text-slate-900 dark:text-slate-50 text-right">
-                                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">Subtotal</p>
-                                Rs. {(item.qty * item.price).toFixed(2)}
-                              </div>
+                              <div className="font-bold text-slate-900 dark:text-slate-50 text-right flex flex-col items-end gap-2">
+                                  <div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">Subtotal</p>
+                                    Rs. {(item.qty * item.price).toFixed(2)}
+                                  </div>
+                                  <button onClick={() => {
+                                      addToCart({
+                                        _id: item.product || item._id,
+                                        title: item.name,
+                                        price: item.price,
+                                        imageUrl: item.image,
+                                        qty: item.qty || 1
+                                      });
+                                      Swal.fire({ title: 'Added to Cart', text: `${item.name} added to cart!`, icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+                                  }} className="text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 px-3 py-1 rounded hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors border border-primary-200 dark:border-primary-800 active:scale-95">
+                                    Buy Again
+                                  </button>
+                                </div>
                             </div>
                           ))}
                         </div>
@@ -765,7 +819,7 @@ export default function UserDashboard() {
                       <div className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border dark:border-[#3d3d5c] shadow-lg dark:shadow-black/20 flex flex-wrap gap-3">
                         <button onClick={() => setShowTrackingModal(true)} className="px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-all active:scale-95 shadow-md">Track Order</button>
                         <button onClick={() => setShowInvoiceModal(true)} className="px-4 py-2 border border-slate-300 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-slate-50 dark:bg-[#1f1f2e] transition-all active:scale-95 flex gap-2 items-center"><i className="fas fa-file-invoice"></i> View / Download Invoice</button>
-                        <button onClick={() => handleReorder(selectedOrder)} className="px-4 py-2 border border-primary-500 text-primary-600 text-sm font-medium rounded-lg hover:bg-primary-50 transition-all active:scale-95">Reorder</button>
+                        
                         
                         {selectedOrder.status === 'Delivered' && (
                           <button onClick={() => navigate('/product/'+selectedOrder.orderItems[0]?.product)} className="px-4 py-2 bg-yellow-100 text-yellow-700 text-sm font-medium rounded-lg hover:bg-yellow-200">Write Review</button>
@@ -854,48 +908,6 @@ export default function UserDashboard() {
                   ))}
                 </div>
               )}
-            </div>
-          )}
-
-          {/* 5. My Profile */}
-          {activeTab === 'profile' && (
-            <div className="space-y-6 max-w-2xl">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">👤 My Profile</h2>
-              <form onSubmit={handleUpdateProfile} className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border dark:border-[#3d3d5c] shadow-lg dark:shadow-black/20 space-y-6">
-                
-                <div className="flex items-center gap-6 pb-6 border-b">
-                  <div className="w-20 h-20 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-3xl font-bold border-4 border-white shadow-sm">
-                    {user?.name?.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <button type="button" className="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:bg-[#1f1f2e]">Upload Profile Picture</button>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">JPG, GIF or PNG. Max size 2MB.</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</label>
-                    <input type="text" value={profile.name} onChange={e=>setProfile({...profile, name: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700  focus:ring-2 focus:ring-primary-500 outline-none" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
-                    <input type="email" value={profile.email} onChange={e=>setProfile({...profile, email: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700  focus:ring-2 focus:ring-primary-500 outline-none" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone Number</label>
-                    <input type="text" value={profile.phone} onChange={e=>setProfile({...profile, phone: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700  focus:ring-2 focus:ring-primary-500 outline-none" />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Date of Birth (Optional)</label>
-                    <input type="date" className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700  focus:ring-2 focus:ring-primary-500 outline-none text-slate-600 dark:text-slate-400" />
-                  </div>
-                </div>
-                
-                <button type="submit" className="bg-primary-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-primary-700 transition-colors">
-                  Edit Profile → Save Changes
-                </button>
-              </form>
             </div>
           )}
 
@@ -988,114 +1000,89 @@ export default function UserDashboard() {
           )}
 
           {/* 7. Settings */}
-          {activeTab === 'settings' && (
-            <div className="space-y-6 max-w-2xl">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">🔐 Account Settings</h2>
-              
-              <div className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border dark:border-[#3d3d5c] shadow-lg dark:shadow-black/20 divide-y">
+            {activeTab === 'settings' && (
+              <div className="space-y-6 max-w-2xl">
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">⚙️ Settings</h2>
                 
-                <div className="pb-6">
-                  <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4">Change Password</h3>
-                  <form onSubmit={handleUpdateProfile} className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">New Password</label>
-                      <input type="password" required value={profile.password} onChange={e=>setProfile({...profile, password: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700  focus:ring-2 focus:ring-primary-500 outline-none" />
+                <form onSubmit={handleUpdateProfile} className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border dark:border-[#3d3d5c] shadow-lg dark:shadow-black/20 space-y-6">
+                  
+                  <div className="flex items-center gap-6 pb-6 border-b dark:border-[#3d3d5c]">
+                    <div className="w-20 h-20 bg-primary-100 text-primary-600 rounded-full flex items-center justify-center text-3xl font-bold border-4 border-white shadow-sm overflow-hidden shrink-0">
+                      {profilePic ? (
+                        <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                      ) : (
+                        user?.name?.charAt(0).toUpperCase()
+                      )}
                     </div>
-                    <button type="submit" className="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors">
-                      Update Password
-                    </button>
-                  </form>
-                </div>
-
-                <div className="py-6">
-                    <form onSubmit={handleUpdateProfile} className="space-y-4">
-                      <div className="space-y-1">
-                        <label className="text-sm font-bold text-slate-800 dark:text-slate-200">Update Email</label>
-                        <input type="email" required value={profile.email} onChange={e=>setProfile({...profile, email: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700  focus:ring-2 focus:ring-primary-500 outline-none" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-sm font-bold text-slate-800 dark:text-slate-200">Update Phone</label>
-                        <input type="text" value={profile.phone} onChange={e=>setProfile({...profile, phone: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700  focus:ring-2 focus:ring-primary-500 outline-none" />
-                      </div>
-                      <button type="submit" className="bg-slate-900 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors">
-                        Save Contact Info
-                      </button>
-                    </form>
+                    <div>
+                      <input type="file" id="profilePicInput" className="hidden" accept="image/*" onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          if (file.size > 2 * 1024 * 1024) {
+                            Swal.fire('Error', 'File size must be less than 2MB', 'error');
+                            return;
+                          }
+                          const reader = new FileReader();
+                          reader.onload = () => setProfilePic(reader.result);
+                          reader.readAsDataURL(file);
+                        }
+                      }} />
+                      <div className="flex gap-2">
+                          <button type="button" onClick={() => document.getElementById('profilePicInput').click()} className="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50 dark:bg-[#1f1f2e] dark:text-slate-300 transition-colors">
+                            Upload Profile Picture
+                          </button>
+                          {profilePic && (
+                              <button type="button" onClick={() => setProfilePic(null)} className="px-4 py-2 border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 dark:border-red-900/30 dark:hover:bg-red-900/20 transition-colors">
+                                Remove
+                              </button>
+                          )}
+                        </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">JPG, GIF or PNG. Max size 2MB.</p>
+                    </div>
+                  </div>
+  
+                  <div className="space-y-4">
+                    <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4 border-b pb-2 dark:border-[#3d3d5c]">Personal Information</h3>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Full Name</label>
+                      <input type="text" value={profile.name || ''} onChange={e=>setProfile({...profile, name: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Address</label>
+                      <input type="email" value={profile.email || ''} onChange={e=>setProfile({...profile, email: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Phone Number</label>
+                      <input type="text" value={profile.phone || ''} onChange={e=>setProfile({...profile, phone: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none" />
+                    </div>
                   </div>
 
-                <div className="py-6">
-                  <h4 className="font-bold text-slate-800 dark:text-slate-200 mb-3">Notification Preferences</h4>
-                  <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 mb-2 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="rounded text-primary-600" /> Order Updates via Email
-                  </label>
-                  <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
-                    <input type="checkbox" defaultChecked className="rounded text-primary-600" /> Promotional Offers & Coupons
-                  </label>
-                </div>
-
-                <div className="pt-6">
-                  <button onClick={handleLogout} className="text-red-600 font-medium hover:underline flex items-center gap-2">
-                    <LogOut size={18} /> Logout from all devices
+                  <div className="space-y-4 pt-4">
+                    <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-4 border-b pb-2 dark:border-[#3d3d5c]">Security</h3>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">New Password</label>
+                      <input type="password" value={profile.password || ''} onChange={e=>setProfile({...profile, password: e.target.value})} className="w-full px-4 py-2 border rounded-lg bg-white dark:bg-[#1a1a24] text-slate-900 dark:text-slate-100 dark:border-slate-700 focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Leave blank to keep current password" />
+                    </div>
+                  </div>
+                  
+                  <button type="submit" className="bg-primary-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-primary-700 transition-colors w-full">
+                    Save All Settings
                   </button>
+                </form>
+
+                <div className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border dark:border-[#3d3d5c] shadow-lg dark:shadow-black/20">
+                    <h4 className="font-bold text-slate-800 dark:text-slate-200 mb-3">Notification Preferences</h4>
+                    <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 mb-2 cursor-pointer">
+                      <input type="checkbox" defaultChecked className="rounded text-primary-600" /> Order Updates via Email
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300 cursor-pointer">
+                      <input type="checkbox" className="rounded text-primary-600" /> Promotional Offers
+                    </label>
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* 8. My Reviews */}
-          {activeTab === 'reviews' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">⭐ My Reviews</h2>
-              
-              <div className="bg-white dark:bg-[#2a2a3c] rounded-2xl border shadow-sm overflow-hidden">
-                <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
-                  <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
-                    <tr>
-                      <th className="px-6 py-4 font-semibold">Product</th>
-                      <th className="px-6 py-4 font-semibold">Rating</th>
-                      <th className="px-6 py-4 font-semibold">Review</th>
-                      <th className="px-6 py-4 font-semibold">Date</th>
-                      <th className="px-6 py-4 font-semibold">Status</th>
-                      <th className="px-6 py-4 font-semibold text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {reviews.map(review => (
-                      <tr key={review._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e]">
-                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50 flex items-center gap-3">
-                          <img src={review.productImage} className="w-10 h-10 rounded border object-cover" alt="" />
-                          <Link to={`/product/${review.productId}`} className="hover:text-primary-600 hover:underline">{review.productName}</Link>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex text-yellow-400">
-                            {[1,2,3,4,5].map(s => <Star key={s} size={14} className={s <= review.rating ? "fill-yellow-400" : "fill-slate-200 text-slate-200"} />)}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4"><div className="max-w-[150px] truncate">{review.comment}</div></td>
-                        <td className="px-6 py-4">{formatDate(review.createdAt)}</td>
-                        <td className="px-6 py-4">
-                          <span className={`font-medium ${
-                            review.status === 'Approved' ? 'text-green-600' :
-                            review.status === 'Rejected' ? 'text-red-600' :
-                            'text-yellow-600'
-                          }`}>{review.status}</span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <div className="flex justify-end gap-2">
-                            <button onClick={() => { setEditingReview(review); setReviewForm({ rating: review.rating, comment: review.comment }); }} className="text-slate-400 hover:text-primary-600"><Edit2 size={16}/></button>
-                            <button onClick={() => handleDeleteReview(review.productId)} className="text-slate-400 hover:text-red-600"><Trash2 size={16}/></button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                    {reviews.length === 0 && <tr><td colSpan="6" className="py-12 text-center text-slate-500 dark:text-slate-400">You haven't submitted any reviews yet.</td></tr>}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
 
-          {/* 9. Notifications */}
           {activeTab === 'notifications' && (
             <div className="space-y-6 max-w-3xl">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">🔔 Notifications</h2>
@@ -1205,3 +1192,4 @@ export default function UserDashboard() {
     </>
   );
 }
+

@@ -36,6 +36,10 @@ const updateOrderStatus = async (req, res) => {
         order.deliveredAt = Date.now();
       }
       const updatedOrder = await order.save();
+      const User = require('../models/User');
+      await User.findByIdAndUpdate(order.user, {
+        $push: { notifications: { message: `Your order #${order._id.toString().substring(order._id.toString().length - 8).toUpperCase()} is now ${req.body.status}`, link: '/user-dashboard' } }
+      });
       res.json(updatedOrder);
     } else {
       res.status(404).json({ message: 'Order not found' });

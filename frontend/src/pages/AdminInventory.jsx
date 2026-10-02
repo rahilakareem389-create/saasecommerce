@@ -1,12 +1,15 @@
 import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet, getCachedDataSync } from '../utils/apiCache';
 import { useAuth } from '../context/AuthContext';
 import { AlertTriangle, PackageX, Box, Check, Edit2 } from 'lucide-react';
 
 export default function AdminInventory() {
-  const [products, setProducts] = useState([]);
-  const [filter, setFilter] = useState('all'); // all, low, out
+  const [products, setProducts] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products`) || []);
+  const [filter, setFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3; // all, low, out
   const [editingId, setEditingId] = useState(null);
   const [editStock, setEditStock] = useState('');
   const [editVariants, setEditVariants] = useState([]);
@@ -14,7 +17,7 @@ export default function AdminInventory() {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products`);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products`);
       setProducts(data);
     } catch (err) {
       console.error(err);
@@ -28,7 +31,7 @@ export default function AdminInventory() {
   const handleSaveStock = async (product) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${product._id}`, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${product._id}`, {
         ...product, // keep existing data
         stock: Number(editStock),
         variants: editVariants
@@ -58,6 +61,19 @@ export default function AdminInventory() {
   
   const removeVariant = (idx) => {
     setEditVariants(editVariants.filter((_, i) => i !== idx));
+  };
+
+  const handleVariantImageUpload = (e, idx) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const updated = [...editVariants];
+        updated[idx].imageUrl = reader.result;
+        setEditVariants(updated);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const updateVariantField = (idx, field, value) => {
@@ -109,7 +125,7 @@ export default function AdminInventory() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
           <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
@@ -121,7 +137,7 @@ export default function AdminInventory() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {filteredProducts.map(product => {
+            {filteredProducts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(product => {
               const isEditing = editingId === product._id;
               
               return (
@@ -139,13 +155,26 @@ export default function AdminInventory() {
                   </td>
                   <td className="px-6 py-4">
                     {isEditing ? (
-                      <input 
-                        type="number" 
-                        min="0" 
-                        value={editStock} 
-                        onChange={e => setEditStock(e.target.value)} 
-                        className="w-20 px-2 py-1 border rounded focus:ring-2 focus:ring-primary-500 outline-none"
-                      />
+                      <div className="space-y-2">
+                        {editVariants.map((v, idx) => (
+                          <div key={idx} className="flex flex-wrap items-center gap-2 text-xs bg-slate-50 dark:bg-[#2a2a3c] p-2 rounded border mb-2">
+                            <label className="cursor-pointer w-8 h-8 rounded border-dashed border border-slate-300 flex items-center justify-center overflow-hidden bg-white hover:bg-slate-100 transition-colors" title="Upload Image">
+                              {v.image || v.imageUrl ? <img src={v.image || v.imageUrl} className="w-full h-full object-cover" /> : <span className="text-[10px] text-slate-400">+</span>}
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleVariantImageUpload(e, idx)} />
+                            </label>
+                            <input type="text" placeholder="Size" value={v.size || ''} onChange={e => updateVariantField(idx, 'size', e.target.value)} className="w-12 border rounded px-1 py-1 dark:bg-[#1f1f2e] dark:border-slate-700 text-xs" />
+                            <div className="flex items-center gap-1 border rounded px-1 py-1 bg-white dark:bg-[#1f1f2e] dark:border-slate-700">
+                              <input type="text" placeholder="Color Name" value={v.color || ''} onChange={e => updateVariantField(idx, 'color', e.target.value)} className="w-16 outline-none bg-transparent text-xs" />
+                              <input type="color" value={v.colorHex || '#000000'} onChange={e => updateVariantField(idx, 'colorHex', e.target.value)} className="w-4 h-4 border-0 p-0 cursor-pointer bg-transparent rounded-full" title="Color Picker" />
+                            </div>
+                            <input type="number" placeholder="Qty" value={v.stock} onChange={e => updateVariantStock(idx, e.target.value)} className="w-12 border rounded px-1 py-1 dark:bg-[#1f1f2e] dark:border-slate-700 text-xs" />
+                            <button onClick={() => removeVariant(idx)} className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 p-1 rounded transition-colors ml-auto flex items-center justify-center" title="Remove">
+                              <span className="font-bold text-sm leading-none">X</span>
+                            </button>
+                          </div>
+                        ))}
+                        <button onClick={addVariant} className="text-xs text-primary-600 font-medium hover:underline mt-1 inline-block">+ Add Variant</button>
+                      </div>
                     ) : (
                       <span className={`font-bold ${product.stock === 0 ? 'text-red-600' : ''}`}>{product.stock} units</span>
                     )}
@@ -154,14 +183,22 @@ export default function AdminInventory() {
                     {isEditing ? (
                       <div className="space-y-2">
                         {editVariants.map((v, idx) => (
-                          <div key={idx} className="flex items-center gap-2 text-xs">
-                            <input type="text" placeholder="Size" value={v.size || ''} onChange={e => updateVariantField(idx, 'size', e.target.value)} className="w-16 border rounded px-1" />
-                            <input type="text" placeholder="Color" value={v.color || ''} onChange={e => updateVariantField(idx, 'color', e.target.value)} className="w-16 border rounded px-1" />
-                            <input type="number" placeholder="Qty" value={v.stock} onChange={e => updateVariantStock(idx, e.target.value)} className="w-16 border rounded px-1" />
-                            <button onClick={() => removeVariant(idx)} className="text-red-500 font-bold">✕</button>
+                          <div key={idx} className="flex flex-wrap items-center gap-2 text-xs bg-slate-50 dark:bg-[#2a2a3c] p-2 rounded border mb-2">
+                            <label className="cursor-pointer w-8 h-8 rounded border-dashed border border-slate-300 flex items-center justify-center overflow-hidden bg-white hover:bg-slate-100 transition-colors" title="Upload Image">
+                              {v.image || v.imageUrl ? <img src={v.image || v.imageUrl} className="w-full h-full object-cover" /> : <span className="text-[10px] text-slate-400">+</span>}
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleVariantImageUpload(e, idx)} />
+                            </label>
+                            <input type="text" placeholder="Size" value={v.size || ""} onChange={e => updateVariantField(idx, "size", e.target.value)} className="w-12 border rounded px-1 py-1 dark:bg-[#1f1f2e] dark:border-slate-700 text-xs" />
+                            <div className="flex items-center gap-1 border rounded px-1 py-1 bg-white dark:bg-[#1f1f2e] dark:border-slate-700">
+                              <input type="text" placeholder="Color Name" value={v.color || ""} onChange={e => updateVariantField(idx, "color", e.target.value)} className="w-16 outline-none bg-transparent text-xs" />
+                              <input type="color" value={v.colorHex || "#000000"} onChange={e => updateVariantField(idx, "colorHex", e.target.value)} className="w-4 h-4 border-0 p-0 cursor-pointer bg-transparent rounded-full" title="Color Picker" />
+                            </div>
+                            <input type="number" placeholder="Qty" value={v.stock} onChange={e => updateVariantStock(idx, e.target.value)} className="w-12 border rounded px-1 py-1 dark:bg-[#1f1f2e] dark:border-slate-700 text-xs" />
+                            <button onClick={() => removeVariant(idx)} className="text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 p-1 rounded transition-colors ml-auto flex items-center justify-center" title="Remove">
+                              <span className="font-bold text-sm leading-none">X</span>
+                            </button>
                           </div>
                         ))}
-                        <button onClick={addVariant} className="text-xs text-primary-600 font-medium hover:underline">+ Add Variant</button>
                       </div>
                     ) : (
                       <div className="space-y-1">
@@ -189,8 +226,35 @@ export default function AdminInventory() {
               );
             })}
           </tbody>
+        
         </table>
+        {filteredProducts.length > itemsPerPage && (
+          <div className="flex justify-between items-center mt-4 p-4 border-t">
+            <div className="text-sm text-slate-500">Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredProducts.length)} of {filteredProducts.length} entries</div>
+            <div className="flex gap-2">
+              <button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Previous</button>
+              {(() => {
+  const total = Math.ceil(filteredProducts.length / itemsPerPage);
+  const pages = [];
+  for(let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || Math.abs(currentPage - i) <= 1) {
+      if (pages.length > 0 && pages[pages.length - 1] !== i - 1) pages.push('...');
+      pages.push(i);
+    }
+  }
+  return pages.map((p, idx) => p === '...' ? <span key={"elipsis" + idx} className="px-2 py-1 text-slate-400">...</span> : <button key={p} onClick={() => setCurrentPage(p)} className={`px-3 py-1 rounded ${currentPage === p ? "bg-primary-600 text-white" : "bg-slate-100 text-slate-600"}`}>{p}</button>);
+})()}
+              <button disabled={currentPage === Math.ceil(filteredProducts.length / itemsPerPage)} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Next</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+
+
+
+
+

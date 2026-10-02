@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 
 export default function Cart() {
-  const { cart, removeFromCart } = useCart();
+  const { cart, removeFromCart, updateQuantity } = useCart();
 
   const total = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
 
@@ -31,7 +31,14 @@ export default function Cart() {
                       Variant: {item.selectedVariant.size && `[${item.selectedVariant.size}]`} {item.selectedVariant.color}
                     </p>
                   )}
-                  <div className="text-slate-500 dark:text-slate-400 text-sm mb-2">Qty: {item.qty}</div>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-slate-500 dark:text-slate-400 text-sm">Qty:</span>
+                    <div className="flex items-center border dark:border-slate-600 rounded-lg overflow-hidden bg-white dark:bg-[#1f1f2e]">
+                      <button onClick={() => updateQuantity(item._id, item.selectedVariant?.color, item.qty - 1)} className="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">-</button>
+                      <input type="number" min="1" value={item.qty} onChange={(e) => updateQuantity(item._id, item.selectedVariant?.color, parseInt(e.target.value) || 1)} className="w-12 text-center bg-transparent border-x dark:border-slate-600 py-1 text-sm outline-none dark:text-white" />
+                      <button onClick={() => updateQuantity(item._id, item.selectedVariant?.color, item.qty + 1)} className="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors">+</button>
+                    </div>
+                  </div>
                   <div className="font-bold text-primary-600">${item.price}</div>
                 </div>
                 <button onClick={() => removeFromCart(item._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">

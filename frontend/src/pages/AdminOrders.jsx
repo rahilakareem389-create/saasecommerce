@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet, getCachedDataSync } from '../utils/apiCache';
 import { useAuth } from '../context/AuthContext';
 import { PackageOpen, Eye, X } from 'lucide-react';
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders`) || null);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
   const { user } = useAuth();
 
   const fetchOrders = async () => {
     try {
       if (!user) return;
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/orders`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders`, config);
       setOrders(data);
     } catch (err) {
       console.error(err);
@@ -26,7 +29,7 @@ export default function AdminOrders() {
   const updateStatus = async (id, status) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/orders/${id}/status`, { status }, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders/${id}/status`, { status }, config);
       fetchOrders();
     } catch (err) {
       console.error(err);
@@ -47,7 +50,7 @@ export default function AdminOrders() {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Orders Management</h2>
-      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
           <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
@@ -60,7 +63,18 @@ export default function AdminOrders() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {orders.map(order => (
+            {orders === null ? (
+               [...Array(5)].map((_, i) => (
+                 <tr key={i} className="animate-pulse hover:bg-slate-50 dark:bg-[#1f1f2e]">
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-24"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-32"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-20"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-16"></div></td>
+                   <td className="px-6 py-4"><div className="h-6 bg-slate-200 dark:bg-[#3d3d5c] rounded-full w-20"></div></td>
+                   <td className="px-6 py-4"><div className="h-8 bg-slate-200 dark:bg-[#3d3d5c] rounded w-24 ml-auto"></div></td>
+                 </tr>
+               ))
+            ) : ((orders || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)).map(order => (
               <tr key={order._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
                 <td className="px-6 py-4 font-mono text-xs">{order._id}</td>
                 <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50">{order.user?.name || 'Guest'}</td>
@@ -93,7 +107,7 @@ export default function AdminOrders() {
                 </td>
               </tr>
             ))}
-            {orders.length === 0 && (
+            {orders && orders.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-6 py-8 text-center text-slate-500 dark:text-slate-400">
                   <PackageOpen size={32} className="mx-auto mb-2 text-slate-400" />
@@ -102,10 +116,17 @@ export default function AdminOrders() {
               </tr>
             )}
           </tbody>
-        </table>
-      </div>
-
-      {/* Order Details Modal */}
+        </table>{orders && orders.length > itemsPerPage && (<div className="flex justify-between items-center mt-4 p-4 border-t"><div className="text-sm text-slate-500">Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, orders.length)} of {orders.length} entries</div><div className="flex gap-2"><button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Previous</button>{(() => {
+  const total = Math.ceil(orders.length / itemsPerPage);
+  const pages = [];
+  for(let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || Math.abs(currentPage - i) <= 1) {
+      if (pages.length > 0 && pages[pages.length - 1] !== i - 1) pages.push('...');
+      pages.push(i);
+    }
+  }
+  return pages.map((p, idx) => p === '...' ? <span key={"elipsis" + idx} className="px-2 py-1 text-slate-400">...</span> : <button key={p} onClick={() => setCurrentPage(p)} className={`px-3 py-1 rounded ${currentPage === p ? "bg-primary-600 text-white" : "bg-slate-100 text-slate-600"}`}>{p}</button>);
+})()}<button disabled={currentPage === Math.ceil(orders.length / itemsPerPage)} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Next</button></div></div>)}</div>{/* Order Details Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-[#2a2a3c] rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -176,3 +197,4 @@ export default function AdminOrders() {
     </div>
   );
 }
+

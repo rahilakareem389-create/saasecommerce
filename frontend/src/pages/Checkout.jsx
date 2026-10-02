@@ -135,7 +135,7 @@ export default function Checkout() {
     onSuccess: () => {
       clearCart();
       setLoading(false);
-      navigate('/dashboard'); // redirect to dashboard to see receipt/history
+      navigate('/user-dashboard'); // redirect to dashboard to see receipt/history
       Swal.fire("Payment Success! Invoice generated in your Transaction History.");
     },
     onError: () => {
@@ -168,7 +168,7 @@ export default function Checkout() {
       for (const item of cart) {
         if (itemReviews[item._id]?.comment) {
           try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/products/${item._id}/reviews`, {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${item._id}/reviews`, {
               rating: itemReviews[item._id].rating || 5,
               comment: itemReviews[item._id].comment
             }, config);
@@ -186,7 +186,7 @@ export default function Checkout() {
       }));
 
       // In real scenario, transactionId/mobileNumber would be passed to backend for invoice records
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/orders`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders`, {
         user: user._id,
         orderItems,
         shippingAddress: { address, city, postalCode, country },

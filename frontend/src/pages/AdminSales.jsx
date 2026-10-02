@@ -1,12 +1,21 @@
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet, getCachedDataSync } from '../utils/apiCache';
 import { useAuth } from '../context/AuthContext';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { DollarSign, Activity, ShoppingBag, Package, Tag, TrendingUp } from 'lucide-react';
 
 export default function AdminSales() {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
+  const [graphFilter, setGraphFilter] = useState("Daily");
+  const [data, setData] = useState({
+    overview: { totalRevenue: 0, todaysSales: 0, weeklySales: 0, monthlySales: 0, totalSales: 0, productsSold: 0, discountGiven: 0, couponCount: 0 },
+    chartData: [], chartDataDaily: [], chartDataWeekly: [], chartDataMonthly: [],
+    categoryChartData: [],
+    topProducts: []
+  });
   const { user } = useAuth();
 
   useEffect(() => {
@@ -27,18 +36,15 @@ export default function AdminSales() {
   const fetchSalesData = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/sales`, config);
+      const res = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/sales`, config);
       setData(res.data);
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
-  if (loading || !data) return <div className="text-center py-20 text-slate-500 dark:text-slate-400">Loading Sales Data...</div>;
-
-  const { overview, chartData, categoryChartData, topProducts } = data;
+  const { overview, chartDataDaily, chartDataWeekly, chartDataMonthly, categoryChartData, topProducts } = data;
+  const chartData = graphFilter === "Daily" ? chartDataDaily : graphFilter === "Weekly" ? chartDataWeekly : chartDataMonthly;
 
   const statCards = [
     { title: 'Total Sales', value: `$${overview.totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`, icon: DollarSign, color: 'text-emerald-600', bg: 'bg-emerald-100' },
@@ -76,7 +82,7 @@ export default function AdminSales() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sales Chart */}
         <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm p-6 lg:col-span-2">
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-6">Daily Sales Trend (Last 7 Days)</h3>
+          <div className="flex justify-between items-center mb-6"><h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Sales Trend</h3><select value={graphFilter} onChange={(e) => setGraphFilter(e.target.value)} className="px-3 py-1 bg-slate-100 dark:bg-[#1f1f2e] border-none rounded text-sm text-slate-600 dark:text-slate-300 outline-none cursor-pointer"><option value="Daily">Daily (Last 7 Days)</option><option value="Weekly">Weekly (Last 4 Weeks)</option><option value="Monthly">Monthly (Last 6 Months)</option></select></div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -103,7 +109,7 @@ export default function AdminSales() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie data={categoryChartData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={2} dataKey="value">
-                  {categoryChartData.map((entry, index) => (
+                  {categoryChartData?.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -128,7 +134,7 @@ export default function AdminSales() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {topProducts.map(product => (
+              {topProducts?.map(product => (
                 <tr key={product._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e]">
                   <td className="px-4 py-3">
                     <img src={product.imageUrl} alt={product.title} className="w-10 h-10 rounded object-cover border" />
@@ -155,3 +161,6 @@ export default function AdminSales() {
     </div>
   );
 }
+
+
+

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet, getCachedDataSync } from '../utils/apiCache';
 import { useAuth } from '../context/AuthContext';
 import { 
   DollarSign, ShoppingCart, Package, Users, Activity, 
@@ -11,9 +12,11 @@ import {
 } from 'recharts';
 
 export default function AdminDashboard() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+
   const [data, setData] = useState({
     kpis: { totalRevenue: 0, newCustomers: 0, activeOrders: 0, conversionRate: '0%' },
-    charts: { revenue: [], visitors: [] },
+    charts: { revenue: [], visitors: [], ordersOverviewData: [], categoryChartData: [] },
     lists: { recentOrders: [], topProducts: [], customerAlerts: [] }
   });
   const [error, setError] = useState(null);
@@ -28,7 +31,7 @@ export default function AdminDashboard() {
     const fetchDashboard = async () => {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/dashboard`, config);
+        const response = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/dashboard`, config);
         setData(response.data);
       } catch (err) {
         console.error(err);

@@ -52,17 +52,19 @@ function App() {
           </Route>
 
           {/* Admin Dashboard */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="categories" element={<AdminCategories />} />
-            <Route path="inventory" element={<AdminInventory />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="coupons" element={<AdminCoupons />} />
-            <Route path="customers" element={<AdminCustomers />} />
-            <Route path="sales" element={<AdminSales />} />
-            <Route path="reviews" element={<AdminReviews />} />
-            <Route path="settings" element={<AdminSettings />} />
+          <Route path="/admin" element={<StoreLayout />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="products" element={<AdminProducts />} />
+              <Route path="categories" element={<AdminCategories />} />
+              <Route path="inventory" element={<AdminInventory />} />
+              <Route path="orders" element={<AdminOrders />} />
+              <Route path="coupons" element={<AdminCoupons />} />
+              <Route path="customers" element={<AdminCustomers />} />
+              <Route path="sales" element={<AdminSales />} />
+              <Route path="reviews" element={<AdminReviews />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
           </Route>
         </Routes>
         <CookieConsent />

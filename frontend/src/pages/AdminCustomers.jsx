@@ -1,12 +1,15 @@
 import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { cachedGet, getCachedDataSync } from '../utils/apiCache';
 import { useAuth } from '../context/AuthContext';
 import { Eye, Edit2, Trash2, Ban, CheckCircle, X } from 'lucide-react';
 
 export default function AdminCustomers() {
-  const [customers, setCustomers] = useState([]);
+  const [customers, setCustomers] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/customers`) || null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 3;
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
 
@@ -30,7 +33,7 @@ export default function AdminCustomers() {
   const fetchCustomers = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/customers`, config);
       setCustomers(data);
     } catch (err) {
       console.error(err);
@@ -42,7 +45,7 @@ export default function AdminCustomers() {
   const fetchCustomerDetails = async (id) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers/${id}`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/customers/${id}`, config);
       setSelectedCustomer(data);
     } catch (err) {
       console.error(err);
@@ -52,7 +55,7 @@ export default function AdminCustomers() {
   const toggleStatus = async (id) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers/${id}/status`, {}, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/customers/${id}/status`, {}, config);
       fetchCustomers();
       if (selectedCustomer && selectedCustomer._id === id) {
         fetchCustomerDetails(id);
@@ -66,7 +69,7 @@ export default function AdminCustomers() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this customer? This action cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "https://saasecommerce-production.up.railway.app"}/api/customers/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/customers/${id}`, config);
       fetchCustomers();
       if (selectedCustomer && selectedCustomer._id === id) {
         setSelectedCustomer(null);
@@ -81,7 +84,7 @@ export default function AdminCustomers() {
     return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
-  if (loading) return <div className="text-center py-10">Loading customers...</div>;
+  
 
   return (
     <div className="space-y-6">
@@ -89,7 +92,7 @@ export default function AdminCustomers() {
         <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200">Customers Management</h2>
       </div>
 
-      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-[#2a2a3c] rounded-xl border shadow-sm overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-600 dark:text-slate-400">
           <thead className="bg-slate-50 dark:bg-[#1f1f2e] text-slate-700 dark:text-slate-300 border-b">
             <tr>
@@ -103,7 +106,19 @@ export default function AdminCustomers() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {customers.map(customer => (
+            {customers === null ? (
+               [...Array(5)].map((_, i) => (
+                 <tr key={i} className="animate-pulse hover:bg-slate-50 dark:bg-[#1f1f2e]">
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-32"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-40"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-12"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-20"></div></td>
+                   <td className="px-6 py-4"><div className="h-6 bg-slate-200 dark:bg-[#3d3d5c] rounded-full w-16"></div></td>
+                   <td className="px-6 py-4"><div className="h-4 bg-slate-200 dark:bg-[#3d3d5c] rounded w-24"></div></td>
+                   <td className="px-6 py-4"><div className="h-8 bg-slate-200 dark:bg-[#3d3d5c] rounded w-24 ml-auto"></div></td>
+                 </tr>
+               ))
+            ) : ((customers || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)).map(customer => (
               <tr key={customer._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
                 <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50">{customer.name}</td>
                 <td className="px-6 py-4 text-blue-600 hover:underline">
@@ -131,11 +146,17 @@ export default function AdminCustomers() {
               </tr>
             ))}
           </tbody>
-        </table>
-        {customers.length === 0 && <div className="text-center py-8 text-slate-500 dark:text-slate-400">No customers found.</div>}
-      </div>
-
-      {/* Customer Details Modal */}
+        </table>{customers && customers.length === 0 && <div className="text-center py-8 text-slate-500 dark:text-slate-400">No customers found.</div>}{customers && customers.length > itemsPerPage && (<div className="flex justify-between items-center mt-4 p-4 border-t"><div className="text-sm text-slate-500">Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, customers.length)} of {customers.length} entries</div><div className="flex gap-2"><button disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Previous</button>{(() => {
+  const total = Math.ceil(customers.length / itemsPerPage);
+  const pages = [];
+  for(let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || Math.abs(currentPage - i) <= 1) {
+      if (pages.length > 0 && pages[pages.length - 1] !== i - 1) pages.push('...');
+      pages.push(i);
+    }
+  }
+  return pages.map((p, idx) => p === '...' ? <span key={"elipsis" + idx} className="px-2 py-1 text-slate-400">...</span> : <button key={p} onClick={() => setCurrentPage(p)} className={`px-3 py-1 rounded ${currentPage === p ? "bg-primary-600 text-white" : "bg-slate-100 text-slate-600"}`}>{p}</button>);
+})()}<button disabled={currentPage === Math.ceil(customers.length / itemsPerPage)} onClick={() => setCurrentPage(p => p + 1)} className="px-3 py-1 rounded bg-slate-100 text-slate-600 disabled:opacity-50">Next</button></div></div>)}</div>{/* Customer Details Modal */}
       {selectedCustomer && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-[#2a2a3c] rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
@@ -239,3 +260,4 @@ export default function AdminCustomers() {
     </div>
   );
 }
+

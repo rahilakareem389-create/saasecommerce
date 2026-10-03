@@ -64,6 +64,23 @@ export default function ProductDetails() {
       }, config);
       fetchProduct();
       setComment('');
+      
+      fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: "ef613376-0f0b-4347-895c-0497fb766444",
+          subject: "New Customer Review Submitted!",
+          from_name: "BuyNest Store",
+          Customer_Name: user.name,
+          Customer_Email: user.email,
+          Product_ID: id,
+          Rating: rating + " Stars",
+          Review_Comment: comment
+        })
+      });
+      
+      Swal.fire({ icon: "success", title: "Review Submitted!", text: "Your review is pending admin approval." });
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error submitting review');
     } finally {

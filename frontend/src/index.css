@@ -140,3 +140,15 @@
 
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Hide Elfsight Watermark */
+a[href*="elfsight.com"], 
+div[class*="eapps-link"],
+.eapps-link,
+[class^="Badge__Container"],
+[class*="WidgetBackground__Container"] a {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}

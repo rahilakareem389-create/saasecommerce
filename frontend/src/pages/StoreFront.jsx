@@ -10,8 +10,7 @@ export default function StoreFront() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [quickQty, setQuickQty] = useState(1);
+    const [quickQty, setQuickQty] = useState(1);
   const [quickColor, setQuickColor] = useState("");
   const [activeImage, setActiveImage] = useState("");
   const { addToCart } = useCart();
@@ -40,19 +39,11 @@ export default function StoreFront() {
   }, [location.search]);
 
   const defaultCategories = [
-    { _id: 'pre-order', name: 'PRE ORDER' },
-    { _id: 'graphic', name: 'GRAPHIC' },
-    { _id: 'tops', name: 'TOPS' },
-    { _id: 'dresses', name: 'DRESSES' },
-    { _id: 'two-piece-sets', name: 'TWO PIECE SETS' },
-    { _id: 'sweaters-cardigans', name: 'SWEATERS & CARDIGANS' },
-    { _id: 'outerwear', name: 'OUTERWEAR' },
-    { _id: 'bottoms', name: 'BOTTOMS' },
-    { _id: 'loungewear-sleepwear', name: 'LOUNGEWEAR & SLEEPWEAR' },
-    { _id: 'plus-size', name: 'PLUS SIZE' },
-    { _id: 'swimwear', name: 'SWIMWEAR' },
-    { _id: 'shoes-bags', name: 'SHOES & BAGS' },
-    { _id: 'activewear', name: 'ACTIVEWEAR' }
+    { _id: "dresses", name: "DRESSES", img: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80" },
+    { _id: "outerwear", name: "OUTERWEAR", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&q=80" },
+    { _id: "accessories", name: "ACCESSORIES", img: "https://images.unsplash.com/photo-1599643478524-fb66f7240078?w=200&q=80" },
+    { _id: "shoes", name: "SHOES", img: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&q=80" },
+    { _id: "tops", name: "TOPS", img: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200&q=80" }
   ];
 
   useEffect(() => {
@@ -61,7 +52,7 @@ export default function StoreFront() {
       fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`).then(r => r.json()).catch(() => [])
     ]).then(([prodData, catData]) => {
       setProducts(prodData);
-      setCategories([...defaultCategories, ...(Array.isArray(catData) ? catData : [])]);
+      setCategories(catData);
       setLoading(false);
     }).catch(console.error);
 
@@ -120,9 +111,7 @@ export default function StoreFront() {
     });
     return prods;
   };
-
-  const dummyProducts = generateDummyProducts();
-  const displayProducts = [...products, ...dummyProducts];
+  const displayProducts = products;
 
   const filteredProducts = displayProducts.filter(p => {
     const matchSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -168,20 +157,6 @@ export default function StoreFront() {
   return (
     <div className="flex flex-col gap-8 w-full px-2 md:px-4 py-8">
       
-      {/* Featured Categories */}
-      <div className="mb-8">
-        <h2 className="text-2xl font-black text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2"><i className="fas fa-th-large text-primary-500"></i> Browse Categories</h2>
-        <div className="flex gap-4 overflow-x-auto pb-4 hide-scrollbar snap-x">
-          {[{_id: '', name: 'ALL PRODUCTS', img: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=500&q=80'}, { _id: 'pre-order', name: 'PRE ORDER', img: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&q=80' }, { _id: 'graphic', name: 'GRAPHIC', img: 'https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=500&q=80' }, { _id: 'tops', name: 'TOPS', img: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&q=80' }, { _id: 'dresses', name: 'DRESSES', img: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=500&q=80' }].map(c => (
-            <button key={c._id} onClick={() => setSelectedCategory(c._id)} className={`min-w-[140px] h-[160px] rounded-2xl relative overflow-hidden group snap-start border-4 transition-all ${selectedCategory === c._id ? 'border-primary-600 shadow-xl scale-105' : 'border-transparent hover:border-primary-300'}`}>
-              <img src={c.img} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
-              <span className="absolute inset-0 flex items-center justify-center text-white font-black tracking-widest text-sm drop-shadow-md z-10">{c.name}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
       {/* Featured Products */}
       {filteredProducts.length > 0 && <div className="mb-8 bg-slate-900 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
          <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500 rounded-full blur-[100px] opacity-30"></div>
@@ -196,7 +171,7 @@ export default function StoreFront() {
                  </div>
                  <h3 className="font-bold text-white line-clamp-1 mb-1">{fp.title}</h3>
                  <p className="text-primary-400 font-black mb-3">Rs. {fp.price}</p>
-                 <button onClick={() => { setQuickViewProduct(fp); setQuickQty(1); setQuickColor(fp.variants?.[0]?.color || "Standard"); setActiveImage(fp.imageUrl); }} className="w-full py-2 bg-white dark:bg-[#2a2a3c] text-slate-900 dark:text-slate-50 font-bold rounded-lg hover:bg-primary-50 transition-colors">Quick View</button>
+                 <Link to={`/product/${fp._id}`} className="block text-center w-full py-2 bg-white dark:bg-[#2a2a3c] text-slate-900 dark:text-slate-50 font-bold rounded-lg hover:bg-primary-50 transition-colors">Add to Cart</Link>
               </div>
            ))}
          </div>
@@ -242,14 +217,16 @@ export default function StoreFront() {
           {currentProducts.map(product => (
             <div key={product._id} className="bg-white dark:bg-[#2a2a3c] rounded-xl overflow-hidden hover:shadow-lg transition-all hover:-translate-y-1 group flex flex-col border">
               <div className="aspect-[3/4] bg-slate-100 dark:bg-[#2a2a3c]/50 relative overflow-hidden">
-                <Link to={`/product/${product._id}`}>
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400">No Image</div>
-                  )}
-                </Link>
-                {product.stock === 0 && (
+                  <Link to={`/product/${product._id}`} className="absolute inset-0 z-0">
+                  </Link>
+                  <div className="w-full h-full pointer-events-none">
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400">No Image</div>
+                    )}
+                  </div>
+                  {product.stock === 0 && (
                   <div className="absolute top-2 left-2 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded">SOLD OUT</div>
                 )}
                 
@@ -263,27 +240,27 @@ export default function StoreFront() {
                     {/* Tooltip */}
                     <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity">Heart</span>
                   </button>
-                  <button 
-                    onClick={() => { setQuickViewProduct(product); setQuickQty(1); setQuickColor(product.variants?.[0]?.color || "Standard"); setActiveImage(product.imageUrl); }}
-                    className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative"
-                  >
-                    <ShoppingBag size={20} />
-                    {/* Tooltip */}
-                    <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Quick View</span>
-                  </button>
+                  <Link 
+                        to={`/product/${product._id}`}
+                        className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative"
+                      >
+                        <ShoppingBag size={20} />
+                        {/* Tooltip */}
+                        <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Add to Cart</span>
+                      </Link>
                 </div>
               </div>
               
               <div className="p-4 flex flex-col flex-1">
-                <Link to={`/product/${product._id}`} className="font-medium text-sm text-slate-800 dark:text-slate-200 mb-1 hover:text-primary-600 line-clamp-2 leading-snug">{product.title}</Link>
-                <div className="flex items-center justify-between mt-auto pt-2">
-                  <span className="font-bold text-base text-primary-600">${product.price}</span>
-                  <div className="text-[10px] text-slate-400 flex items-center gap-1">
-                    <span className="w-3 h-3 border rounded-full inline-block"></span>
-                    {Math.floor(Math.random() * 200) + 50}
+                  <Link to={`/product/${product._id}`} className="font-medium text-sm text-slate-800 dark:text-slate-200 mb-1 hover:text-primary-600 line-clamp-2 leading-snug">{product.title}</Link>
+                  <div className="flex items-center justify-between mt-auto pt-2">
+                    <span className="font-bold text-base text-primary-600">${product.price}</span>
+                    <div className="text-[10px] text-slate-400 flex items-center gap-1">
+                      <span className="w-3 h-3 border rounded-full inline-block"></span>
+                      {Math.floor(Math.random() * 200) + 50}
+                    </div>
                   </div>
                 </div>
-              </div>
             </div>
           ))}
           {filteredProducts.length === 0 && (
@@ -340,94 +317,37 @@ export default function StoreFront() {
         )}
       </div>
 
-      {/* Quick View Modal */}
-      {quickViewProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md z-[100]">
-          <div className="bg-white dark:bg-[#2a2a3c] rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300">
-            <button 
-              onClick={() => setQuickViewProduct(null)}
-              className="absolute top-4 right-4 z-20 w-10 h-10 bg-white dark:bg-[#2a2a3c] shadow-md rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:bg-[#2a2a3c]/50 transition-colors"
-            >
-              <X size={20} />
-            </button>
-            
-            {/* Left: Images */}
-            <div className="w-full md:w-1/2 bg-slate-50 dark:bg-[#1f1f2e] p-6 flex flex-col gap-4 overflow-y-auto">
-              <div className="w-full aspect-square bg-white dark:bg-[#2a2a3c] rounded-2xl shadow-sm border border-slate-200 dark:border-[#3d3d5c] overflow-hidden">
-                <img src={activeImage || quickViewProduct.imageUrl} alt={quickViewProduct.title} className="w-full h-full object-contain hover:scale-110 transition-transform duration-500" />
-              </div>
-              {/* Feature Images Gallery */}
-              <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
-                 {[quickViewProduct.imageUrl, 'https://images.unsplash.com/photo-1523381294911-8d3cead13475?w=500&q=80', 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80', 'https://images.unsplash.com/photo-1489987707023-afc82478163a?w=500&q=80'].map((img, idx) => (
-                    <button key={idx} onClick={() => setActiveImage(img)} className={`w-20 h-20 min-w-[5rem] bg-white dark:bg-[#2a2a3c] rounded-xl border-2 overflow-hidden ${activeImage === img ? 'border-primary-600 shadow-md' : 'border-slate-200 dark:border-[#3d3d5c] opacity-70 hover:opacity-100'}`}>
-                       <img src={img} className="w-full h-full object-cover" />
-                    </button>
-                 ))}
-              </div>
-            </div>
-            
-            {/* Right: Details */}
-            <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col overflow-y-auto bg-white dark:bg-[#2a2a3c] hide-scrollbar">
-              <span className="text-primary-600 font-bold text-xs tracking-widest uppercase bg-primary-50 px-3 py-1 rounded-full w-fit mb-4">
-                {quickViewProduct.category?.name || 'Premium'}
-              </span>
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-slate-50 mb-2 leading-tight">{quickViewProduct.title}</h2>
-              <div className="text-3xl font-black text-primary-600 mb-6">Rs. {quickViewProduct.price.toFixed(2)}</div>
-              
-              <div className="grid grid-cols-2 gap-4 mb-6 bg-slate-50 dark:bg-[#1f1f2e] p-4 rounded-xl border border-slate-100 dark:border-[#3d3d5c]">
-                 <div>
-                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Quality</p>
-                   <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">Brand New (100% Original)</p>
-                 </div>
-                 <div>
-                   <p className="text-xs text-slate-400 uppercase font-bold tracking-wider mb-1">Weight</p>
-                   <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">Approx. 1.2 KG</p>
-                 </div>
-              </div>
-
-              <div className="mb-6">
-                <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Select Color</h4>
-                <div className="flex gap-2">
-                   {['Black', 'White', 'Navy'].map(c => (
-                     <button key={c} onClick={() => setQuickColor(c)} className={`px-4 py-2 rounded-lg border-2 text-sm font-bold transition-all ${quickColor === c ? 'border-slate-900 bg-slate-900 text-white shadow-md' : 'border-slate-200 dark:border-[#3d3d5c] text-slate-600 dark:text-slate-400 hover:border-slate-300'}`}>
-                        {c}
-                     </button>
-                   ))}
-                </div>
-              </div>
-
-              <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">{quickViewProduct.description || "This premium product is crafted with the highest quality materials to ensure durability and comfort. Whether you are using it for daily tasks or special occasions, it delivers exceptional performance."}</p>
-              
-              <div className="mt-auto pt-6 border-t flex flex-col sm:flex-row gap-4">
-                <div className="flex items-center justify-between border-2 border-slate-200 dark:border-[#3d3d5c] rounded-xl px-4 py-2 bg-white dark:bg-[#2a2a3c] sm:w-1/3">
-                  <button onClick={() => setQuickQty(q => Math.max(1, q - 1))} className="text-slate-400 hover:text-primary-600 p-2"><i className="fas fa-minus"></i></button>
-                  <span className="font-black text-xl text-slate-800 dark:text-slate-200">{quickQty}</span>
-                  <button onClick={() => setQuickQty(q => q + 1)} className="text-slate-400 hover:text-primary-600 p-2"><i className="fas fa-plus"></i></button>
-                </div>
-
-                <button 
-                  onClick={() => {
-                    addToCart({...quickViewProduct, qty: quickQty, selectedVariant: { color: quickColor }});
-                    setQuickViewProduct(null);
-                    Swal.fire("Added to cart successfully!");
-                  }}
-                  className="flex-1 bg-primary-600 text-white py-4 rounded-xl font-black text-lg hover:bg-primary-700 transition-all hover:shadow-lg hover:-translate-y-1 shadow-primary-500/30 flex items-center justify-center gap-2"
-                >
-                  <ShoppingBag size={24} />
-                  Add to Cart
-                </button>
-                <button 
-                  onClick={() => toggleWishlist(quickViewProduct)}
-                  className="w-14 h-14 flex items-center justify-center border-2 border-slate-200 dark:border-[#3d3d5c] rounded-xl text-slate-500 dark:text-slate-400 hover:text-red-500 hover:border-red-200 hover:bg-red-50 transition-colors"
-                >
-                  <Heart size={24} className={isInWishlist(quickViewProduct._id) ? "fill-red-500 text-red-500" : ""} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* END QUICK VIEW */}
+      
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

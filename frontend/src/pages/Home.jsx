@@ -8,8 +8,7 @@ import { useWishlist } from '../context/WishlistContext';
 export default function Home() {
   const [realReviews, setRealReviews] = useState([]);
   const [products, setProducts] = useState([]);
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const { addToCart } = useCart();
+    const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
@@ -40,74 +39,50 @@ export default function Home() {
     fetchProducts();
   }, []);
 
-  const dummyReviews = [
-    { name: "Sarah J.", role: "Verified Buyer", text: "Absolutely love the dresses here! The quality is amazing and fits perfectly. Will definitely order again.", img: "https://i.pravatar.cc/150?img=1", rating: 5 },
-    { name: "Emily R.", role: "Fashion Blogger", text: "Their new outerwear collection is a must-have for the winter season. So cozy and stylish!", img: "https://i.pravatar.cc/150?img=5", rating: 5 },
-    { name: "Jessica T.", role: "Verified Buyer", text: "Fast shipping and the material feels so premium. Highly recommended!", img: "https://i.pravatar.cc/150?img=9", rating: 5 },
-    { name: "Amanda K.", role: "Verified Buyer", text: "I bought a 2-piece set and it's my new favorite outfit. Customer service was also very helpful.", img: "https://i.pravatar.cc/150?img=12", rating: 4 },
-    { name: "Michelle B.", role: "Loyal Customer", text: "I've been shopping here for years. The activewear is better than most expensive brands.", img: "https://i.pravatar.cc/150?img=16", rating: 5 },
-    { name: "Laura M.", role: "Verified Buyer", text: "The fit is just right! Plus size options are actually cute and trendy.", img: "https://i.pravatar.cc/150?img=20", rating: 5 },
-    { name: "Chloe S.", role: "Verified Buyer", text: "Obsessed with the accessories. They elevate any basic outfit instantly.", img: "https://i.pravatar.cc/150?img=24", rating: 5 },
-    { name: "Diana P.", role: "Verified Buyer", text: "Everything I ordered exceeded my expectations. 5 stars all the way!", img: "https://i.pravatar.cc/150?img=32", rating: 5 },
-  ];
-
-  const defaultCategories = [
-    { _id: 'pre-order', name: 'PRE ORDER' },
-    { _id: 'graphic', name: 'GRAPHIC' },
-    { _id: 'tops', name: 'TOPS' },
-    { _id: 'dresses', name: 'DRESSES' },
-    { _id: 'two-piece-sets', name: 'TWO PIECE SETS' },
-    { _id: 'sweaters-cardigans', name: 'SWEATERS & CARDIGANS' },
-    { _id: 'outerwear', name: 'OUTERWEAR' },
-    { _id: 'bottoms', name: 'BOTTOMS' },
-    { _id: 'loungewear-sleepwear', name: 'LOUNGEWEAR & SLEEPWEAR' },
-    { _id: 'plus-size', name: 'PLUS SIZE' },
-    { _id: 'swimwear', name: 'SWIMWEAR' },
-    { _id: 'shoes-bags', name: 'SHOES & BAGS' },
-    { _id: 'activewear', name: 'ACTIVEWEAR' }
-  ];
-
-  const adjectives = ["Elegant", "Casual", "Premium", "Classic", "Modern", "Luxury", "Chic", "Trendy", "Vintage", "Boho"];
-  const fashionImages = [
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80",
-    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&q=80",
-    "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&q=80",
-    "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=400&q=80",
-    "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=400&q=80",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=400&q=80",
-    "https://images.unsplash.com/photo-1495385794356-15371f348c31?w=400&q=80",
-    "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&q=80",
-    "https://images.unsplash.com/photo-1550639525-c97d455acf70?w=400&q=80",
-    "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400&q=80",
-    "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=80",
-    "https://images.unsplash.com/photo-1550639524-a6f58345a278?w=400&q=80",
-    "https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?w=400&q=80",
-    "https://images.unsplash.com/photo-1434389678369-130a08e647c0?w=400&q=80",
-    "https://images.unsplash.com/photo-1485230895905-ef4a5c54e7d8?w=400&q=80"
-  ];
-
-  const generateDummyProducts = () => {
-    let prods = [];
-    defaultCategories.forEach((catObj, catIdx) => {
-      for (let i = 0; i < 10; i++) { // 10 products
-        const randomImg = fashionImages[(catIdx * 10 + i) % fashionImages.length];
-        prods.push({
-          _id: `d_${catIdx}_${i}`,
-          title: `${adjectives[i % adjectives.length]} ${catObj.name} Item ${i+1}`,
-          price: (Math.floor(Math.random() * 150) + 20) - 0.01,
-          category: { _id: catObj._id, name: catObj.name },
-          imageUrl: randomImg
-        });
+  // Load Elfsight Script for Google Reviews & Hide Watermark
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://elfsightcdn.com/platform.js";
+    script.async = true;
+    document.body.appendChild(script);
+    
+    // Forcefully remove Elfsight watermark by piercing Shadow DOM
+    const interval = setInterval(() => {
+      // Find the main elfsight container
+      const widgetContainer = document.querySelector('.elfsight-app-25cea332-b09a-43cb-b23b-2667a19ef7b0');
+      
+      if (widgetContainer) {
+        // Method 1: Check if there's a shadow DOM
+        if (widgetContainer.shadowRoot) {
+          const badge = widgetContainer.shadowRoot.querySelector('a[href*="elfsight.com"], [class*="Badge__Container"]');
+          if (badge) {
+            badge.style.display = 'none';
+            badge.style.opacity = '0';
+          }
+        }
+        
+        // Method 2: Check regular children just in case
+        const regularBadge = widgetContainer.querySelector('a[href*="elfsight.com"], [class*="Badge__Container"]');
+        if (regularBadge) {
+          regularBadge.style.display = 'none';
+        }
       }
-    });
-    return prods;
-  };
+    }, 500);
 
-  // Generate 400 dummy products with images
-  const dummyProducts = generateDummyProducts();
+    return () => {
+      document.body.removeChild(script);
+      clearInterval(interval);
+    };
+  }, []);
 
-  const allReviews = [...realReviews, ...dummyReviews];
-  const displayProducts = [...products, ...dummyProducts];
+  
+
+  
+  const allReviews = realReviews;
+  const displayProducts = products; // Ignoring backend products to keep it clean
+  
+  // Only select featured products for the Featured Section (max 8)
+  const featuredProductsList = displayProducts.filter(p => p.featured !== false).slice(0, 8);
 
   const catScrollRef = useRef(null);
   const prodScrollRef = useRef(null);
@@ -287,27 +262,12 @@ export default function Home() {
           >
             <div className="flex gap-8 sm:gap-12 w-max mx-auto md:mx-0">
             {[
-                  { name: 'DRESSES', img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80' },
-                  { name: 'TOPS', img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200&q=80' },
-                  { name: 'BOTTOMS', img: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=200&q=80' },
-                  { name: 'OUTERWEAR', img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&q=80' },
-                  { name: 'SHOES', img: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&q=80' },
-                  { name: 'ACCESSORIES', img: 'https://images.unsplash.com/photo-1599643478524-fb66f7240078?w=200&q=80' },
-                  { name: 'ACTIVEWEAR', img: 'https://images.unsplash.com/photo-1518310383802-640c2de311b2?w=200&q=80' },
-                  { name: 'SWIMWEAR', img: 'https://images.unsplash.com/photo-1564859228273-274232fdb516?w=200&q=80' },
-                  { name: 'LINGERIE', img: 'https://images.unsplash.com/photo-1592548232675-9252c1e7841c?w=200&q=80' },
-                  { name: 'SLEEPWEAR', img: 'https://images.unsplash.com/photo-1616781442111-e408ec9ccbb2?w=200&q=80' },
-                  { name: 'PLUS SIZE', img: 'https://images.unsplash.com/photo-1611042553365-9b101441c135?w=200&q=80' },
-                  { name: 'MATERNITY', img: 'https://images.unsplash.com/photo-1560505167-2708304910eb?w=200&q=80' },
-                  { name: 'DENIM', img: 'https://images.unsplash.com/photo-1542272604-780c8d9e7943?w=200&q=80' },
-                  { name: 'SWEATERS', img: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=200&q=80' },
-                  { name: 'JUMPSUITS', img: 'https://images.unsplash.com/photo-1618212133465-9d3cc136f32e?w=200&q=80' },
-                  { name: 'ROMPERS', img: 'https://images.unsplash.com/photo-1622513233630-17e92ceee9e9?w=200&q=80' },
-                  { name: 'SKIRTS', img: 'https://images.unsplash.com/photo-1582142306909-195724d33ffc?w=200&q=80' },
-                  { name: 'SHORTS', img: 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?w=200&q=80' },
-                  { name: 'INTIMATES', img: 'https://images.unsplash.com/photo-1510212351239-0158bcbb879b?w=200&q=80' },
-                  { name: 'JEWELRY', img: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=200&q=80' },
-            ].map((cat, idx) => (
+                    { name: 'DRESSES', img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80' },
+                    { name: 'OUTERWEAR', img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&q=80' },
+                    { name: 'ACCESSORIES', img: 'https://images.unsplash.com/photo-1599643478524-fb66f7240078?w=200&q=80' },
+                    { name: 'SHOES', img: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&q=80' },
+                    { name: 'TOPS', img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200&q=80' },
+              ].map((cat, idx) => (
               <Link to={`/products?category=${cat.name.toLowerCase()}`} key={idx} className="flex flex-col items-center gap-4 group/cat w-28 sm:w-32 shrink-0">
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-[3px] border-white shadow-md group-hover/cat:border-primary-500 group-hover/cat:shadow-xl group-hover/cat:-translate-y-2 transition-all duration-300">
                   <img src={cat.img} alt={cat.name} className="w-full h-full object-cover group-hover/cat:scale-110 transition-transform duration-500" />
@@ -347,7 +307,7 @@ export default function Home() {
             className="w-full overflow-x-auto pb-6 px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative scroll-smooth"
           >
             <div className="flex gap-4 w-max mx-auto md:mx-0">
-            {displayProducts.map((prod, idx) => (
+            {featuredProductsList.map((prod, idx) => (
               <Link to={`/products`} key={idx} className="w-48 sm:w-52 bg-slate-50 dark:bg-[#1f1f2e] border border-slate-100 dark:border-[#3d3d5c] rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all shrink-0 group flex flex-col">
                 <div className="aspect-[4/5] bg-slate-200 dark:bg-slate-700 overflow-hidden relative">
                   {prod.imageUrl ? (
@@ -365,14 +325,14 @@ export default function Home() {
                       {/* Tooltip */}
                       <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity">Heart</span>
                     </button>
-                    <button 
-                      onClick={(e) => { e.preventDefault(); setQuickViewProduct(prod); }}
-                      className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative"
-                    >
-                      <ShoppingBag size={20} />
-                      {/* Tooltip */}
-                      <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Quick View</span>
-                    </button>
+                    <Link 
+                        to={`/product/${prod._id}`}
+                        className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative"
+                      >
+                        <ShoppingBag size={20} />
+                        {/* Tooltip */}
+                        <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Add to Cart</span>
+                      </Link>
                   </div>
                 </div>
                 <div className="p-3 flex flex-col items-center text-center">
@@ -401,7 +361,18 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Reviews Ticker Container */}
+        {/* Google Reviews Widget Container */}
+        <div className="container mx-auto px-4 mb-16 relative z-10 w-full flex justify-center">
+            {/* Overflow hidden wrapper to cut off the bottom watermark */}
+            <div style={{ width: '100%', overflow: 'hidden', paddingBottom: '5px' }} className="flex justify-center max-w-6xl">
+                <div style={{ marginBottom: '-60px', width: '100%' }}>
+                    {/* Elfsight Google Reviews Widget */}
+                    <div className="elfsight-app-25cea332-b09a-43cb-b23b-2667a19ef7b0 w-full" data-elfsight-app-lazy></div>
+                </div>
+            </div>
+        </div>
+
+        {/* Reviews Ticker Container (Dummy + DB Reviews) */}
         <div className="w-full relative flex flex-col gap-8 overflow-hidden z-10">
           <style>
             {`
@@ -491,53 +462,27 @@ export default function Home() {
           <div className="absolute top-0 bottom-0 right-0 w-32 bg-gradient-to-l from-[#f3ebff] dark:from-[#1f1f2e] to-transparent pointer-events-none z-10"></div>
         </div>
       </div>
-      {/* Quick View Modal */}
-      {quickViewProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm z-[100]">
-          <div className="bg-white dark:bg-[#2a2a3c] rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col md:flex-row relative animate-in fade-in zoom-in duration-300">
-            <button 
-              onClick={() => setQuickViewProduct(null)}
-              className="absolute top-4 right-4 z-10 w-8 h-8 bg-white dark:bg-[#2a2a3c]/80 backdrop-blur rounded-full flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:bg-[#2a2a3c]/50 transition-colors"
-            >
-              <X size={18} />
-            </button>
-            
-            <div className="w-full md:w-1/2 aspect-square md:aspect-auto md:h-[500px] bg-slate-100 dark:bg-[#2a2a3c]/50">
-              {quickViewProduct.imageUrl ? (
-                <img src={quickViewProduct.imageUrl} alt={quickViewProduct.title} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400">No Image</div>
-              )}
-            </div>
-            
-            <div className="w-full md:w-1/2 p-8 flex flex-col text-left">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-2">{quickViewProduct.title}</h2>
-              <div className="text-2xl font-bold text-primary-600 mb-6">${quickViewProduct.price}</div>
-              
-              <p className="text-slate-600 dark:text-slate-400 mb-8 flex-1 overflow-y-auto pr-2">{quickViewProduct.description || "Beautiful design and premium materials make this a must-have addition to your collection."}</p>
-              
-              <div className="mt-auto pt-6 border-t flex items-center gap-4">
-                <button 
-                  onClick={() => {
-                    addToCart(quickViewProduct);
-                    setQuickViewProduct(null);
-                  }}
-                  className="flex-1 bg-primary-600 text-white py-3 rounded-xl font-bold hover:bg-primary-700 transition-colors shadow-lg shadow-primary-500/30"
-                >
-                  Add to Cart
-                </button>
-                <button 
-                  onClick={() => toggleWishlist(quickViewProduct)}
-                  className="w-12 h-12 flex items-center justify-center border-2 border-slate-200 dark:border-[#3d3d5c] rounded-xl text-slate-500 dark:text-slate-400 hover:text-primary-600 hover:border-primary-600 transition-colors"
-                >
-                  <Heart size={24} className={isInWishlist(quickViewProduct._id) ? "fill-primary-600 text-primary-600" : ""} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

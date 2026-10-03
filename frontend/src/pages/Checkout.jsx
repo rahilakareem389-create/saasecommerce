@@ -22,18 +22,6 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false);
 
   // Cart Reviews State
-  const [itemReviews, setItemReviews] = useState({});
-
-  const handleReviewChange = (productId, field, value) => {
-    setItemReviews(prev => ({
-      ...prev,
-      [productId]: {
-        ...prev[productId],
-        [field]: value
-      }
-    }));
-  };
-
   // --- AUTHENTICATION & PAYMENT STATE ---
   const [authStatus, setAuthStatus] = useState({ 
     'Debit/Credit Card': false, 
@@ -163,18 +151,6 @@ export default function Checkout() {
     setLoading(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      
-      // Save reviews
-      for (const item of cart) {
-        if (itemReviews[item._id]?.comment) {
-          try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${item._id}/reviews`, {
-              rating: itemReviews[item._id].rating || 5,
-              comment: itemReviews[item._id].comment
-            }, config);
-          } catch(e) {}
-        }
-      }
 
       const orderItems = cart.map(item => ({
         name: item.title,
@@ -360,31 +336,6 @@ export default function Checkout() {
           </div>
         </div>
 
-        {/* Leave a Review */}
-        <div className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border shadow-sm">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-4 flex items-center gap-2"><Star size={20} className="text-yellow-500 fill-yellow-500"/> Review Your Products</h2>
-          <div className="space-y-4 divide-y">
-            {cart.map(item => (
-              <div key={item._id} className="pt-4 first:pt-0">
-                <div className="flex items-center gap-3 mb-3"><img src={item.imageUrl} alt="" className="w-12 h-12 rounded-lg border object-cover"/><span className="font-semibold text-sm">{item.title}</span></div>
-                <div className="pl-[60px] space-y-3">
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {[{ v: 5, l: "Awesome" }, { v: 4, l: "Excellent" }, { v: 3, l: "Very Good" }, { v: 2, l: "Good" }, { v: 1, l: "Poor" }].map(opt => {
-                      const isSelected = (itemReviews[item._id]?.rating || 5) === opt.v;
-                      return (
-                        <button key={opt.v} type="button" onClick={() => handleReviewChange(item._id, 'rating', opt.v)} className={`px-3 py-2 rounded-xl text-xs font-bold border flex items-center gap-1 ${isSelected ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-white dark:bg-[#2a2a3c]'}`}>
-                          <span className="text-yellow-500">{Array(opt.v).fill('★').join('')}</span> <span>{opt.v} - {opt.l}</span>
-                        </button>
-                      )
-                    })}
-                  </div>
-                  <textarea rows={2} value={itemReviews[item._id]?.comment || ''} onChange={e => handleReviewChange(item._id, 'comment', e.target.value)} className="w-full p-3 text-sm border rounded-lg outline-none focus:border-primary-500 bg-slate-50 dark:bg-[#1f1f2e]"></textarea>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
       </div>
 
       {/* Right Column: Order Summary */}
@@ -418,3 +369,8 @@ export default function Checkout() {
     </div>
   );
 }
+
+
+
+
+

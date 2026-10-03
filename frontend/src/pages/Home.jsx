@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, ShoppingBag, Phone, ChevronLeft, ChevronRight, Heart, X } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -9,12 +9,13 @@ export default function Home() {
   const [realReviews, setRealReviews] = useState([]);
   const [products, setProducts] = useState([]);
     const { addToCart } = useCart();
+  const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'https://saasecommerce-production.up.railway.app'}/api/products`);
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/products`);
         let extracted = [];
         const fetchedProducts = Array.isArray(data) ? data : (data.products || []);
         
@@ -325,17 +326,14 @@ export default function Home() {
                       {/* Tooltip */}
                       <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity">Heart</span>
                     </button>
-                    <Link 
-                        to={`/product/${prod._id}`}
-                        className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative"
-                      >
+                      <Link to={`/product/${prod._id}`} className="w-10 h-10 bg-white dark:bg-[#2a2a3c]/90 backdrop-blur rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-primary-600 hover:bg-white dark:bg-[#2a2a3c] shadow-md transition-all pointer-events-auto group/btn relative">
+
+
+
                         <ShoppingBag size={20} />
                         {/* Tooltip */}
                         <span className="absolute -top-8 bg-slate-900 text-white text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap">Add to Cart</span>
-                      </Link>
-                  </div>
-                </div>
-                <div className="p-3 flex flex-col items-center text-center">
+                      </Link></div></div><div className="p-3 flex flex-col items-center text-center">
                   <span className="font-semibold text-sm text-slate-800 dark:text-slate-200 line-clamp-1 mb-1 group-hover:text-primary-600">{prod.title}</span>
                   <span className="text-primary-600 font-bold text-sm">${prod.price}</span>
                 </div>
@@ -466,6 +464,14 @@ export default function Home() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
 
 
 

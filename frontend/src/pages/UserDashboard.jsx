@@ -230,7 +230,7 @@ export default function UserDashboard() {
       if (editingAddressId) {
         newAddresses = newAddresses.map(a => a._id === editingAddressId ? { ...addressForm, _id: editingAddressId } : a);
       } else {
-        newAddresses.push({ ...addressForm, _id: Date.now().toString() });
+        newAddresses.push({ ...addressForm });
       }
 
       const updatedProfile = { ...profile, addresses: newAddresses, address: { ...profile.address, street: JSON.stringify(newAddresses) } };
@@ -911,8 +911,39 @@ export default function UserDashboard() {
             </div>
           )}
 
-          {/* 6. Addresses */}
-          {activeTab === 'addresses' && (
+                    {/* 5. My Reviews */}
+          {activeTab === 'reviews' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">My Reviews</h2>
+              {reviews.length === 0 ? (
+                <div className="bg-slate-50 dark:bg-[#2a2a3c] rounded-2xl p-8 text-center border">
+                  <Star className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <h3 className="text-lg font-bold text-slate-600 dark:text-slate-400">No Reviews Yet</h3>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {reviews.map(r => (
+                    <div key={r._id} className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border shadow-sm flex gap-4">
+                      {r.productImage && <img src={r.productImage} className="w-20 h-20 rounded-lg object-cover" />}
+                      <div className="flex-1">
+                        <h3 className="font-bold">{r.productName || 'Product'}</h3>
+                        <div className="flex text-yellow-500 my-1">{Array(r.rating || 5).fill('?').join('')}</div>
+                        <p className="text-slate-600 dark:text-slate-300 text-sm mt-2">{r.comment}</p>
+                      </div>
+                      <div className="flex gap-2">
+                         <button onClick={() => { setEditingReview(r); setReviewForm({ rating: r.rating, comment: r.comment }); }} className="p-2 text-slate-400 hover:text-blue-500 bg-slate-100 rounded-lg h-fit"><Edit2 size={16} /></button>
+                         <button onClick={() => handleDeleteReview(r.productId)} className="p-2 text-slate-400 hover:text-red-500 bg-slate-100 rounded-lg h-fit"><Trash2 size={16} /></button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+
+            {/* 6. Addresses */}
+            {activeTab === 'addresses' && (
             <div className="space-y-6 max-w-3xl">
               <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">📍 My Addresses</h2>
               {!showAddressForm ? (
@@ -1119,8 +1150,8 @@ export default function UserDashboard() {
           {/* 10. Coupons */}
           {activeTab === 'coupons' && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">🎟️ My Coupons</h2>
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4"> REMOVE_ME
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">My Coupons</h2>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {coupons.map(coupon => (
                   <div key={coupon._id} className="bg-white dark:bg-[#2a2a3c] p-6 rounded-2xl border border-dashed border-primary-300 bg-primary-50/30 flex justify-between items-center shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-16 h-16 bg-primary-100 rounded-bl-full -z-10"></div>
@@ -1192,4 +1223,9 @@ export default function UserDashboard() {
     </>
   );
 }
+
+
+
+
+
 

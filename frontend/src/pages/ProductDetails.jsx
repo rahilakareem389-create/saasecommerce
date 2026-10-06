@@ -1,11 +1,11 @@
 import Swal from 'sweetalert2';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
-import { Heart, ShoppingCart, Star, Minus, Plus, CheckCircle, X } from 'lucide-react';
+import { Heart, ShoppingCart, Star, Minus, Plus, CheckCircle, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -13,6 +13,7 @@ export default function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const sliderRef = useRef(null);
   
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -25,6 +26,15 @@ export default function ProductDetails() {
   const [variant, setVariant] = useState(null);
   const [qty, setQty] = useState(1);
   const [showAddedModal, setShowAddedModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showFullDesc, setShowFullDesc] = useState(false);
+
+  const scrollThumbnails = (direction) => {
+    if (sliderRef.current) {
+      const scrollAmount = 150;
+      sliderRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     fetchProduct();
@@ -102,17 +112,50 @@ export default function ProductDetails() {
       <div className="bg-white dark:bg-[#2a2a3c] p-6 md:p-10 rounded-3xl shadow-sm border border-slate-100 dark:border-[#3d3d5c] flex flex-col lg:flex-row gap-12">
         
         {/* Left: Image */}
-        <div className="lg:w-1/2 relative bg-slate-50 dark:bg-[#1f1f2e] rounded-2xl p-8 flex items-center justify-center min-h-[400px]">
-          <button 
-            onClick={() => toggleWishlist(product)}
-            className="absolute top-4 right-4 p-3 bg-white dark:bg-[#2a2a3c] rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md z-10"
-          >
-            <Heart size={24} className={isInWishlist(product._id) ? "fill-red-500 text-red-500" : ""} />
-          </button>
-          {product.imageUrl ? (
-            <img src={(variant && variant.imageUrl) ? variant.imageUrl : product.imageUrl} alt={product.title} className="max-h-[500px] object-contain hover:scale-105 transition-transform duration-500" />
-          ) : (
-            <div className="text-slate-400">No Image Available</div>
+        <div className="lg:w-1/2 flex flex-col gap-4">
+          <div className="relative bg-slate-50 dark:bg-[#1f1f2e] rounded-2xl p-8 flex items-center justify-center min-h-[400px]">
+            <button 
+              onClick={() => toggleWishlist(product)}
+              className="absolute top-4 right-4 p-3 bg-white dark:bg-[#2a2a3c] rounded-full text-slate-400 hover:text-red-500 transition-colors shadow-md z-10"
+            >
+              <Heart size={24} className={isInWishlist(product._id) ? "fill-red-500 text-red-500" : ""} />
+            </button>
+            {product.imageUrl ? (
+              <img src={selectedImage || ((variant && variant.imageUrl) ? variant.imageUrl : product.imageUrl)} alt={product.title} className="max-h-[500px] object-contain hover:scale-105 transition-transform duration-500" />
+            ) : (
+              <div className="text-slate-400">No Image Available</div>
+            )}
+          </div>
+          {/* Thumbnails */}
+          {product.images && product.images.length > 0 && (
+            <div className="relative group">
+              <button onClick={() => scrollThumbnails('left')} className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/50 p-1 rounded-full shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ChevronLeft size={20} />
+              </button>
+              <div 
+                ref={sliderRef}
+                className="flex gap-2 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              >
+                <button 
+                  onClick={() => setSelectedImage(product.imageUrl)}
+                  className={`w-20 h-20 rounded-lg border-2 overflow-hidden flex-shrink-0 ${(!selectedImage || selectedImage === product.imageUrl) ? 'border-primary-600' : 'border-transparent'}`}
+                >
+                  <img src={product.imageUrl} alt="Main" className="w-full h-full object-cover" />
+                </button>
+                {product.images.map((img, idx) => (
+                  <button 
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-20 h-20 rounded-lg border-2 overflow-hidden flex-shrink-0 ${selectedImage === img ? 'border-primary-600' : 'border-transparent'}`}
+                  >
+                    <img src={img} alt={`Feature ${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => scrollThumbnails('right')} className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-black/50 p-1 rounded-full shadow-md z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                <ChevronRight size={20} />
+              </button>
+            </div>
           )}
         </div>
 
@@ -197,16 +240,26 @@ export default function ProductDetails() {
 
       {/* Long Description Section */}
       <div className="bg-white dark:bg-[#2a2a3c] p-8 md:p-12 rounded-3xl border border-slate-100 dark:border-[#3d3d5c] shadow-sm">
-         <h2 className="text-3xl font-black text-slate-800 dark:text-slate-200 mb-6">Product Details (Long Description)</h2>
+         <h2 className="text-3xl font-black text-slate-800 dark:text-slate-200 mb-6">Product Details</h2>
          <div className="prose max-w-none text-slate-600 dark:text-slate-400 text-lg leading-relaxed space-y-4">
-           <p>This premium product is crafted with the highest quality materials to ensure durability and comfort. Whether you are using it for daily tasks or special occasions, it delivers exceptional performance.</p>
-           <ul className="list-disc pl-6 space-y-2">
-              <li>100% Authentic & Certified</li>
-              <li>Engineered for maximum efficiency</li>
-              <li>Includes standard company warranty</li>
-              <li>Easy to use and maintain</li>
-           </ul>
-           <p>{product.description}</p>
+           <div className={!showFullDesc ? "line-clamp-4 overflow-hidden relative" : ""}>
+             <div className="whitespace-pre-wrap">{product.description}</div>
+             {!showFullDesc && (
+               <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white dark:from-[#2a2a3c] to-transparent pointer-events-none"></div>
+             )}
+           </div>
+           {product.description && product.description.length > 200 && (
+             <button 
+               onClick={() => setShowFullDesc(!showFullDesc)} 
+               className="text-primary-600 hover:text-primary-700 font-bold flex items-center gap-1 mt-2"
+             >
+               {showFullDesc ? (
+                 <>^ See less</>
+               ) : (
+                 <>v See more</>
+               )}
+             </button>
+           )}
          </div>
       </div>
 

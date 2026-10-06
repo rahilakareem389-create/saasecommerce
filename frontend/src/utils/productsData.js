@@ -3,7 +3,12 @@ export const realisticProducts = [
   { _id: "p1", title: "Elegant Summer Midi Dress", price: 49.99, category: { _id: "dresses", name: "DRESSES" }, imageUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&q=80", featured: true, rating: 4.8, numReviews: 124 },
   { _id: "p2", title: "Floral Wrap Maxi Dress", price: 59.99, category: { _id: "dresses", name: "DRESSES" }, imageUrl: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=400&q=80", featured: true, rating: 4.5, numReviews: 89 },
   { _id: "p3", title: "Classic Evening Gown", price: 129.99, category: { _id: "dresses", name: "DRESSES" }, imageUrl: "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=400&q=80", featured: false, rating: 5.0, numReviews: 42 },
-  { _id: "p4", title: "Casual Cotton Sundress", price: 39.99, category: { _id: "dresses", name: "DRESSES" }, imageUrl: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=400&q=80", featured: false, rating: 4.2, numReviews: 215 },
+  { _id: "p4", title: "Casual Cotton Sundress", price: 39.99, category: { _id: "dresses", name: "DRESSES" }, imageUrl: "/Casual Cotton Sundress/main.jpg", images: [
+    "/Casual Cotton Sundress/dress.jpg.avif",
+    "/Casual Cotton Sundress/OIP.jpg",
+    "/Casual Cotton Sundress/Busydd-Summer-Dresses-Women-2025-Trendy-Solid-Color-Button-Cotton-Linen-Dress-Lapel-Sleeveless-Midi-Dresses-Women-Loose-Comfy-Casual-Sundresses-Women_db948e7d-12fe-4e80-8ec2-94b2c705e182.bfedeb81f2abd25585d68187571.avif",
+    "/Casual Cotton Sundress/Sundresses-for-Women-Over-50-Ruffle-Tiered-Layered-Cotton-Linen-Sleeveless-Loose-Shirt-Dresses-Knee-Length-V-Neck-Vacation-Pleated-Dresses-Blue-M_4c8559f1-11a8-4727-a7d2-a5d127c0759f.172b5c164c5776e1233a730688e8960.avif"
+  ], featured: false, rating: 4.2, numReviews: 215 },
 
   // OUTERWEAR (4 products)
   { _id: "p5", title: "Classic Denim Jacket", price: 69.99, category: { _id: "outerwear", name: "OUTERWEAR" }, imageUrl: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&q=80", featured: true, rating: 4.9, numReviews: 310 },

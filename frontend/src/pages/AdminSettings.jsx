@@ -31,7 +31,7 @@ export default function AdminSettings() {
   const fetchSettings = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/settings`, config);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/settings`, config);
       if (data) setSettings(data);
     } catch (err) {
       console.error(err);
@@ -45,7 +45,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/settings`, settings, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/settings`, settings, config);
       Swal.fire('Settings saved successfully!');
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error saving settings');
@@ -59,7 +59,7 @@ export default function AdminSettings() {
     setSaving(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/auth/profile`, adminProfile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/auth/profile`, adminProfile, config);
       Swal.fire('Admin Profile updated successfully!');
       setAdminProfile({ ...adminProfile, password: '' });
     } catch (err) {

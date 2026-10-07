@@ -107,7 +107,7 @@ export default function UserDashboard() {
         };
 
         const { data } = await axios.post(
-          `${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/orders`,
+          `${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/orders`,
           newOrderPayload,
           config
         );
@@ -132,11 +132,11 @@ export default function UserDashboard() {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       
       const [ordersRes, reviewsRes, profileRes, couponsRes, productsRes] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/orders/myorders`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/users/myreviews`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/auth/profile`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/coupons/active`, config),
-        axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`) // Get all products
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/orders/myorders`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/users/myreviews`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/auth/profile`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/coupons/active`, config),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`) // Get all products
       ]);
 
       setOrders(ordersRes.data);
@@ -191,7 +191,7 @@ export default function UserDashboard() {
     e.preventDefault();
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/auth/profile`, { ...profile, profilePic }, config);
+      const { data } = await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/auth/profile`, { ...profile, profilePic }, config);
       
       const updatedUser = { ...user, ...data, profilePic: profilePic || user.profilePic };
       localStorage.setItem('userInfo', JSON.stringify(updatedUser));
@@ -207,7 +207,7 @@ export default function UserDashboard() {
     if(!(await Swal.fire({title: 'Are you sure?', text: 'Delete this review?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${productId}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${productId}/reviews`, {
         rating: 0, comment: 'deleted', _delete: true // Dummy way to handle delete if backend doesn't have route
       }, config).catch(e => console.log("Implement delete route in backend if needed"));
       
@@ -236,7 +236,7 @@ export default function UserDashboard() {
       const updatedProfile = { ...profile, addresses: newAddresses, address: { ...profile.address, street: JSON.stringify(newAddresses) } };
       
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/auth/profile`, updatedProfile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/auth/profile`, updatedProfile, config);
       
       setProfile(updatedProfile);
       localStorage.setItem('userAddresses_' + user._id, JSON.stringify(newAddresses));
@@ -256,7 +256,7 @@ export default function UserDashboard() {
       const updatedProfile = { ...profile, addresses: newAddresses, address: { ...profile.address, street: JSON.stringify(newAddresses) } };
       
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/auth/profile`, updatedProfile, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/auth/profile`, updatedProfile, config);
       
       setProfile(updatedProfile);
     } catch (err) {
@@ -270,7 +270,7 @@ export default function UserDashboard() {
     if(!editingReview) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${editingReview.productId}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${editingReview.productId}/reviews`, {
         rating: reviewForm.rating,
         comment: reviewForm.comment
       }, config).catch(e => console.log("Update sent to backend"));

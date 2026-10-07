@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Eye, Edit2, Trash2, Ban, CheckCircle, X } from 'lucide-react';
 
 export default function AdminCustomers() {
-  const [customers, setCustomers] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/customers`) || null);
+  const [customers, setCustomers] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/customers`) || null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
@@ -33,7 +33,7 @@ export default function AdminCustomers() {
   const fetchCustomers = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/customers`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/customers`, config);
       setCustomers(data);
     } catch (err) {
       console.error(err);
@@ -45,7 +45,7 @@ export default function AdminCustomers() {
   const fetchCustomerDetails = async (id) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/customers/${id}`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/customers/${id}`, config);
       setSelectedCustomer(data);
     } catch (err) {
       console.error(err);
@@ -55,7 +55,7 @@ export default function AdminCustomers() {
   const toggleStatus = async (id) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/customers/${id}/status`, {}, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/customers/${id}/status`, {}, config);
       fetchCustomers();
       if (selectedCustomer && selectedCustomer._id === id) {
         fetchCustomerDetails(id);
@@ -69,7 +69,7 @@ export default function AdminCustomers() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this customer? This action cannot be undone.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/customers/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/customers/${id}`, config);
       fetchCustomers();
       if (selectedCustomer && selectedCustomer._id === id) {
         setSelectedCustomer(null);

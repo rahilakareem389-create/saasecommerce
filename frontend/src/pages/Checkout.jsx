@@ -162,7 +162,7 @@ export default function Checkout() {
       }));
 
       // In real scenario, transactionId/mobileNumber would be passed to backend for invoice records
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/orders`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/orders`, {
         user: user._id,
         orderItems,
         shippingAddress: { address, city, postalCode, country },

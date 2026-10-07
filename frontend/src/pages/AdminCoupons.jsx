@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Plus, Edit2, Trash2, Ticket, CheckCircle, XCircle } from 'lucide-react';
 
 export default function AdminCoupons() {
-  const [coupons, setCoupons] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/coupons`) || []);
+  const [coupons, setCoupons] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/coupons`) || []);
   const [isAdding, setIsAdding] = useState(false);
   const [editId, setEditId] = useState(null);
   const { user } = useAuth();
@@ -25,7 +25,7 @@ export default function AdminCoupons() {
     try {
       if (!user) return;
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/coupons`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/coupons`, config);
       setCoupons(data);
     } catch (err) {
       console.error(err);
@@ -52,9 +52,9 @@ export default function AdminCoupons() {
       };
 
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/coupons/${editId}`, couponData, config);
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/coupons/${editId}`, couponData, config);
       } else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/coupons`, couponData, config);
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/coupons`, couponData, config);
       }
       
       fetchCoupons();
@@ -68,7 +68,7 @@ export default function AdminCoupons() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this coupon?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/coupons/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/coupons/${id}`, config);
       fetchCoupons();
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error deleting coupon');
@@ -78,7 +78,7 @@ export default function AdminCoupons() {
   const toggleActive = async (coupon) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/coupons/${coupon._id}`, { isActive: !coupon.isActive }, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/coupons/${coupon._id}`, { isActive: !coupon.isActive }, config);
       fetchCoupons();
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error updating coupon');

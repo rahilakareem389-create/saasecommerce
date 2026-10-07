@@ -7,7 +7,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, Activity, ShoppingBag, Package, Tag, TrendingUp } from 'lucide-react';
 
 export default function AdminSales() {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app');
 
   const [graphFilter, setGraphFilter] = useState("Daily");
   const [data, setData] = useState({
@@ -36,7 +36,7 @@ export default function AdminSales() {
   const fetchSalesData = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const res = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/sales`, config);
+      const res = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/sales`, config);
       setData(res.data);
     } catch (err) {
       console.error(err);

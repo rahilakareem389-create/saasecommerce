@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 
 export default function AdminDashboard() {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app');
 
   const [data, setData] = useState({
     kpis: { totalRevenue: 0, newCustomers: 0, activeOrders: 0, conversionRate: '0%' },
@@ -31,7 +31,7 @@ export default function AdminDashboard() {
     const fetchDashboard = async () => {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const response = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/dashboard`, config);
+        const response = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/dashboard`, config);
         setData(response.data);
       } catch (err) {
         console.error(err);

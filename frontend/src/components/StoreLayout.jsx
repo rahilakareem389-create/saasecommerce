@@ -37,7 +37,7 @@ export default function StoreLayout() {
   ];
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`)
       .then(r => r.json())
       .then(data => setCategories([...defaultCategories, ...(Array.isArray(data) ? data : [])]))
       .catch(err => {

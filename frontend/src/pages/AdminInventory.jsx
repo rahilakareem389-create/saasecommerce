@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { AlertTriangle, PackageX, Box, Check, Edit2 } from 'lucide-react';
 
 export default function AdminInventory() {
-  const [products, setProducts] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`) || []);
+  const [products, setProducts] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`) || []);
   const [filter, setFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3; // all, low, out
@@ -17,7 +17,7 @@ export default function AdminInventory() {
 
   const fetchProducts = async () => {
     try {
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`);
       setProducts(data);
     } catch (err) {
       console.error(err);
@@ -31,7 +31,7 @@ export default function AdminInventory() {
   const handleSaveStock = async (product) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${product._id}`, {
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${product._id}`, {
         ...product, // keep existing data
         stock: Number(editStock),
         variants: editVariants

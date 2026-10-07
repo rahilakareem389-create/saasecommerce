@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Plus, Edit2, Trash2, Upload, X, MessageSquare } from 'lucide-react';
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`) || null);
+  const [products, setProducts] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`) || null);
   const [categories, setCategories] = useState([]);
   const [isAdding, setIsAdding] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -38,7 +38,7 @@ export default function AdminProducts() {
   const handleReplyQA = async (productId, questionId) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${productId}/questions/${questionId}/answer`, { answer: replyText[questionId] }, config);
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${productId}/questions/${questionId}/answer`, { answer: replyText[questionId] }, config);
       Swal.fire('Replied', '', 'success');
       setReplyText(prev => ({...prev, [questionId]: ''}));
       // refresh products
@@ -60,12 +60,12 @@ export default function AdminProducts() {
   }, []);
 
   const fetchProducts = async () => {
-    const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`);
+    const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`);
     setProducts(data);
   };
 
   const fetchCategories = async () => {
-    const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`);
+    const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`);
     setCategories(data);
   };
 
@@ -79,9 +79,9 @@ export default function AdminProducts() {
       };
 
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${editId}`, productData, config);
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${editId}`, productData, config);
       } else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`, productData, config);
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`, productData, config);
       }
       
       fetchProducts();
@@ -95,7 +95,7 @@ export default function AdminProducts() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this product?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${id}`, config);
       fetchProducts();
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error deleting product');
@@ -184,7 +184,7 @@ export default function AdminProducts() {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
         const payload = { name: catName, description: '', isActive: true };
         if(isSub && category) payload.parentCategory = category;
-        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`, payload, config);
+        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`, payload, config);
         setCategories([...categories, res.data]);
         if(isSub) setSubCategory(res.data._id);
         else setCategory(res.data._id);

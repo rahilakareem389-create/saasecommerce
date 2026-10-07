@@ -19,7 +19,7 @@ export default function AdminReviews() {
   const fetchReviews = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/reviews`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/reviews`, config);
       setReviews(data);
     } catch (err) {
       console.error(err);
@@ -31,7 +31,7 @@ export default function AdminReviews() {
   const handleUpdateStatus = async (productId, reviewId, status) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/reviews/${productId}/${reviewId}/status`, { status }, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/reviews/${productId}/${reviewId}/status`, { status }, config);
       fetchReviews();
       if (selectedReview && selectedReview._id === reviewId) {
         setSelectedReview({ ...selectedReview, status });
@@ -45,7 +45,7 @@ export default function AdminReviews() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this review?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/reviews/${productId}/${reviewId}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/reviews/${productId}/${reviewId}`, config);
       fetchReviews();
       if (selectedReview && selectedReview._id === reviewId) setSelectedReview(null);
     } catch (err) {

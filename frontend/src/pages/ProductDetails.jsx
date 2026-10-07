@@ -45,7 +45,7 @@ export default function ProductDetails() {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${id}`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${id}`);
       let prod = data;
       if (typeof data === 'string' || !data || data.message) {
         prod = realisticProducts.find(p => p._id === id);
@@ -64,7 +64,7 @@ export default function ProductDetails() {
 
   const fetchRelatedProducts = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`);
       let fetchedProds = Array.isArray(data) ? data : (data.products || []);
       if (fetchedProds.length === 0) fetchedProds = realisticProducts;
       setRelatedProducts(fetchedProds.filter(p => p._id !== id).slice(0, 4));
@@ -80,7 +80,7 @@ export default function ProductDetails() {
     setReviewLoading(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${id}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${id}/reviews`, {
         rating, comment
       }, config);
       fetchProduct();
@@ -323,7 +323,7 @@ export default function ProductDetails() {
                 });
 
                 try {
-                  const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${product._id}/questions`, { 
+                  const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products/${product._id}/questions`, { 
                     question: q, 
                     user: user?.name || 'Guest User', userId: user?._id || null 
                   });

@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2';
 import { useState, useEffect } from 'react';
-import { socket } from '../socket';
+
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { Link, useLocation } from 'react-router-dom';
@@ -49,22 +49,26 @@ export default function StoreFront() {
   useEffect(() => {
     Promise.all([fetch(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`).then(r => r.json()).catch(() => []), fetch(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`).then(r => r.json()).catch(() => [])]).then(([prodData, catData]) => { if (!prodData || prodData.length === 0) { prodData = generateDummyProducts(); } setProducts(prodData); setCategories(catData); setLoading(false); }).catch((err) => { console.error(err); setProducts(generateDummyProducts()); setLoading(false); });
 
-    socket.on('new_product', (product) => {
-      setProducts(prev => [product, ...prev]);
-    });
+    import('../socket').then(({ socket }) => {
+      socket.on('new_product', (product) => {
+        setProducts(prev => [product, ...prev]);
+      });
 
-    socket.on('update_product', (updatedProduct) => {
-      setProducts(prev => prev.map(p => p._id === updatedProduct._id ? updatedProduct : p));
-    });
+      socket.on('update_product', (updatedProduct) => {
+        setProducts(prev => prev.map(p => p._id === updatedProduct._id ? updatedProduct : p));
+      });
 
-    socket.on('delete_product', (productId) => {
-      setProducts(prev => prev.filter(p => p._id !== productId));
+      socket.on('delete_product', (productId) => {
+        setProducts(prev => prev.filter(p => p._id !== productId));
+      });
     });
 
     return () => {
-      socket.off('new_product');
-      socket.off('update_product');
-      socket.off('delete_product');
+      import('../socket').then(({ socket }) => {
+        socket.off('new_product');
+        socket.off('update_product');
+        socket.off('delete_product');
+      });
     };
   }, []);
 

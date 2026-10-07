@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import NotificationsDropdown from './NotificationsDropdown';
-import { ShoppingBag, ShoppingCart, User as UserIcon, LogOut, Heart, Moon, Sun, ChevronDown, Search, X, Globe, MessageCircle, MapPin, Phone, Mail, Truck, Flame, Sparkles } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, User as UserIcon, LogOut, Heart, Moon, Sun, ChevronDown, Search, X, Globe, MessageCircle, MapPin, Phone, Mail, Truck, Flame, Sparkles, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
@@ -12,6 +12,7 @@ export default function StoreLayout() {
   const [categories, setCategories] = useState([]);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   
   const [isDarkMode, setIsDarkMode] = useState(
@@ -118,7 +119,7 @@ export default function StoreLayout() {
           </Link>
 
           {/* Navigation Links - Center Flex-1 */}
-          <div className={`flex-1 flex items-center gap-4 xl:gap-8 text-[12px] xl:text-[13px] font-semibold flex-nowrap overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDarkMode ? 'text-slate-200' : 'text-slate-700 dark:text-slate-300'}`}>
+          <div className={`hidden md:flex flex-1 items-center gap-4 xl:gap-8 text-[12px] xl:text-[13px] font-semibold flex-nowrap ${isDarkMode ? "text-slate-200" : "text-slate-700 dark:text-slate-300"}`}>
             <Link to="/" className="py-4 hover:text-primary-600 border-b-2 border-transparent hover:border-primary-600 transition-colors whitespace-nowrap outline-none">HOME</Link>
             {/* Mega Menu Dropdown */}
             <div className="group">
@@ -379,6 +380,9 @@ export default function StoreLayout() {
 
           {/* Right Icons (Moved to same line) */}
           <div className="flex items-center gap-6 shrink-0">
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className={`md:hidden flex items-center hover:text-primary-600 transition-colors ${isDarkMode ? 'text-slate-200' : 'text-slate-600 dark:text-slate-400'}`}>
+              <Menu size={24} />
+            </button>
             {/* Search Icon */}
             <div className="relative">
               <button 
@@ -441,6 +445,20 @@ export default function StoreLayout() {
             </div>
           </div>
         </div>
+  {isMobileMenuOpen && (
+        <div className={`md:hidden w-full ${isDarkMode ? 'bg-slate-900 border-[#3d3d5c]' : 'bg-white border-slate-200'} border-b px-4 py-4 flex flex-col gap-4 shadow-lg absolute top-full left-0 z-50`}>
+          <Link to="/" onClick={() => setIsMobileMenuOpen(false)} className="font-bold">HOME</Link>
+          <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="font-bold">CATEGORIES</Link>
+          <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="font-bold">NEW IN</Link>
+          <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="font-bold">COLLECTION</Link>
+          <Link to="/products" onClick={() => setIsMobileMenuOpen(false)} className="font-bold">BEST SELLERS</Link>
+          <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="font-bold">ABOUT US</Link>
+          <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="font-bold">CONTACT</Link>
+          {user?.role === 'admin' && (
+            <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="font-bold text-primary-600">ADMIN AREA</Link>
+          )}
+        </div>
+      )}
       </header>
       <main className="flex-1 w-full flex flex-col">
         <Outlet />
@@ -558,3 +576,4 @@ export default function StoreLayout() {
     </div>
   );
 }
+

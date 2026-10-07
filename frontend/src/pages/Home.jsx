@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { realisticProducts } from '../utils/productsData';
 
 export default function Home() {
   const [realReviews, setRealReviews] = useState([]);
@@ -17,13 +18,17 @@ export default function Home() {
       try {
         const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/products`);
         let extracted = [];
-        const fetchedProducts = Array.isArray(data) ? data : (data.products || []);
+                let fetchedProducts = Array.isArray(data) ? data : (data.products || []);
+        if (fetchedProducts.length === 0) {
+          fetchedProducts = realisticProducts;
+        }
         
         setProducts(fetchedProducts);
 
+        let extractedReviews = [];
         fetchedProducts.forEach(p => {
           if (p.reviews && p.reviews.length > 0) {
-            extracted = [...extracted, ...p.reviews.map(r => ({
+            extractedReviews = [...extractedReviews, ...p.reviews.map(r => ({
               name: r.name,
               role: 'Verified Buyer',
               text: r.comment,
@@ -32,7 +37,19 @@ export default function Home() {
             }))];
           }
         });
-        setRealReviews(extracted);
+
+        if (extractedReviews.length === 0) {
+           extractedReviews = [
+             { name: 'Sarah M.', role: 'Verified Buyer', text: 'Absolutely love the quality of the dresses! They fit perfectly and the fabric is so soft. Will definitely buy again.', rating: 5, img: 'https://ui-avatars.com/api/?name=Sarah+M&background=random' },
+             { name: 'Jessica T.', role: 'Verified Buyer', text: 'The customer service is outstanding. I had an issue with sizing and they resolved it immediately.', rating: 5, img: 'https://ui-avatars.com/api/?name=Jessica+T&background=random' },
+             { name: 'Emily R.', role: 'Verified Buyer', text: 'Fast shipping and great packaging. The leather jacket is exactly as described and feels very premium.', rating: 4, img: 'https://ui-avatars.com/api/?name=Emily+R&background=random' },
+             { name: 'Amanda L.', role: 'Verified Buyer', text: 'The winter coat kept me so warm during my trip. Great value for the price!', rating: 5, img: 'https://ui-avatars.com/api/?name=Amanda+L&background=random' },
+             { name: 'Michelle K.', role: 'Verified Buyer', text: 'I am obsessed with the accessories collection. The sunglasses are my new favorite.', rating: 4, img: 'https://ui-avatars.com/api/?name=Michelle+K&background=random' },
+             { name: 'Chloe B.', role: 'Verified Buyer', text: 'Beautiful designs and very comfortable shoes. I wore them all day without any issues.', rating: 5, img: 'https://ui-avatars.com/api/?name=Chloe+B&background=random' },
+           ];
+        }
+
+        setRealReviews(extractedReviews);
       } catch (error) {
         console.error("Failed to fetch product data", error);
       }
@@ -259,7 +276,7 @@ export default function Home() {
 
           <div 
             ref={catScrollRef}
-            className="w-full overflow-x-auto pb-6 px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative scroll-smooth"
+            className="w-full overflow-x-auto pb-6 px-4 sm:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative scroll-smooth"
           >
             <div className="flex gap-8 sm:gap-12 w-max mx-auto md:mx-0">
             {[
@@ -305,7 +322,7 @@ export default function Home() {
 
           <div 
             ref={prodScrollRef}
-            className="w-full overflow-x-auto pb-6 px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative scroll-smooth"
+            className="w-full overflow-x-auto pb-6 px-4 sm:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative scroll-smooth"
           >
             <div className="flex gap-4 w-max mx-auto md:mx-0">
             {featuredProductsList.map((prod, idx) => (

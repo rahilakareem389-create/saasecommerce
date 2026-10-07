@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app');
 
   const [data, setData] = useState({
-    kpis: { totalRevenue: 0, newCustomers: 0, activeOrders: 0, conversionRate: '0%' },
+    kpis: { totalRevenue: 15430, newCustomers: 11, activeOrders: 22, conversionRate: '3.4%' },
     charts: { revenue: [], visitors: [], ordersOverviewData: [], categoryChartData: [] },
     lists: { recentOrders: [], topProducts: [], customerAlerts: [] }
   });

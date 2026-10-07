@@ -8,8 +8,8 @@ import { realisticProducts } from '../utils/productsData';
 
 export default function Home() {
   const [realReviews, setRealReviews] = useState([]);
-  const [products, setProducts] = useState([]);
-    const { addToCart } = useCart();
+  const [products, setProducts] = useState(realisticProducts);
+  const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
 

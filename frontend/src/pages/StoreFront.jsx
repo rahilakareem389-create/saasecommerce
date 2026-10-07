@@ -5,11 +5,12 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { Link, useLocation } from 'react-router-dom';
 import { Heart, Eye, ShoppingBag, X } from 'lucide-react';
+import { realisticProducts } from '../utils/productsData';
 
 export default function StoreFront() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(realisticProducts);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
     const [quickQty, setQuickQty] = useState(1);
   const [quickColor, setQuickColor] = useState("");
   const [activeImage, setActiveImage] = useState("");

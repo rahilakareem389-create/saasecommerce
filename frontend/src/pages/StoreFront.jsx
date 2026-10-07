@@ -47,7 +47,7 @@ export default function StoreFront() {
   ];
 
   useEffect(() => {
-    Promise.all([fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products`).then(r => r.json()).catch(() => []), fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`).then(r => r.json()).catch(() => [])]).then(([prodData, catData]) => { if (!prodData || prodData.length === 0) { prodData = generateDummyProducts(); } setProducts(prodData); setCategories(catData); setLoading(false); }).catch((err) => { console.error(err); setProducts(generateDummyProducts()); setLoading(false); });
+    Promise.all([fetch(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`).then(r => r.json()).catch(() => []), fetch(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`).then(r => r.json()).catch(() => [])]).then(([prodData, catData]) => { if (!prodData || prodData.length === 0) { prodData = generateDummyProducts(); } setProducts(prodData); setCategories(catData); setLoading(false); }).catch((err) => { console.error(err); setProducts(generateDummyProducts()); setLoading(false); });
 
     socket.on('new_product', (product) => {
       setProducts(prev => [product, ...prev]);

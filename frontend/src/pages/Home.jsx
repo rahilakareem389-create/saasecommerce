@@ -16,7 +16,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/products`);
+        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`);
         let extracted = [];
                 let fetchedProducts = Array.isArray(data) ? data : (data.products || []);
         if (fetchedProducts.length === 0) {
@@ -52,6 +52,7 @@ export default function Home() {
         setRealReviews(extractedReviews);
       } catch (error) {
         console.error("Failed to fetch product data", error);
+        setProducts(realisticProducts);
       }
     };
     fetchProducts();

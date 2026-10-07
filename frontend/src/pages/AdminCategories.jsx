@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Plus, Edit2, Trash2, FolderTree } from 'lucide-react';
 
 export default function AdminCategories() {
-  const [categories, setCategories] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`) || null);
+  const [categories, setCategories] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`) || null);
   const [isAdding, setIsAdding] = useState(false);
   const [editId, setEditId] = useState(null);
   const { user } = useAuth();
@@ -20,7 +20,7 @@ export default function AdminCategories() {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`);
       setCategories(data);
     } catch (err) {
       console.error(err);
@@ -40,9 +40,9 @@ export default function AdminCategories() {
       };
 
       if (editId) {
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories/${editId}`, categoryData, config);
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories/${editId}`, categoryData, config);
       } else {
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`, categoryData, config);
+        await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`, categoryData, config);
       }
       
       fetchCategories();
@@ -56,7 +56,7 @@ export default function AdminCategories() {
     if (!(await Swal.fire({title: 'Are you sure?', text: 'Are you sure you want to delete this category? Products using this category might lose their reference.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes'})).isConfirmed) return;
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories/${id}`, config);
+      await axios.delete(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories/${id}`, config);
       fetchCategories();
     } catch (err) {
       Swal.fire(err.response?.data?.message || 'Error deleting category');

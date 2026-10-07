@@ -37,7 +37,7 @@ export default function StoreLayout() {
   ];
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/categories`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/categories`)
       .then(r => r.json())
       .then(data => setCategories([...defaultCategories, ...(Array.isArray(data) ? data : [])]))
       .catch(err => {

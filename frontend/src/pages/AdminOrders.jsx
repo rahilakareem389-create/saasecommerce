@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { PackageOpen, Eye, X } from 'lucide-react';
 
 export default function AdminOrders() {
-  const [orders, setOrders] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders`) || null);
+  const [orders, setOrders] = useState(() => getCachedDataSync(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/orders`) || null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
@@ -15,7 +15,7 @@ export default function AdminOrders() {
     try {
       if (!user) return;
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders`, config);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/orders`, config);
       setOrders(data);
     } catch (err) {
       console.error(err);
@@ -29,7 +29,7 @@ export default function AdminOrders() {
   const updateStatus = async (id, status) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/orders/${id}/status`, { status }, config);
+      await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/orders/${id}/status`, { status }, config);
       fetchOrders();
     } catch (err) {
       console.error(err);

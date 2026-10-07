@@ -32,7 +32,7 @@ export default function NotificationsDropdown() {
   const fetchNotifications = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/notifications`, config);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/notifications`, config);
       setNotifications(data);
     } catch (err) {
       console.error('Failed to fetch notifications');
@@ -42,7 +42,7 @@ export default function NotificationsDropdown() {
   const markAsRead = async (id) => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/notifications/${id}/read`, {}, config);
+      const { data } = await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/notifications/${id}/read`, {}, config);
       setNotifications(data);
     } catch (err) { console.error(err); }
   };
@@ -50,7 +50,7 @@ export default function NotificationsDropdown() {
   const markAllRead = async () => {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      const { data } = await axios.put(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/notifications/read-all`, {}, config);
+      const { data } = await axios.put(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/notifications/read-all`, {}, config);
       setNotifications(data);
       setShow(false);
     } catch (err) { console.error(err); }

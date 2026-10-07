@@ -44,7 +44,7 @@ export default function ProductDetails() {
   const fetchProduct = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${id}`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${id}`);
       setProduct(data);
       if(data.variants?.length > 0) setVariant(data.variants[0]);
     } catch (err) {
@@ -56,7 +56,7 @@ export default function ProductDetails() {
 
   const fetchRelatedProducts = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products`);
+      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`);
       setRelatedProducts((Array.isArray(data) ? data : (data.products || [])).filter(p => p._id !== id).slice(0, 4));
     } catch(e) {
       console.error(e);
@@ -69,7 +69,7 @@ export default function ProductDetails() {
     setReviewLoading(true);
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
-      await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${id}/reviews`, {
+      await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${id}/reviews`, {
         rating, comment
       }, config);
       fetchProduct();
@@ -312,7 +312,7 @@ export default function ProductDetails() {
                 });
 
                 try {
-                  const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"}/api/products/${product._id}/questions`, { 
+                  const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${product._id}/questions`, { 
                     question: q, 
                     user: user?.name || 'Guest User', userId: user?._id || null 
                   });

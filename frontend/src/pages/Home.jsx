@@ -266,12 +266,12 @@ export default function Home() {
           onTouchStart={() => setIsCatPaused(true)}
           onTouchEnd={() => setIsCatPaused(false)}
         >
-          <button onClick={() => scrollContainer(catScrollRef, 'left')} className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
-            <ChevronLeft size={28} />
+          <button onClick={() => scrollContainer(catScrollRef, 'left')} className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
+            <ChevronLeft size={24} />
           </button>
           
-          <button onClick={() => scrollContainer(catScrollRef, 'right')} className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
-            <ChevronRight size={28} />
+          <button onClick={() => scrollContainer(catScrollRef, 'right')} className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
+            <ChevronRight size={24} />
           </button>
 
           <div 
@@ -312,12 +312,12 @@ export default function Home() {
           onTouchStart={() => setIsProdPaused(true)}
           onTouchEnd={() => setIsProdPaused(false)}
         >
-          <button onClick={() => scrollContainer(prodScrollRef, 'left')} className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
-            <ChevronLeft size={28} />
+          <button onClick={() => scrollContainer(prodScrollRef, 'left')} className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
+            <ChevronLeft size={24} />
           </button>
           
-          <button onClick={() => scrollContainer(prodScrollRef, 'right')} className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
-            <ChevronRight size={28} />
+          <button onClick={() => scrollContainer(prodScrollRef, 'right')} className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center rounded-full bg-white dark:bg-[#2a2a3c] shadow-[0_4px_20px_rgba(0,0,0,0.15)] text-primary-900 hover:text-primary-600 hover:scale-110 transition-all md:opacity-0 md:group-hover:opacity-100 border border-slate-100 dark:border-[#3d3d5c]">
+            <ChevronRight size={24} />
           </button>
 
           <div 

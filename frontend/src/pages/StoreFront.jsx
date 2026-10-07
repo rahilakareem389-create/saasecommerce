@@ -88,7 +88,7 @@ export default function StoreFront() {
     "https://images.unsplash.com/photo-1485230895905-ef4a5c54e7d8?w=400&q=80"
   ];
 
-  const generateDummyProducts = () => {
+  function generateDummyProducts() {
     let prods = [];
     defaultCategories.forEach((catObj, catIdx) => {
       for (let i = 0; i < 10; i++) { // 10 products per category as requested

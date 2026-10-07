@@ -280,11 +280,11 @@ export default function Home() {
           >
             <div className="flex gap-8 sm:gap-12 w-max mx-auto md:mx-0">
             {[
-                    { name: 'DRESSES', img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=200&q=80' },
-                    { name: 'OUTERWEAR', img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=200&q=80' },
-                    { name: 'ACCESSORIES', img: 'https://images.unsplash.com/photo-1599643478524-fb66f7240078?w=200&q=80' },
-                    { name: 'SHOES', img: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=200&q=80' },
-                    { name: 'TOPS', img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200&q=80' },
+                    { name: 'DRESSES', img: '/Casual Cotton Sundress/main.jpg' },
+                    { name: 'OUTERWEAR', img: '/Premium Leather Biker Jacket/main.jpg' },
+                    { name: 'ACCESSORIES', img: '/Minimalist Gold Necklace/main.webp' },
+                    { name: 'SHOES', img: '/Summer Ankle Boots/main.jpg' },
+                    { name: 'TOPS', img: '/Silk Button-Up Blouse/main.jpg' },
               ].map((cat, idx) => (
               <Link to={`/products?category=${cat.name.toLowerCase()}`} key={idx} className="flex flex-col items-center gap-4 group/cat w-28 sm:w-32 shrink-0">
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-[3px] border-white shadow-md group-hover/cat:border-primary-500 group-hover/cat:shadow-xl group-hover/cat:-translate-y-2 transition-all duration-300">

@@ -6,7 +6,7 @@ export const realisticProducts = [
     "price": 22.5,
     "imageUrl": "/Graphic Print Tee/main.jpg",
     "images": [
-      "/Graphic Print Tee/714zFpM+dTL._AC_SX466_.jpg",
+      "/Graphic Print Tee/714zFpM_dTL._AC_SX466_.jpg",
       "/Graphic Print Tee/71JUSvpBPEL._AC_SY550_.jpg",
       "/Graphic Print Tee/71kSqUpOtEL._AC_SY550_.jpg",
       "/Graphic Print Tee/81a7wID8n6L._AC_SY550_.jpg"
@@ -100,11 +100,11 @@ export const realisticProducts = [
     "images": [
       "/Classic Denim Jacket/71IEQEwzcFL._AC_SY550_.jpg",
       "/Classic Denim Jacket/71lbvx34cJL._AC_SY550_.jpg",
-      "/Classic Denim Jacket/81+yEVAZ3cL._AC_SY550_.jpg",
+      "/Classic Denim Jacket/81_yEVAZ3cL._AC_SY550_.jpg",
       "/Classic Denim Jacket/81C2GrBOqbL._AC_SY550_.jpg",
       "/Classic Denim Jacket/81euXfj5lnL._AC_SY550_.jpg",
       "/Classic Denim Jacket/81GZ8u39YHL._AC_SY550_.jpg",
-      "/Classic Denim Jacket/913sL+OvALL._AC_SY550_.jpg",
+      "/Classic Denim Jacket/913sL_OvALL._AC_SY550_.jpg",
       "/Classic Denim Jacket/91ejursbGeL._AC_SX466_.jpg"
     ],
     "category": {
@@ -161,7 +161,7 @@ export const realisticProducts = [
     "imageUrl": "/Premium Leather Biker Jacket/main.jpg",
     "images": [
       "/Premium Leather Biker Jacket/71jg08zmUjL._AC_SX569_.jpg",
-      "/Premium Leather Biker Jacket/71Onkt+uFeL._AC_SX569_.jpg",
+      "/Premium Leather Biker Jacket/71Onkt_uFeL._AC_SX569_.jpg",
       "/Premium Leather Biker Jacket/71REthyHW9L._AC_SX569_.jpg",
       "/Premium Leather Biker Jacket/71Tzkg33ILL._AC_SX569_.jpg"
     ],
@@ -294,7 +294,7 @@ export const realisticProducts = [
     "price": 55,
     "imageUrl": "/Leather Crossbody Bag/main.webp",
     "images": [
-      "/Leather Crossbody Bag/71Ds+YxPBDL._AC_SX569_.jpg",
+      "/Leather Crossbody Bag/71Ds_YxPBDL._AC_SX569_.jpg",
       "/Leather Crossbody Bag/71iRVYHaMGL._AC_UL480_FMwebp_QL65_.webp",
       "/Leather Crossbody Bag/71ivGRbezAL._AC_SX569_.jpg",
       "/Leather Crossbody Bag/71vvyVWlxcL._AC_UL480_FMwebp_QL65_.webp",
@@ -331,9 +331,9 @@ export const realisticProducts = [
       "/Designer Aviator Sunglasses/61-03mngMNL._AC_SX569_.jpg",
       "/Designer Aviator Sunglasses/619I4ePlh2L._AC_SX569_.jpg",
       "/Designer Aviator Sunglasses/61d14-7xgsL._AC_SX679_.jpg",
-      "/Designer Aviator Sunglasses/61dxjQk2+mL._AC_SX569_.jpg",
+      "/Designer Aviator Sunglasses/61dxjQk2_mL._AC_SX569_.jpg",
       "/Designer Aviator Sunglasses/61R-w52hlLL._AC_UL480_FMwebp_QL65_.webp",
-      "/Designer Aviator Sunglasses/61SID0+kHxL._AC_SX569_.jpg"
+      "/Designer Aviator Sunglasses/61SID0_kHxL._AC_SX569_.jpg"
     ],
     "category": {
       "_id": "6ac0db54e51ca9b50a8ad1e5",
@@ -397,7 +397,7 @@ export const realisticProducts = [
       "/Minimalist Gold Necklace/51JaNKiZrsL._AC_UL480_FMwebp_QL65_.webp",
       "/Minimalist Gold Necklace/61ecXhQfFOL._AC_UL480_FMwebp_QL65_.webp",
       "/Minimalist Gold Necklace/71cCBi5Wx2L._AC_SY535_.jpg",
-      "/Minimalist Gold Necklace/71Hnw4+oQUL._AC_SY675_.jpg",
+      "/Minimalist Gold Necklace/71Hnw4_oQUL._AC_SY675_.jpg",
       "/Minimalist Gold Necklace/71jLeKqBR9L._AC_UL480_FMwebp_QL65_.webp"
     ],
     "category": {
@@ -427,11 +427,11 @@ export const realisticProducts = [
     "imageUrl": "/Comfortable Running Shoes/main.jpg",
     "images": [
       "/Comfortable Running Shoes/71mkJtAsr6L._AC_SY575_.jpg",
-      "/Comfortable Running Shoes/813Pgd9e+tL._AC_SY575_.jpg",
+      "/Comfortable Running Shoes/813Pgd9e_tL._AC_SY575_.jpg",
       "/Comfortable Running Shoes/81BGGZFh2ZL._AC_SY575_.jpg",
-      "/Comfortable Running Shoes/81C+t8tMn7L._AC_SY575_.jpg",
+      "/Comfortable Running Shoes/81C_t8tMn7L._AC_SY575_.jpg",
       "/Comfortable Running Shoes/81efl2dk1GL._AC_SY575_.jpg",
-      "/Comfortable Running Shoes/81GCzekwr+L._AC_SY575_.jpg",
+      "/Comfortable Running Shoes/81GCzekwr_L._AC_SY575_.jpg",
       "/Comfortable Running Shoes/81jwuz4tOdL._AC_SY575_.jpg",
       "/Comfortable Running Shoes/81ZBR3X4fUL._AC_SY575_.jpg"
     ],
@@ -493,7 +493,7 @@ export const realisticProducts = [
     "price": 95,
     "imageUrl": "/Leather Oxford Shoes/main.jpg",
     "images": [
-      "/Leather Oxford Shoes/71+Y-h15Y8L._AC_SY575_.jpg",
+      "/Leather Oxford Shoes/71_Y-h15Y8L._AC_SY575_.jpg",
       "/Leather Oxford Shoes/71Fi6kAyieL._AC_SY575_.jpg",
       "/Leather Oxford Shoes/71h9pOXO8FL._AC_SY575_.jpg",
       "/Leather Oxford Shoes/71HUPkQCWNL._AC_SY575_.jpg",
@@ -530,10 +530,10 @@ export const realisticProducts = [
       "/Summer Ankle Boots/51kd7fEoYYL._AC_SY575_.jpg",
       "/Summer Ankle Boots/61-Bs5SXs9L._AC_SY575_.jpg",
       "/Summer Ankle Boots/61CpeIR2PmL._AC_SY575_.jpg",
-      "/Summer Ankle Boots/61iWQyuUf+L._AC_SY575_.jpg",
+      "/Summer Ankle Boots/61iWQyuUf_L._AC_SY575_.jpg",
       "/Summer Ankle Boots/61Jc0sXojoL._AC_SY575_.jpg",
       "/Summer Ankle Boots/61NgogXsOoL._AC_SY575_.jpg",
-      "/Summer Ankle Boots/61ZLFF+ofrL._AC_SY575_.jpg",
+      "/Summer Ankle Boots/61ZLFF_ofrL._AC_SY575_.jpg",
       "/Summer Ankle Boots/716LqUxcFEL._AC_SY575_.jpg"
     ],
     "category": {
@@ -562,13 +562,13 @@ export const realisticProducts = [
     "price": 15.99,
     "imageUrl": "/Basic V-Neck T-Shirt/main.jpg",
     "images": [
-      "/Basic V-Neck T-Shirt/71+HDU0IToL._AC_SY550_.jpg",
+      "/Basic V-Neck T-Shirt/71_HDU0IToL._AC_SY550_.jpg",
       "/Basic V-Neck T-Shirt/71hIbTH464L._AC_SY550_.jpg",
       "/Basic V-Neck T-Shirt/71l-agMAM3L._AC_SY550_.jpg",
       "/Basic V-Neck T-Shirt/71vx7kmCeoL._AC_SY550_.jpg",
       "/Basic V-Neck T-Shirt/81bBQiKhCAL._AC_SY550_.jpg",
       "/Basic V-Neck T-Shirt/81kW0EJ2xEL._AC_SY550_.jpg",
-      "/Basic V-Neck T-Shirt/81LT10H1+aL._AC_SY550_.jpg"
+      "/Basic V-Neck T-Shirt/81LT10H1_aL._AC_SY550_.jpg"
     ],
     "category": {
       "_id": "6ac0db54e51ca9b50a8ad1e7",
@@ -598,10 +598,10 @@ export const realisticProducts = [
     "images": [
       "/Silk Button-Up Blouse/51DgdEL4c2L._AC_SX425_.jpg",
       "/Silk Button-Up Blouse/51dOHezFKmL._AC_SX425_.jpg",
-      "/Silk Button-Up Blouse/51EP+ZEhvIL._AC_SX425_.jpg",
+      "/Silk Button-Up Blouse/51EP_ZEhvIL._AC_SX425_.jpg",
       "/Silk Button-Up Blouse/51F2CUFPGTL._AC_SX425_.jpg",
-      "/Silk Button-Up Blouse/51FBbn+LosL._AC_SX425_.jpg",
-      "/Silk Button-Up Blouse/51igiOX+kbL._AC_SX425_.jpg",
+      "/Silk Button-Up Blouse/51FBbn_LosL._AC_SX425_.jpg",
+      "/Silk Button-Up Blouse/51igiOX_kbL._AC_SX425_.jpg",
       "/Silk Button-Up Blouse/51mbL53NL4L._AC_SX425_.jpg",
       "/Silk Button-Up Blouse/51o-NOGQMZL._AC_SX425_.jpg",
       "/Silk Button-Up Blouse/51SBAWDEO4L._AC_SX425_.jpg"
@@ -633,7 +633,7 @@ export const realisticProducts = [
     "imageUrl": "/Cozy Knit Sweater/main.jpg",
     "images": [
       "/Cozy Knit Sweater/51om0lmJKIL._AC_SX569_.jpg",
-      "/Cozy Knit Sweater/61AyJf+om+L._AC_SX569_.jpg",
+      "/Cozy Knit Sweater/61AyJf_om_L._AC_SX569_.jpg",
       "/Cozy Knit Sweater/61iaHDXLEcL._AC_SX522_.jpg",
       "/Cozy Knit Sweater/71njUd9A-pL._AC_SX569_.jpg",
       "/Cozy Knit Sweater/71u2gUiw0gL._AC_SX522_.jpg"
@@ -666,7 +666,7 @@ export const realisticProducts = [
     "images": [
       "/Elegant Summer Midi Dress/61b29Bnd1jL._AC_SY550_.jpg",
       "/Elegant Summer Midi Dress/61jeGJPQutL._AC_SY550_.jpg",
-      "/Elegant Summer Midi Dress/61sVkIjYV+L._AC_SY741_.jpg",
+      "/Elegant Summer Midi Dress/61sVkIjYV_L._AC_SY741_.jpg",
       "/Elegant Summer Midi Dress/71idY1MyTTL._AC_SY550_.jpg",
       "/Elegant Summer Midi Dress/71K87lgH3uL._AC_SY550_.jpg",
       "/Elegant Summer Midi Dress/71qRpNJD-DL._AC_SY550_.jpg"

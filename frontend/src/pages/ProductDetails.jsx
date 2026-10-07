@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 import { Heart, ShoppingCart, Star, Minus, Plus, CheckCircle, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { realisticProducts } from '../utils/productsData';
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -45,10 +46,17 @@ export default function ProductDetails() {
     try {
       setLoading(true);
       const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products/${id}`);
-      setProduct(data);
-      if(data.variants?.length > 0) setVariant(data.variants[0]);
+      let prod = data;
+      if (typeof data === 'string' || !data || data.message) {
+        prod = realisticProducts.find(p => p._id === id);
+      }
+      setProduct(prod);
+      if(prod?.variants?.length > 0) setVariant(prod.variants[0]);
     } catch (err) {
       console.error(err);
+      const fallback = realisticProducts.find(p => p._id === id);
+      setProduct(fallback);
+      if(fallback?.variants?.length > 0) setVariant(fallback.variants[0]);
     } finally {
       setLoading(false);
     }
@@ -57,9 +65,12 @@ export default function ProductDetails() {
   const fetchRelatedProducts = async () => {
     try {
       const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (`http://${window.location.hostname}:5000`)}/api/products`);
-      setRelatedProducts((Array.isArray(data) ? data : (data.products || [])).filter(p => p._id !== id).slice(0, 4));
+      let fetchedProds = Array.isArray(data) ? data : (data.products || []);
+      if (fetchedProds.length === 0) fetchedProds = realisticProducts;
+      setRelatedProducts(fetchedProds.filter(p => p._id !== id).slice(0, 4));
     } catch(e) {
       console.error(e);
+      setRelatedProducts(realisticProducts.filter(p => p._id !== id).slice(0, 4));
     }
   };
 

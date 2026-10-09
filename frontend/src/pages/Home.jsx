@@ -301,7 +301,7 @@ export default function Home() {
                 'shoes': '/Summer Ankle Boots/main.jpg',
                 'tops': '/Silk Button-Up Blouse/main.jpg'
               };
-              let catImg = cat.img || defaultImages[cat.name.toLowerCase()];
+              let catImg = cat.image || cat.img || defaultImages[cat.name.toLowerCase()];
               if (!catImg) {
                 // Find a product that belongs to this category
                 const catProduct = displayProducts.find(p => p.category && (p.category === cat._id || p.category._id === cat._id || p.category.name === cat.name));

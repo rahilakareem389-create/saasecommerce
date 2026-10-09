@@ -15,8 +15,18 @@ export default function AdminCategories() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [parentCategory, setParentCategory] = useState('');
+  const [image, setImage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 3;
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setImage(reader.result);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -36,7 +46,7 @@ export default function AdminCategories() {
     try {
       const config = { headers: { Authorization: `Bearer ${user.token}` } };
       const categoryData = { 
-        name, slug: slug.toLowerCase(), parentCategory: parentCategory || null 
+        name, slug: slug.toLowerCase(), parentCategory: parentCategory || null, image 
       };
 
       if (editId) {
@@ -68,13 +78,14 @@ export default function AdminCategories() {
     setName(cat.name);
     setSlug(cat.slug);
     setParentCategory(cat.parentCategory || '');
+    setImage(cat.image || '');
     setIsAdding(true);
   };
 
   const resetForm = () => {
     setIsAdding(false);
     setEditId(null);
-    setName(''); setSlug(''); setParentCategory('');
+    setName(''); setSlug(''); setParentCategory(''); setImage('');
   };
 
   const getParentName = (parentId) => {
@@ -129,6 +140,13 @@ export default function AdminCategories() {
                   })}
                 </select>
               </div>
+              <div className="space-y-1 md:col-span-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Category Image</label>
+                <div className="flex items-center gap-4">
+                  {image && <img src={image} alt="Preview" className="w-16 h-16 rounded-md object-cover border" />}
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="w-full px-3 py-2 border rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                </div>
+              </div>
             </div>
             <button type="submit" className="bg-slate-900 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors">
               {editId ? 'Update Category' : 'Save Category'}
@@ -159,8 +177,12 @@ export default function AdminCategories() {
                ))
             ) : (categories || []).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage).map(cat => (
               <tr key={cat._id} className="hover:bg-slate-50 dark:bg-[#1f1f2e] transition-colors">
-                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50 flex items-center gap-2">
-                  <FolderTree size={16} className="text-slate-400" />
+                <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-50 flex items-center gap-3">
+                  {cat.image ? (
+                    <img src={cat.image} className="w-8 h-8 rounded object-cover" alt="" />
+                  ) : (
+                    <div className="w-8 h-8 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center"><FolderTree size={16} className="text-slate-400" /></div>
+                  )}
                   {cat.name}
                 </td>
                 <td className="px-6 py-4 font-mono text-xs">{cat.slug}</td>

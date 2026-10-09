@@ -4,7 +4,6 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import useWeb3Forms from '@web3forms/react';
 import { CreditCard, Wallet, Truck, Star, Lock, ShieldCheck, CheckCircle2, Smartphone, Building2, QrCode } from 'lucide-react';
 import { auth } from '../firebase';
 import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
@@ -116,22 +115,7 @@ export default function Checkout() {
     }
   };
 
-  // Web3Forms
-  const { submit: submitWeb3Form } = useWeb3Forms({
-    access_key: 'ef613376-0f0b-4347-895c-0497fb766444',
-    settings: { from_name: 'BuyNest Gateway', subject: 'New Order Received!' },
-    onSuccess: () => {
-      clearCart();
-      setLoading(false);
-      navigate('/user-dashboard'); // redirect to dashboard to see receipt/history
-      Swal.fire("Payment Success! Invoice generated in your Transaction History.");
-    },
-    onError: () => {
-      clearCart();
-      setLoading(false);
-      navigate('/');
-    },
-  });
+  // Web3Forms hook removed, will use fetch instead
 
   // Coupons & Pricing
   const [couponCode, setCouponCode] = useState('');
@@ -170,11 +154,30 @@ export default function Checkout() {
         totalPrice: finalTotal
       });
 
-      submitWeb3Form({
-        Order_Total: `$${finalTotal.toFixed(2)}`,
-        Payment_Method: `${paymentMethod} (Verified)`,
-        Customer_Email: user.email,
-      });
+      try {
+        await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            access_key: "ef613376-0f0b-4347-895c-0497fb766444",
+            from_name: "BuyNest Gateway",
+            subject: "New Order Received!",
+            Order_Total: `$${finalTotal.toFixed(2)}`,
+            Payment_Method: `${paymentMethod} (Verified)`,
+            Customer_Email: user.email,
+          }),
+        });
+      } catch (e) {
+        console.error("Web3Forms error:", e);
+      }
+
+      clearCart();
+      setLoading(false);
+      navigate('/user-dashboard'); // redirect to dashboard to see receipt/history
+      Swal.fire("Payment Success! Invoice generated in your Transaction History.");
 
     } catch (err) {
       Swal.fire('Transaction Failed. System error.');

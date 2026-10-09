@@ -152,8 +152,7 @@ export default function ContactUs() {
             <p className="text-slate-500 dark:text-slate-400 mb-8">Fill out the form below and we will get back to you as soon as possible.</p>
             
             <form action="https://api.web3forms.com/submit" method="POST" encType="multipart/form-data" className="space-y-6 relative z-10">
-              {/* NOTE: User needs to replace YOUR_ACCESS_KEY_HERE with a real Web3Forms Access Key */}
-              <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
+              <input type="hidden" name="access_key" value="ef613376-0f0b-4347-895c-0497fb766444" />
               <input type="hidden" name="subject" value="New Contact Form Submission from BuyNest" />
               <input type="hidden" name="redirect" value="https://web3forms.com/success" />
               

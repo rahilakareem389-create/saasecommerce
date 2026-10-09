@@ -155,7 +155,7 @@ export default function StoreFront() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     setSearchTerm(params.get('search') || '');
-    if (params.get('category')) setSelectedCategory(params.get('category'));
+    setSelectedCategory(params.get('category') || '');
   }, [location.search]);
 
   // Pagination calculation

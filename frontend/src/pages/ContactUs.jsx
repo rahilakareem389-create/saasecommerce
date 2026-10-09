@@ -151,7 +151,7 @@ export default function ContactUs() {
             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-50 mb-2">Send us a Message</h2>
             <p className="text-slate-500 dark:text-slate-400 mb-8">Fill out the form below and we will get back to you as soon as possible.</p>
             
-            <form action="https://api.web3forms.com/submit" method="POST" encType="multipart/form-data" className="space-y-6 relative z-10">
+            <form action="https://api.web3forms.com/submit" method="POST" className="space-y-6 relative z-10">
               <input type="hidden" name="access_key" value="ef613376-0f0b-4347-895c-0497fb766444" />
               <input type="hidden" name="subject" value="New Contact Form Submission from BuyNest" />
               <input type="hidden" name="redirect" value="https://web3forms.com/success" />
@@ -219,27 +219,7 @@ export default function ContactUs() {
                 <input type="text" name="message_subject" required className="w-full bg-slate-50 dark:bg-[#1f1f2e] border border-slate-200 dark:border-[#3d3d5c] rounded-xl p-3 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all hover:border-primary-300" placeholder="How can we help?" />
               </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Attach Document (PDF / Image)</label>
-                <div className="relative">
-                  <input 
-                    type="file" 
-                    name="attachment" 
-                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" 
-                    className="hidden" 
-                    id="file-upload" 
-                    onChange={handleFileChange}
-                  />
-                  <label 
-                    htmlFor="file-upload" 
-                    className={`flex items-center gap-3 w-full bg-slate-50 dark:bg-[#1f1f2e] border border-slate-200 dark:border-[#3d3d5c] border-dashed rounded-xl p-4 cursor-pointer hover:bg-slate-100 dark:bg-[#2a2a3c]/50 transition-colors justify-center ${fileName ? 'text-primary-600 border-primary-300 bg-primary-50/30' : 'text-slate-500 dark:text-slate-400'}`}
-                  >
-                    <Paperclip size={20} />
-                    <span className="font-medium">{fileName ? fileName : "Click to upload a file"}</span>
-                  </label>
-                </div>
-                <p className="text-xs text-slate-400 mt-2">Max file size: 5MB. Allowed formats: PDF, DOCX, JPG, PNG.</p>
-              </div>
+
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Message <span className="text-red-500">*</span></label>

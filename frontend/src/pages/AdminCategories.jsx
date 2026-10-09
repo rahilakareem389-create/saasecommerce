@@ -30,7 +30,7 @@ export default function AdminCategories() {
 
   const fetchCategories = async () => {
     try {
-      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`);
+      const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`, {}, true);
       setCategories(data);
     } catch (err) {
       console.error(err);

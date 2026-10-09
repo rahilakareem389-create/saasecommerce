@@ -66,7 +66,7 @@ export default function AdminProducts() {
   };
 
   const fetchCategories = async () => {
-    const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`);
+    const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`, {}, true);
     setCategories(data);
   };
 
@@ -183,7 +183,7 @@ export default function AdminProducts() {
     if(catName) {
       try {
         const config = { headers: { Authorization: `Bearer ${user.token}` } };
-        const payload = { name: catName, description: '', isActive: true };
+        const payload = { name: catName, slug: catName.toLowerCase().replace(/ /g, '-'), description: '', isActive: true };
         if(isSub && category) payload.parentCategory = category;
         const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`, payload, config);
         setCategories([...categories, res.data]);
@@ -269,7 +269,7 @@ export default function AdminProducts() {
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Main Product Image (Upload or URL)</label>
                   <div className="flex gap-2 items-center">
-                    <input type="text" value={imageUrl} onChange={e=>setImageUrl(e.target.value)} className="flex-1 px-3 py-2 border rounded-md" placeholder="Image URL or upload file" />
+                    <input required type="text" value={imageUrl} onChange={e=>setImageUrl(e.target.value)} className="flex-1 px-3 py-2 border rounded-md" placeholder="Image URL or upload file" />
                     <label className="cursor-pointer bg-slate-100 dark:bg-[#2a2a3c]/50 text-slate-700 dark:text-slate-300 px-4 py-2 border border-slate-300 rounded-md hover:bg-slate-200 dark:bg-slate-700 transition-colors flex items-center gap-2">
                       <Upload size={16} /> Upload
                       <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, setImageUrl)} className="hidden" />

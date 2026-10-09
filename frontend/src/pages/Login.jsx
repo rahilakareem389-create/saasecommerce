@@ -27,6 +27,26 @@ export default function Login() {
       const regRes = await register(name, email, password);
       
       if (regRes && regRes.success) {
+         try {
+           const web3Res = await fetch("https://api.web3forms.com/submit", {
+             method: "POST",
+             headers: { "Content-Type": "application/json", Accept: "application/json" },
+             body: JSON.stringify({
+               access_key: "ef613376-0f0b-4347-895c-0497fb766444",
+               from_name: "BuyNest System",
+               subject: "New User Registered on BuyNest (via Quick Login)",
+               Name: name,
+               Email: email
+             }),
+           });
+           const web3Data = await web3Res.json();
+           if (!web3Res.ok || !web3Data.success) {
+             console.error("Web3Forms API Error:", web3Data);
+           }
+         } catch (err) {
+           console.error("Web3Forms error:", err);
+         }
+
          if (regRes.data?.role === 'admin') {
            navigate('/admin');
          } else {

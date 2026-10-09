@@ -60,7 +60,8 @@ export default function AdminProducts() {
   }, []);
 
   const fetchProducts = async () => {
-    const { data } = await cachedGet(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`);
+    const url = `${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`;
+    const { data } = await cachedGet(url, {}, true);
     setProducts(data);
   };
 

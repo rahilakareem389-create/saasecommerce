@@ -102,7 +102,7 @@ export default function Register() {
             isSubmitting ? 'bg-primary-400 cursor-not-allowed' : 'bg-primary-600 hover:bg-primary-700'
           }`}
         >
-          {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+          {isSubmitting ? 'Creating Account...' : 'Create Account (Updated)'}
         </button>
       </form>
       <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">

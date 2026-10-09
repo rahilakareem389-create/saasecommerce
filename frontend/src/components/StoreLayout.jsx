@@ -20,29 +20,13 @@ export default function StoreLayout() {
   );
 
   // Promo variables replaced by continuous marquee in Top Bar
-  const defaultCategories = [
-    { _id: 'pre-order', name: 'PRE ORDER' },
-    { _id: 'graphic', name: 'GRAPHIC' },
-    { _id: 'tops', name: 'TOPS' },
-    { _id: 'dresses', name: 'DRESSES' },
-    { _id: 'two-piece-sets', name: 'TWO PIECE SETS' },
-    { _id: 'sweaters-cardigans', name: 'SWEATERS & CARDIGANS' },
-    { _id: 'outerwear', name: 'OUTERWEAR' },
-    { _id: 'bottoms', name: 'BOTTOMS' },
-    { _id: 'loungewear-sleepwear', name: 'LOUNGEWEAR & SLEEPWEAR' },
-    { _id: 'plus-size', name: 'PLUS SIZE' },
-    { _id: 'swimwear', name: 'SWIMWEAR' },
-    { _id: 'shoes-bags', name: 'SHOES & BAGS' },
-    { _id: 'activewear', name: 'ACTIVEWEAR' }
-  ];
-
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`)
       .then(r => r.json())
-      .then(data => setCategories([...defaultCategories, ...(Array.isArray(data) ? data : [])]))
+      .then(data => setCategories(Array.isArray(data) ? data : []))
       .catch(err => {
         console.error(err);
-        setCategories(defaultCategories);
+        setCategories([]);
       });
   }, []);
 
@@ -492,11 +476,9 @@ export default function StoreLayout() {
             <div>
               <h3 className={`text-base font-black uppercase tracking-wider mb-4 ${isDarkMode ? 'text-white' : 'text-slate-900 dark:text-slate-50'}`}>Categories</h3>
               <ul className="space-y-4">
-                <li><Link to="/products?category=dresses" className="text-base font-medium hover:text-primary-600 transition-colors">Dresses</Link></li>
-                <li><Link to="/products?category=outerwear" className="text-base font-medium hover:text-primary-600 transition-colors">Outerwear</Link></li>
-                <li><Link to="/products?category=activewear" className="text-base font-medium hover:text-primary-600 transition-colors">Activewear</Link></li>
-                <li><Link to="/products?category=swimwear" className="text-base font-medium hover:text-primary-600 transition-colors">Swimwear</Link></li>
-                <li><Link to="/products?category=accessories" className="text-base font-medium hover:text-primary-600 transition-colors">Accessories</Link></li>
+                {categories.slice(0, 5).map(cat => (
+                  <li key={cat._id}><Link to={`/products?category=${cat._id}`} className="text-base font-medium hover:text-primary-600 transition-colors capitalize">{cat.name.toLowerCase()}</Link></li>
+                ))}
               </ul>
             </div>
 

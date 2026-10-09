@@ -48,7 +48,21 @@ export default function StoreFront() {
   ];
 
   useEffect(() => {
-    Promise.all([fetch(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`).then(r => r.json()).catch(() => []), fetch(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`).then(r => r.json()).catch(() => [])]).then(([prodData, catData]) => { if (!prodData || prodData.length === 0) { prodData = generateDummyProducts(); } setProducts(prodData); setCategories(catData); setLoading(false); }).catch((err) => { console.error(err); setProducts(generateDummyProducts()); setLoading(false); });
+    Promise.all([
+      fetch(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`, { cache: 'no-store' }).then(r => r.json()).catch(() => []), 
+      fetch(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`, { cache: 'no-store' }).then(r => r.json()).catch(() => [])
+    ]).then(([prodData, catData]) => { 
+      if (!prodData || prodData.length === 0) { 
+        prodData = generateDummyProducts(); 
+      } 
+      setProducts(prodData); 
+      setCategories(catData); 
+      setLoading(false); 
+    }).catch((err) => { 
+      console.error(err); 
+      setProducts(generateDummyProducts()); 
+      setLoading(false); 
+    });
 
     import('../socket').then(({ socket }) => {
       socket.on('new_product', (product) => {

@@ -21,6 +21,8 @@ export const AuthProvider = ({ children }) => {
         if (error.response?.status === 401 && !isAuthRoute) {
           setUser(null);
           localStorage.removeItem('userInfo');
+          localStorage.removeItem('cart');
+          localStorage.removeItem('wishlist');
           window.location.href = '/login';
         }
         return Promise.reject(error);
@@ -55,6 +57,9 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('userInfo');
+    localStorage.removeItem('cart');
+    localStorage.removeItem('wishlist');
+    window.location.href = '/login';
   };
 
   return (

@@ -155,7 +155,7 @@ export default function Checkout() {
       });
 
       try {
-        await fetch("https://api.web3forms.com/submit", {
+        const web3Res = await fetch("https://api.web3forms.com/submit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -170,6 +170,13 @@ export default function Checkout() {
             Customer_Email: user.email,
           }),
         });
+        const web3Data = await web3Res.json();
+        if (!web3Res.ok || !web3Data.success) {
+          console.error("Web3Forms API Error:", web3Data);
+          Swal.fire("Warning: Order placed, but email notification failed. Check Web3Forms Key.");
+        } else {
+          console.log("Web3Forms Success:", web3Data);
+        }
       } catch (e) {
         console.error("Web3Forms error:", e);
       }

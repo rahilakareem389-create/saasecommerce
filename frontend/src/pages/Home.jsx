@@ -9,6 +9,7 @@ import { realisticProducts } from '../utils/productsData';
 export default function Home() {
   const [realReviews, setRealReviews] = useState([]);
   const [products, setProducts] = useState(realisticProducts);
+  const [categories, setCategories] = useState([]);
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -16,14 +17,25 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`);
-        let extracted = [];
-                let fetchedProducts = Array.isArray(data) ? data : (data.products || []);
+        const [prodRes, catRes] = await Promise.all([
+          axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/products`).catch(() => ({data: []})),
+          axios.get(`${import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname.match(/^192\.168\./) ? `http://${window.location.hostname}:5000` : 'https://saasecommerce-production.up.railway.app')}/api/categories`).catch(() => ({data: []}))
+        ]);
+        
+        let fetchedProducts = Array.isArray(prodRes.data) ? prodRes.data : (prodRes.data.products || []);
         if (fetchedProducts.length === 0) {
           fetchedProducts = realisticProducts;
         }
         
         setProducts(fetchedProducts);
+        const defaultHardcoded = [
+          { _id: 'dresses', name: 'DRESSES', img: '/Casual Cotton Sundress/main.jpg' },
+          { _id: 'outerwear', name: 'OUTERWEAR', img: '/Premium Leather Biker Jacket/main.jpg' },
+          { _id: 'accessories', name: 'ACCESSORIES', img: '/Minimalist Gold Necklace/main.webp' },
+          { _id: 'shoes', name: 'SHOES', img: '/Summer Ankle Boots/main.jpg' },
+          { _id: 'tops', name: 'TOPS', img: '/Silk Button-Up Blouse/main.jpg' }
+        ];
+        setCategories(Array.isArray(catRes.data) && catRes.data.length > 0 ? catRes.data : defaultHardcoded);
 
         let extractedReviews = [];
         fetchedProducts.forEach(p => {
@@ -280,20 +292,34 @@ export default function Home() {
             className="w-full overflow-x-auto pb-6 px-4 sm:px-12 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] relative scroll-smooth"
           >
             <div className="flex gap-8 sm:gap-12 w-max mx-auto md:mx-0">
-            {[
-                    { name: 'DRESSES', img: '/Casual Cotton Sundress/main.jpg' },
-                    { name: 'OUTERWEAR', img: '/Premium Leather Biker Jacket/main.jpg' },
-                    { name: 'ACCESSORIES', img: '/Minimalist Gold Necklace/main.webp' },
-                    { name: 'SHOES', img: '/Summer Ankle Boots/main.jpg' },
-                    { name: 'TOPS', img: '/Silk Button-Up Blouse/main.jpg' },
-              ].map((cat, idx) => (
-              <Link to={`/products?category=${cat.name.toLowerCase()}`} key={idx} className="flex flex-col items-center gap-4 group/cat w-28 sm:w-32 shrink-0">
+            {categories.map((cat, idx) => {
+              // Find a fallback image from a product in this category, or use a default
+              const defaultImages = {
+                'dresses': '/Casual Cotton Sundress/main.jpg',
+                'outerwear': '/Premium Leather Biker Jacket/main.jpg',
+                'accessories': '/Minimalist Gold Necklace/main.webp',
+                'shoes': '/Summer Ankle Boots/main.jpg',
+                'tops': '/Silk Button-Up Blouse/main.jpg'
+              };
+              let catImg = cat.img || defaultImages[cat.name.toLowerCase()];
+              if (!catImg) {
+                // Find a product that belongs to this category
+                const catProduct = displayProducts.find(p => p.category && (p.category === cat._id || p.category._id === cat._id || p.category.name === cat.name));
+                if (catProduct && catProduct.imageUrl) {
+                  catImg = catProduct.imageUrl;
+                } else {
+                  catImg = `https://ui-avatars.com/api/?name=${encodeURIComponent(cat.name)}&background=random&size=200`; // Ultimate fallback
+                }
+              }
+
+              return (
+              <Link to={`/products?category=${cat._id}`} key={idx} className="flex flex-col items-center gap-4 group/cat w-28 sm:w-32 shrink-0">
                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden border-[3px] border-white shadow-md group-hover/cat:border-primary-500 group-hover/cat:shadow-xl group-hover/cat:-translate-y-2 transition-all duration-300">
-                  <img src={cat.img} alt={cat.name} className="w-full h-full object-cover group-hover/cat:scale-110 transition-transform duration-500" />
+                  <img src={catImg} alt={cat.name} className="w-full h-full object-cover group-hover/cat:scale-110 transition-transform duration-500" />
                 </div>
                 <span className="text-sm font-extrabold text-slate-700 dark:text-slate-300 group-hover/cat:text-primary-600 tracking-wider uppercase">{cat.name}</span>
               </Link>
-            ))}
+            )})}
           </div>
         </div>
         </div>

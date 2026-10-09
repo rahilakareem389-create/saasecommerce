@@ -129,6 +129,10 @@ export default function Checkout() {
     e.preventDefault();
     if (!user) { Swal.fire("Please login first!"); navigate('/login'); return; }
     
+    if (!address || !city || !postalCode) {
+      return Swal.fire("Please fill all Billing Address details (Street Address, City, Postal Code).");
+    }
+
     // Auth Check
     if(!authStatus[paymentMethod]) return Swal.fire(`Payment Failed: Please authenticate ${paymentMethod} first.`);
 
@@ -152,7 +156,7 @@ export default function Checkout() {
         shippingAddress: { address, city, postalCode, country },
         paymentMethod: paymentMethod,
         totalPrice: finalTotal
-      });
+      }, config);
 
       try {
         const web3Res = await fetch("https://api.web3forms.com/submit", {

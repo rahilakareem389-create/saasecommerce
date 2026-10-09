@@ -26,8 +26,17 @@ export default function StoreFront() {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [sortOption, setSortOption] = useState(initialSort);
   
-  const [priceRange, setPriceRange] = useState(1000);
+  const maxPrice = products.length > 0 ? Math.max(...products.map(p => p.price)) : 10000;
+  const initialMax = maxPrice > 100000 ? maxPrice : 100000;
+  const [priceRange, setPriceRange] = useState(initialMax);
   
+  // Update price range when products load
+  useEffect(() => {
+    if (products.length > 0) {
+      const highest = Math.max(...products.map(p => p.price));
+      setPriceRange(Math.max(highest, 100000));
+    }
+  }, [products]);  
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12;
@@ -204,7 +213,8 @@ export default function StoreFront() {
               <input 
                 type="range" 
                 min="0" 
-                max="1000" 
+                max={Math.max(priceRange, 100000)}
+                step="100"
                 value={priceRange} 
                 onChange={e => setPriceRange(Number(e.target.value))}
                 className="accent-primary-600 w-24" 
